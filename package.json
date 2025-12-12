@@ -1,0 +1,16 @@
+{
+  "name": "conception-technique-creative",
+  "version": "1.0.0",
+  "description": "Projet Conception technique & Créative",
+  "private": true,
+  "devDependencies": {
+    "@commitlint/cli": "^18.6.1",
+    "@commitlint/config-conventional": "^18.6.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "lint": "eslint src"
+  }
+}

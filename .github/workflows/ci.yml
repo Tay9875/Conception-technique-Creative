@@ -1,0 +1,98 @@
+name: CI
+
+on:
+  pull_request:
+    branches:
+      - main
+      - dev
+  push:
+    branches:
+      - main
+      - dev
+
+permissions:
+  contents: read
+
+jobs:
+  check-branch-name:
+    name: Check Branch Name
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate branch name
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          # For PRs, use head ref; for pushes, use ref name
+          BRANCH_NAME="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME}}"
+
+          # Skip tags
+          if [[ "${GITHUB_REF_TYPE:-}" == "tag" ]]; then
+            echo "Skipping tag ref: ${GITHUB_REF_NAME}" 
+            exit 0
+          fi
+
+          # Conventions:
+          # - protected: main, dev
+          # - task branches: <type>/<slug>
+          #   types: feat|fix|docs|style|refactor|perf|test|chore|build|ci|revert
+          #   slug: lowercase alnum + separators (- or _)
+          allowed_regex='^(main|dev|((feat|fix|docs|style|refactor|perf|test|chore|build|ci|revert)\/[a-z0-9]+([._-][a-z0-9]+)*))$'
+
+          if [[ ! "$BRANCH_NAME" =~ $allowed_regex ]]; then
+            echo "❌ Branch name '$BRANCH_NAME' does not match conventions." >&2
+            echo "" >&2
+            echo "Expected: main | dev | <type>/<slug>" >&2
+            echo "Examples: feat/user-login, fix/api-timeout, docs/readme" >&2
+            exit 1
+          fi
+
+          echo "✅ Branch name '$BRANCH_NAME' is valid"
+
+  lint-client:
+    name: Lint Client
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: client
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: client/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+        continue-on-error: true
+
+  lint-server:
+    name: Lint Server
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: server
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: server/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+        continue-on-error: true
