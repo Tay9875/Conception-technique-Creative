@@ -1,7 +1,7 @@
 /* client/src/Auth.css */
 .auth-container {
     display: flex;
-    justify_content: center;
+    justify-content: center;
     align-items: center;
     min-height: 100vh;
     background-color: #F3E8FF; /* Fond violet très clair */
