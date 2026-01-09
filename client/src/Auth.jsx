@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import './Auth.css';
 
-export default function Auth() {
+export default function Auth({ onLoginSuccess }) {
     const [isLogin, setIsLogin] = useState(true); // Bascule entre Login et Register
     const [formData, setFormData] = useState({
         firstname: '',
@@ -20,7 +20,7 @@ export default function Auth() {
         const endpoint = isLogin ? '/login' : '/register';
         
         try {
-            const response = await fetch(`https://conception-technique-creative-backend.onrender.com/${endpoint}`, {
+            const response = await fetch(`https://conception-technique-creative-backend.onrender.com/api/auth${endpoint}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData)
@@ -30,7 +30,12 @@ export default function Auth() {
 
             if (response.ok) {
                 alert(isLogin ? `Bienvenue ${data.user.firstname} !` : "Inscription réussie ! Connectez-vous.");
-                if (!isLogin) setIsLogin(true); // Redirige vers login après inscription
+                if (isLogin) {
+                    onLoginSuccess(data.user); 
+                } else {
+                    alert("Inscription réussie ! Connectez-vous.");
+                    setIsLogin(true);
+                }
             } else {
                 alert(data.message);
             }
