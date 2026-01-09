@@ -7,6 +7,7 @@ const cors = require('cors');
 const authRoutes = require('./routes/auth'); // C'est cette ligne qui te manquait !
 const postRoutes = require('./routes/posts'); // Et celle-ci pour les posts
 const tagsRoutes = require('./routes/tags');
+const commentsRoutes = require('./routes/comments');
 require('./database/db'); // Test BDD
 
 const app = express();
@@ -53,6 +54,7 @@ boot().catch((err) => {
 app.use('/api/auth', authRoutes); // Utilise l'import authRoutes
 app.use('/api/posts', postRoutes); // Utilise l'import postRoutes
 app.use('/api/tags', tagsRoutes);
+app.use('/api/comments', commentsRoutes);
 
 app.listen(PORT, () => {
     console.log(`🚀 Serveur lancé sur http://localhost:${PORT}`);
