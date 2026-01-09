@@ -17,7 +17,7 @@ export default function Auth() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const endpoint = isLogin ? '/login' : '/register';
+        const endpoint = isLogin ? 'login' : 'register';
         
         try {
             const response = await fetch(`https://conception-technique-creative-backend.onrender.com/${endpoint}`, {
