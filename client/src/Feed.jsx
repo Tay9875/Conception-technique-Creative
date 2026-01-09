@@ -1,6 +1,7 @@
 // client/src/Feed.jsx
 import React, { useState, useEffect } from 'react';
 import './Feed.css';
+import PostCard from './PostCard';
 
 export default function Feed({ user, onLogout }) {
     const [posts, setPosts] = useState([]);
@@ -94,18 +95,7 @@ export default function Feed({ user, onLogout }) {
 
             <div className="posts-list">
                 {posts.map((post) => (
-                    <div key={post.id} className="post-card">
-                        {/* Affiche le vrai nom du tag s'il existe */}
-                        {post.tag_title && <span className="post-tag">{post.tag_title}</span>}
-                        
-                        <h2 className="post-title">{post.title}</h2>
-                        <p className="post-desc">{post.description}</p>
-                        
-                        <div className="post-footer">
-                            <span>Par <strong>{post.firstname} {post.lastname}</strong></span>
-                            <span>{new Date(post.created_at).toLocaleDateString()}</span>
-                        </div>
-                    </div>
+                    <PostCard key={post.id} post={post} user={user} />
                 ))}
             </div>
         </div>
