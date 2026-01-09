@@ -1,23 +1,20 @@
-import { createRequire } from "module";
-const require = createRequire(import.meta.url);
-
+// server/src/index.js
+require('dotenv').config();
 const express = require('express');
+const cors = require('cors'); // Important pour que le Front parle au Back
+const authRoutes = require('./routes/auth');
+require('./database/db'); // Test BDD
+
 const app = express();
-const cors = require('cors');
+const PORT = process.env.PORT || 3000;
 
-app.use(cors())
+// Middlewares
+app.use(cors()); // Autorise le frontend à se connecter
+app.use(express.json()); // Permet de lire le JSON envoyé par le front
 
-app.get('/', (req, res) => {
-      res.send('Hello from our server!')
-})
+// Routes
+app.use('/api/auth', authRoutes);
 
-// routes
-const userRoutes = require("./routes/users");
-app.use("/api/users", userRoutes);
-
-
-const port = process.env.PORT || 8080;
-
-app.listen(port, '0.0.0.0', () => {
-      console.log(`server listening on port ${port}`)
-})
+app.listen(PORT, () => {
+    console.log(`🚀 Serveur lancé sur http://localhost:${PORT}`);
+});
