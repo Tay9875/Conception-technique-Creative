@@ -15,10 +15,20 @@ const shouldMigrateOnStart = () => {
     return value === 'true' || value === '1' || value === 'yes';
 };
 
+const shouldSeedOnStart = () => {
+    const value = process.env.SEED_ON_START;
+    return value === 'true' || value === '1' || value === 'yes';
+};
+
 const boot = async () => {
     if (shouldMigrateOnStart()) {
         const migrate = require('./database/migrate');
         await migrate();
+    }
+
+    if (shouldSeedOnStart() || shouldMigrateOnStart()) {
+        const seed = require('./database/seed');
+        await seed();
     }
 
     require('./database/db'); // Test BDD

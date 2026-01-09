@@ -30,12 +30,18 @@ async function seed() {
         console.log("✅ Pathologies insérées avec succès.");
 
         console.log("🚀 Base de données prête à l'emploi !");
-        process.exit(0); // Arrête le script proprement
+        return;
 
     } catch (error) {
         console.error("❌ Une erreur est survenue lors du seeding :", error);
-        process.exit(1); // Arrête le script avec une erreur
+        throw error;
     }
 }
 
-seed();
+module.exports = seed;
+
+if (require.main === module) {
+    seed()
+        .then(() => process.exit(0))
+        .catch(() => process.exit(1));
+}
