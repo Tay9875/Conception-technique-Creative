@@ -12,5 +12,8 @@
   },
   "scripts": {
     "lint": "eslint src"
+  },
+  "dependencies": {
+    "mysql": "^2.18.1"
   }
 }
