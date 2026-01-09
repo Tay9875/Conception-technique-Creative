@@ -12,8 +12,35 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middlewares
-app.use(cors());
-app.use(express.json());
+app.use(cors()); // Autorise le frontend à se connecter
+app.use(express.json()); // Permet de lire le JSON envoyé par le front
+
+const shouldMigrateOnStart = () => {
+    const value = process.env.MIGRATE_ON_START;
+    return value === 'true' || value === '1' || value === 'yes';
+};
+
+const shouldSeedOnStart = () => {
+    const value = process.env.SEED_ON_START;
+    return value === 'true' || value === '1' || value === 'yes';
+};
+
+const boot = async () => {
+    if (shouldMigrateOnStart()) {
+        const migrate = require('./database/migrate');
+        await migrate();
+    }
+
+    if (shouldSeedOnStart() || shouldMigrateOnStart()) {
+        const seed = require('./database/seed');
+        await seed();
+    }
+
+    require('./database/db'); // Test BDD
+
+    // Routes
+    const authRoutes = require('./routes/auth');
+    app.use('/api/auth', authRoutes);
 
 // --- DÉCLARATION DES ROUTES ---
 app.use('/api/auth', authRoutes); // Utilise l'import authRoutes

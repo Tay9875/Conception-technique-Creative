@@ -17,10 +17,12 @@ export default function Auth({ onLoginSuccess }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const endpoint = isLogin ? '/login' : '/register';
+        const endpoint = isLogin ? 'login' : 'register';
+        const baseUrl = 'https://conception-technique-creative-backend.onrender.com';
         
         try {
-            const response = await fetch(`https://conception-technique-creative-backend.onrender.com/api/auth${endpoint}`, {
+
+            const response = await fetch(`${baseUrl}/api/auth/${endpoint}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData)
