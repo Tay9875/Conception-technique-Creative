@@ -1,0 +1,98 @@
+/* client/src/Feed.css */
+.feed-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #F9FAFB;
+    min-height: 100vh;
+}
+
+/* En-tête */
+.feed-header {
+    display: flex;
+    justify_content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.feed-title {
+    color: #4C1D95;
+}
+
+.logout-btn {
+    background: transparent;
+    border: 1px solid #7C3AED;
+    color: #7C3AED;
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+}
+
+/* Formulaire de création */
+.create-post-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    margin-bottom: 2rem;
+    border: 1px solid #E5E7EB;
+}
+
+.post-input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 10px;
+    border: 1px solid #E9D5FF;
+    border-radius: 10px;
+    font-family: inherit;
+}
+
+.btn-post {
+    background-color: #7C3AED;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+/* Liste des posts */
+.post-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 16px;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    border-left: 5px solid #7C3AED; /* Petite touche violette */
+}
+
+.post-tag {
+    background-color: #EDE9FE;
+    color: #7C3AED;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    display: inline-block;
+    margin-bottom: 0.5rem;
+}
+
+.post-title {
+    margin: 0.5rem 0;
+    color: #1F2937;
+}
+
+.post-desc {
+    color: #4B5563;
+    line-height: 1.5;
+}
+
+.post-footer {
+    margin-top: 1rem;
+    font-size: 0.85rem;
+    color: #9CA3AF;
+    display: flex;
+    justify_content: space-between;
+}
