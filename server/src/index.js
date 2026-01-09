@@ -11,6 +11,11 @@ app.get('/', (req, res) => {
       res.send('Hello from our server!')
 })
 
+// routes
+const userRoutes = require("./routes/users");
+app.use("/api/users", userRoutes);
+
+
 const port = process.env.PORT || 8080;
 
 app.listen(port, '0.0.0.0', () => {
