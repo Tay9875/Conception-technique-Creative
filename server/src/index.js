@@ -1,18 +1,38 @@
-import { createRequire } from "module";
-const require = createRequire(import.meta.url);
-
+// server/src/index.js
+require('dotenv').config();
 const express = require('express');
+const cors = require('cors'); // Important pour que le Front parle au Back
+
 const app = express();
-const cors = require('cors');
+const PORT = process.env.PORT || 3000;
 
-app.use(cors())
+// Middlewares
+app.use(cors()); // Autorise le frontend à se connecter
+app.use(express.json()); // Permet de lire le JSON envoyé par le front
 
-app.get('/', (req, res) => {
-      res.send('Hello from our server!')
-})
+const shouldMigrateOnStart = () => {
+    const value = process.env.MIGRATE_ON_START;
+    return value === 'true' || value === '1' || value === 'yes';
+};
 
-const port = process.env.PORT || 8080;
+const boot = async () => {
+    if (shouldMigrateOnStart()) {
+        const migrate = require('./database/migrate');
+        await migrate();
+    }
 
-app.listen(port, '0.0.0.0', () => {
-      console.log(`server listening on port ${port}`)
-})
+    require('./database/db'); // Test BDD
+
+    // Routes
+    const authRoutes = require('./routes/auth');
+    app.use('/api/auth', authRoutes);
+
+    app.listen(PORT, () => {
+        console.log(`🚀 Serveur lancé sur http://localhost:${PORT}`);
+    });
+};
+
+boot().catch((err) => {
+    console.error('❌ Erreur au démarrage du serveur :', err);
+    process.exit(1);
+});

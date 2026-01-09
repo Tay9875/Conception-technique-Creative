@@ -20,7 +20,11 @@ export default function Auth() {
         const endpoint = isLogin ? '/login' : '/register';
         
         try {
+<<<<<<< HEAD
             const response = await fetch(`https://conception-technique-creative-backend.onrender.com/${endpoint}`, {
+=======
+            const response = await fetch(`http://localhost:3000/api/auth${endpoint}`, {
+>>>>>>> 386d8eca735eae9bb54c19655d33586fcd0c23a2
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData)

@@ -1,21 +1,17 @@
--- Création de la base de données
-CREATE DATABASE IF NOT EXISTS social_cancer_network CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE social_cancer_network;
-
 -- 1. Table Roles (Définit : Patient, Ancien Patient, Proche)
-CREATE TABLE roles (
+CREATE TABLE IF NOT EXISTS roles (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(50) NOT NULL UNIQUE
 );
 
 -- 2. Table Pathologies (Type de cancer)
-CREATE TABLE pathologies (
+CREATE TABLE IF NOT EXISTS pathologies (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL UNIQUE
 );
 
 -- 3. Table Users
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     firstname VARCHAR(100) NOT NULL,
     lastname VARCHAR(100) NOT NULL,
@@ -31,7 +27,7 @@ CREATE TABLE users (
 );
 
 -- 4. Table Posts
-CREATE TABLE posts (
+CREATE TABLE IF NOT EXISTS posts (
     id INT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
     description TEXT NOT NULL,
@@ -42,7 +38,7 @@ CREATE TABLE posts (
 );
 
 -- 5. Table Comments
-CREATE TABLE comments (
+CREATE TABLE IF NOT EXISTS comments (
     id INT AUTO_INCREMENT PRIMARY KEY,
     description TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -54,13 +50,13 @@ CREATE TABLE comments (
 );
 
 -- 6. Table Tags
-CREATE TABLE tags (
+CREATE TABLE IF NOT EXISTS tags (
     id INT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(50) NOT NULL UNIQUE
 );
 
 -- 7. Table de liaison Posts <-> Tags (Many-to-Many)
-CREATE TABLE post_tags (
+CREATE TABLE IF NOT EXISTS post_tags (
     post_id INT NOT NULL,
     tag_id INT NOT NULL,
     PRIMARY KEY (post_id, tag_id),

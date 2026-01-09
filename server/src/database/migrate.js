@@ -7,8 +7,13 @@ const mysql = require('mysql2/promise');
 const migrate = async () => {
   const connection = await mysql.createConnection({
     host: process.env.DB_HOST,
+    port: process.env.DB_PORT ? Number(process.env.DB_PORT) : undefined,
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
+    ssl: process.env.DB_SSL === 'true' || process.env.DB_SSL === '1'
+      ? { rejectUnauthorized: false }
+      : undefined,
     multipleStatements: true
   });
 
@@ -17,12 +22,17 @@ const migrate = async () => {
 
   try {
     await connection.query(sql);
-    console.log('✅ Base de données initialisée avec succès !');
+    console.log('✅ Migrations appliquées avec succès !');
   } catch (err) {
     console.error('❌ Erreur lors de la migration :', err);
+    throw err;
   } finally {
     await connection.end();
   }
 };
 
-migrate();
+module.exports = migrate;
+
+if (require.main === module) {
+  migrate().catch(() => process.exit(1));
+}
