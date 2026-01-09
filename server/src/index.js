@@ -41,6 +41,7 @@ const boot = async () => {
     // Routes
     const authRoutes = require('./routes/auth');
     app.use('/api/auth', authRoutes);
+};
 
 // --- DÉCLARATION DES ROUTES ---
 app.use('/api/auth', authRoutes); // Utilise l'import authRoutes

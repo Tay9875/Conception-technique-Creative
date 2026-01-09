@@ -11,7 +11,7 @@
 /* En-tête */
 .feed-header {
     display: flex;
-    justify_content: space-between;
+    justify-content: space-between;
     align-items: center;
     margin-bottom: 2rem;
 }
@@ -94,5 +94,5 @@
     font-size: 0.85rem;
     color: #9CA3AF;
     display: flex;
-    justify_content: space-between;
+    justify-content: space-between;
 }
