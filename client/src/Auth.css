@@ -1,0 +1,90 @@
+/* client/src/Auth.css */
+.auth-container {
+    display: flex;
+    justify_content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #F3E8FF; /* Fond violet très clair */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.auth-card {
+    background: white;
+    padding: 2.5rem;
+    border-radius: 20px; /* Arrondis comme sur la maquette */
+    box-shadow: 0 10px 25px rgba(124, 58, 237, 0.1);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+}
+
+.auth-title {
+    color: #4C1D95; /* Violet foncé */
+    margin-bottom: 0.5rem;
+    font-size: 1.8rem;
+}
+
+.auth-subtitle {
+    color: #8B5CF6;
+    margin-bottom: 2rem;
+    font-size: 0.9rem;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+    text-align: left;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #5B21B6;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.form-input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #E9D5FF;
+    border-radius: 12px;
+    font-size: 1rem;
+    outline: none;
+    transition: all 0.3s;
+}
+
+.form-input:focus {
+    border-color: #7C3AED;
+    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+}
+
+.btn-primary {
+    width: 100%;
+    padding: 12px;
+    background-color: #7C3AED; /* Le violet principal du bouton */
+    color: white;
+    border: none;
+    border-radius: 50px; /* Bouton très arrondi */
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 1rem;
+    transition: background 0.3s;
+}
+
+.btn-primary:hover {
+    background-color: #6D28D9;
+}
+
+.toggle-text {
+    margin-top: 1.5rem;
+    color: #6B7280;
+    font-size: 0.9rem;
+}
+
+.toggle-link {
+    color: #7C3AED;
+    font-weight: bold;
+    cursor: pointer;
+    text-decoration: underline;
+}
