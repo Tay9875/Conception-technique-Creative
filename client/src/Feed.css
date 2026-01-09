@@ -96,3 +96,14 @@
     display: flex;
     justify-content: space-between;
 }
+
+.post-select {
+    background-color: white;
+    cursor: pointer;
+    color: #4B5563;
+}
+
+.post-select:focus {
+    border-color: #7C3AED;
+    color: #1F2937;
+}
