@@ -7,7 +7,7 @@ export default function PostCard({ post, user }) {
     const [newComment, setNewComment] = useState("");
     
     // URL API (Change selon Prod/Local)
-    const API_URL = 'https://conception-technique-creative-backend.onrender.com/api'; 
+    const API_URL = 'https://conception-technique-creative-backend.onrender.com/api';
 
     // Charger les commentaires quand on clique sur "Voir commentaires"
     const fetchComments = async () => {
