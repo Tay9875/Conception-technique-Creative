@@ -44,6 +44,11 @@ const boot = async () => {
     app.use('/api/auth', authRoutes);
 };
 
+boot().catch((err) => {
+    console.error("❌ Erreur lors du démarrage de l'application :", err);
+    process.exit(1);
+});
+
 // --- DÉCLARATION DES ROUTES ---
 app.use('/api/auth', authRoutes); // Utilise l'import authRoutes
 app.use('/api/posts', postRoutes); // Utilise l'import postRoutes
