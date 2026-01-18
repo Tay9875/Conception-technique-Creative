@@ -1,0 +1,38 @@
+button {
+    background-color: white;
+    color: #0a0a0a;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-weight: normal;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    outline: none;
+}
+
+.sqr-btn{
+    background-color: white;
+    color: #0a0a0a;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    outline: none;
+}
+
+/* Focus visible pour keyboard users */
+.sqr-button:focus {
+    background-color: #7C3AED;
+    outline-offset: 2px;
+}
+
+.sqr-button:hover {
+    outline: 3px solid #7C3AED;
+}
+
+.sqr-btn:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
