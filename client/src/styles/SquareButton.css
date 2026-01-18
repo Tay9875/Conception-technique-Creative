@@ -29,7 +29,7 @@ button {
 }
 
 .sqr-button:hover {
-    outline: 3px solid #7C3AED;
+    background-color: rgba(124, 58, 237, 0.10);
 }
 
 .sqr-btn:disabled {
