@@ -1,0 +1,22 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter');
+
+body{
+	width: 100%;
+	margin: 0;
+	padding: 0;
+	font-family: "Inter", sans-serif;
+}
+
+.footer{
+	display: flex;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: auto;
+    padding: 41px 32px 41px;
+    background: white;
+    justify-content: center;
+    align-items: flex-end;
+    text-align: center;
+    color: #6b7280;
+}
