@@ -31,6 +31,10 @@ body{
     justify-content: space-between;
 }
 
+.extra {
+  display: block;
+}
+
 .logo-title{
 	position: relative;
 	font-size: 20px;
@@ -55,4 +59,12 @@ a, .header-left, .header-nav, .header-right, nav{
 a, nav{
 	text-decoration: none;
 	gap: 12px;
+}
+
+
+/* Quand l'écran devient petit (ex : moins de 600px), on cache certains éléments */
+@media (max-width: 1000px) {
+  .extra {
+    display: none; /* disparaît visuellement mais reste dans le DOM */
+  }
 }

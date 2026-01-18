@@ -27,7 +27,7 @@ export const Header: React.FC = () => {
 
         {/* Navigation principale */}
         <nav
-          className="header-nav"
+          className="header-nav extra"
           aria-label="Navigation principale"
         >
           <Button>Accueil</Button>
@@ -35,12 +35,16 @@ export const Header: React.FC = () => {
           <Button>Mes Notes</Button>
         </nav>
 
-        {/* Actions supplémentaires */}
+		{/* Actions supplémentaires */}
         <div className="header-right">
-          <Button>Partager</Button>
-          <Button>Recherche</Button>
-          <Button>Theme</Button>
-          <Button>Connexion</Button>
+			<div>
+				<Button>Recherche</Button>
+          		<Button>Theme</Button>
+			</div>
+			<div className="extra">
+				<Button>Partager</Button>
+				<Button>Connexion</Button>
+			</div>
         </div>
       </header>
     </>
