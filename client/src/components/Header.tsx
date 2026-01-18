@@ -1,6 +1,7 @@
 import "../styles/Header.css";
 import logo from "../styles/images/logo.png";
-import { Button } from "./ui/button.tsx";
+import { Button } from "./ui/SquareButton.tsx";
+import { SquareButton } from "./SquareButton.tsx";
 
 export const Header: React.FC = () => {
   return (
@@ -30,20 +31,24 @@ export const Header: React.FC = () => {
           className="header-nav extra"
           aria-label="Navigation principale"
         >
-          <Button>Accueil</Button>
-          <Button>Favoris</Button>
-          <Button>Mes Notes</Button>
+          <SquareButton>Accueil</SquareButton>
+          <SquareButton>Favoris</SquareButton>
+          <SquareButton>Mes Notes</SquareButton>
         </nav>
 
 		{/* Actions supplémentaires */}
         <div className="header-right">
-			<div>
-				<Button>Recherche</Button>
-          		<Button>Theme</Button>
+			<div className="button-gaps">
+				<SquareButton ariaLabel="Rechercher">
+					<span className="material-symbols-outlined">search</span>
+				</SquareButton>
+				<SquareButton ariaLabel="Mode sombre">
+					<span className="material-symbols-outlined">dark_mode</span>
+				</SquareButton>
 			</div>
-			<div className="extra">
-				<Button>Partager</Button>
-				<Button>Connexion</Button>
+			<div className="button-gaps extra">
+				<SquareButton>Partager</SquareButton>
+				<SquareButton>Connexion</SquareButton>
 			</div>
         </div>
       </header>

@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined');
 
 body{
 	width: 100%;
@@ -6,6 +7,21 @@ body{
 	padding: 0;
 	font-family: "Inter", sans-serif;
 }
+
+.material-symbols-outlined {
+  	font-size: 24px;
+  	/* Support for all WebKit browsers. */
+	-webkit-font-smoothing: antialiased;
+	/* Support for Safari and Chrome. */
+	text-rendering: optimizeLegibility;
+
+	/* Support for Firefox. */
+	-moz-osx-font-smoothing: grayscale;
+
+	/* Support for IE. */
+	font-feature-settings: 'liga';
+}
+
 .skip-link {
   position: absolute;
   top: -40px;
@@ -54,13 +70,16 @@ a, .header-left, .header-nav, .header-right, nav{
     justify-content: flex-start;
     align-items: center;
     display: flex;
+	gap: 12px;
 }
 
 a, nav{
 	text-decoration: none;
-	gap: 12px;
 }
 
+.button-gaps > button {
+	margin-left: 8px;
+}
 
 /* Quand l'écran devient petit (ex : moins de 600px), on cache certains éléments */
 @media (max-width: 1000px) {
