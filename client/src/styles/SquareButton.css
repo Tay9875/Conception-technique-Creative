@@ -25,6 +25,7 @@ button {
 /* Focus visible pour keyboard users */
 .sqr-button:focus {
     background-color: #7C3AED;
+    color: white;
     outline-offset: 2px;
 }
 
