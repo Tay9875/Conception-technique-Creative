@@ -31,25 +31,25 @@ export const Header: React.FC = () => {
           className="header-nav extra"
           aria-label="Navigation principale"
         >
-          <SquareButton>Accueil</SquareButton>
-          <SquareButton>Favoris</SquareButton>
-          <SquareButton>Mes Notes</SquareButton>
+          <SquareButton onClick={() => handleClick("accueil")}>Accueil</SquareButton>
+          <SquareButton onClick={() => handleClick("favoris")}>Favoris</SquareButton>
+          <SquareButton onClick={() => handleClick("mes notes")}>Mes Notes</SquareButton>
         </nav>
 
 		{/* Actions supplémentaires */}
         <div className="header-right">
-			<div className="button-gaps">
-				<SquareButton ariaLabel="Rechercher">
-					<span className="material-symbols-outlined">search</span>
-				</SquareButton>
-				<SquareButton ariaLabel="Mode sombre">
-					<span className="material-symbols-outlined">dark_mode</span>
-				</SquareButton>
-			</div>
-			<div className="button-gaps extra">
-				<SquareButton>Partager</SquareButton>
-				<SquareButton>Connexion</SquareButton>
-			</div>
+          <div className="button-gaps">
+            <SquareButton ariaLabel="Rechercher" onClick={() => handleClick("search")}>
+              <span className="material-symbols-outlined">search</span>
+            </SquareButton>
+            <SquareButton ariaLabel="Mode sombre" onClick={() => handleClick("theme")}>
+              <span className="material-symbols-outlined">dark_mode</span>
+            </SquareButton>
+          </div>
+          <div className="button-gaps extra">
+            <SquareButton onClick={() => navigate("/feed")}>Partager</SquareButton>
+            <SquareButton onClick={() => handleClick("connexion")}>Connexion</SquareButton>
+          </div>
         </div>
       </header>
     </>

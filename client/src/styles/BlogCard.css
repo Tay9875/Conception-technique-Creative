@@ -1,0 +1,57 @@
+.blogcard {
+    width: 100%;
+    height: 283px;
+    position: relative;
+    border-radius: 14px;
+    background-color: #fff;
+    padding: 25px;
+    border: 1px solid rgba(139, 92, 246, 0.15);
+    box-sizing: border-box;
+    text-align: left;
+    font-size: 14px;
+    color: #0a0a0a;
+}
+
+.title{
+    font-weight: 800px
+}
+
+.paragraph{
+    color: #6b7280;
+}
+
+.tools{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 17px 0px;;
+    color: #6b7280;
+    border-top: 1px solid rgba(139, 92, 246, 0.15);
+}
+
+.tags, .infos, .action{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+}
+
+.author, .likes{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

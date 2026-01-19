@@ -1,12 +1,14 @@
-button {
+.btn{
     display: flex;
     flex-direction: row;
     align-items: center;
     background-color: white;
+    height: 50px;
     color: #0a0a0a;
     border: none;
-    padding: 10px 16px;
-    border-radius: 10px;
+    padding: 10px 20px;
+    border-radius: 30px;
+    border: 1px solid rgba(139, 92, 246, 0.15);
     font-weight: normal;
     font-size: 16px;
     cursor: pointer;
@@ -15,35 +17,18 @@ button {
     gap: 8px;
 }
 
-.sqr-btn{
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    height: 40px;
-    background-color: white;
-    color: #0a0a0a;
-    border: none;
-    padding: 10px 16px;
-    border-radius: 20px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    outline: none;
-    gap: 8px;
-}
-
 /* Focus visible pour keyboard users */
-.sqr-button:focus {
+.btn:focus {
     background-color: #7C3AED;
     color: white;
     outline-offset: 2px;
 }
 
-.sqr-button:hover {
+.btn:hover {
     background-color: rgba(124, 58, 237, 0.10);
 }
 
-.sqr-btn:disabled {
+.btn:disabled {
   background-color: #cccccc;
   cursor: not-allowed;
 }

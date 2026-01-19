@@ -77,8 +77,10 @@ a, nav{
 	text-decoration: none;
 }
 
-.button-gaps > button {
-	margin-left: 8px;
+.button-gaps{
+	display: flex;
+	flex-direction: row;
+	gap: 8px;
 }
 
 /* Quand l'écran devient petit (ex : moins de 600px), on cache certains éléments */
