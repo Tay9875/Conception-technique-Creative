@@ -32,6 +32,15 @@ button {
     gap: 8px;
 }
 
+.sqr-button-background{
+    background-color: #ddd6fe;
+}
+
+.sqr-button-dark-background{
+    background-color: #7C3AED;
+    color: white;
+}
+
 /* Focus visible pour keyboard users */
 .sqr-button:focus {
     background-color: #7C3AED;

@@ -61,6 +61,7 @@ export const Container: React.FC<ContainerProps> = ({ children }) => {
           <p id="sort-label">Trier par :</p>
 
           <SquareButton
+            className="sqr-button-background"
             aria-pressed={sort === "Récents"}
             onClick={() => setSort("Récents")}
           >
@@ -74,10 +75,17 @@ export const Container: React.FC<ContainerProps> = ({ children }) => {
           </SquareButton>
 
           <SquareButton
+            className="sqr-button-background"
             aria-pressed={sort === "Populaires"}
             onClick={() => setSort("Populaires")}
           >
-            Populaires
+            <span
+              className="material-symbols-outlined"
+              aria-hidden="true"
+            >
+              chart_data
+            </span>
+            <span>Populaires</span>
           </SquareButton>
         </div>
 
