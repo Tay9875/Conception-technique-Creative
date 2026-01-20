@@ -1,6 +1,6 @@
 import "../styles/Header.css";
 import logo from "../styles/images/logo.png";
-import { Button } from "./ui/SquareButton.tsx";
+import { Button } from "./Button.tsx";
 import { SquareButton } from "./SquareButton.tsx";
 
 export const Header: React.FC = () => {
