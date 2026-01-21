@@ -9,15 +9,17 @@ export const BlogCard: React.FC = () => {
           <Tag>Bien-être</Tag>
         </div>
 
-        <header className="heading">
-          <h3 id="blog-title" className="title">
-            Commentaires sur la gestion du stress pendant les traitements
-          </h3>
-        </header>
+        <div className="blogcard-container">
+          <header className="heading">
+            <h3 id="blog-title" className="title">
+              Commentaires sur la gestion du stress pendant les traitements
+            </h3>
+          </header>
 
-        <p className="paragraph">
-          J'ai trouvé que la méditation et les exercices de respiration m'ont beaucoup aidé à gérer le stress lié aux traitements. Cela m'a permis de rester plus calme et concentré sur mon rétablissement.
-        </p>
+          <p className="paragraph">
+            J'ai trouvé que la méditation et les exercices de respiration m'ont beaucoup aidé à gérer le stress lié aux traitements. Cela m'a permis de rester plus calme et concentré sur mon rétablissement.
+          </p>
+        </div>
 
         <footer className="tools">
           <div className="infos">
@@ -28,8 +30,7 @@ export const BlogCard: React.FC = () => {
               >
                 person
               </span>
-              <span className="sr-only">Auteur :</span>
-              Marie D.
+              <span className="sr-only">Marie D.</span>
             </p>
 
             <time className="date" dateTime="2024-06-12">
