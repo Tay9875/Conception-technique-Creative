@@ -1,14 +1,18 @@
 // client/src/Feed.jsx
+import { useNavigate } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
 import './Feed.css';
+import { Header } from './components/Header.tsx';
 
 export default function Feed({ user, onLogout }) {
+    const navigate = useNavigate();
+    
     const [posts, setPosts] = useState([]);
     const [tags, setTags] = useState([]); // Stocke la liste des tags
     // On ajoute tag_id au formulaire
     const [newPost, setNewPost] = useState({ title: '', description: '', tag_id: '' });
 
-    const API_URL = 'https://conception-technique-creative-backend.onrender.com/api'; 
+    const API_URL = process.env.REACT_APP_API_URL;
 
     useEffect(() => {
         fetchPosts();
@@ -49,6 +53,8 @@ export default function Feed({ user, onLogout }) {
     };
 
     return (
+        <>
+        <Header />
         <div className="feed-container">
             <header className="feed-header">
                 <h1 className="feed-title">Bonjour, {user.firstname} 👋</h1>
@@ -58,20 +64,19 @@ export default function Feed({ user, onLogout }) {
             <div className="create-post-card">
                 <h3>Partagez votre expérience</h3>
                 <form onSubmit={handleSubmit}>
-                    <input 
-                        type="text" 
-                        placeholder="Titre du sujet" 
+                    <input
+                        type="text"
+                        placeholder="Titre du sujet"
                         className="post-input"
                         value={newPost.title}
-                        onChange={(e) => setNewPost({...newPost, title: e.target.value})}
-                        required
-                    />
-                    
+                        onChange={(e) => setNewPost({ ...newPost, title: e.target.value })}
+                        required />
+
                     {/* --- NOUVEAU SELECTEUR DE TAGS --- */}
-                    <select 
+                    <select
                         className="post-input post-select"
                         value={newPost.tag_id}
-                        onChange={(e) => setNewPost({...newPost, tag_id: e.target.value})}
+                        onChange={(e) => setNewPost({ ...newPost, tag_id: e.target.value })}
                         required
                     >
                         <option value="">-- Choisir un sujet --</option>
@@ -80,14 +85,13 @@ export default function Feed({ user, onLogout }) {
                         ))}
                     </select>
 
-                    <textarea 
-                        placeholder="Racontez-nous..." 
+                    <textarea
+                        placeholder="Racontez-nous..."
                         className="post-input"
                         rows="3"
                         value={newPost.description}
-                        onChange={(e) => setNewPost({...newPost, description: e.target.value})}
-                        required
-                    />
+                        onChange={(e) => setNewPost({ ...newPost, description: e.target.value })}
+                        required />
                     <button type="submit" className="btn-post">Publier</button>
                 </form>
             </div>
@@ -97,10 +101,10 @@ export default function Feed({ user, onLogout }) {
                     <div key={post.id} className="post-card">
                         {/* Affiche le vrai nom du tag s'il existe */}
                         {post.tag_title && <span className="post-tag">{post.tag_title}</span>}
-                        
+
                         <h2 className="post-title">{post.title}</h2>
                         <p className="post-desc">{post.description}</p>
-                        
+
                         <div className="post-footer">
                             <span>Par <strong>{post.firstname} {post.lastname}</strong></span>
                             <span>{new Date(post.created_at).toLocaleDateString()}</span>
@@ -109,5 +113,6 @@ export default function Feed({ user, onLogout }) {
                 ))}
             </div>
         </div>
+        </>
     );
 }
