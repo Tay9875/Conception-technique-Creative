@@ -1,16 +1,40 @@
+import { useState } from "react";
 import "../styles/Header.css";
 import logo from "../styles/images/logo.png";
-import { Button } from "./Button.tsx";
 import { SquareButton } from "./SquareButton.tsx";
+import { useNavigate } from "react-router-dom";
 
 export const Header: React.FC = () => {
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+
+  const handleClick = async (path: string) => {
+    setLoading(true);
+
+    // Pages qui nécessitent d'être connecté
+    const protectedPaths = ["/favoris", "/notes", "/feed"];
+
+    try {
+      const user = localStorage.getItem("user");
+      const isAuthenticated = !!user;
+
+      if (protectedPaths.includes(path) && !isAuthenticated) {
+        // Non connecté → redirige vers Auth.jsx
+        navigate("/connexion");
+      } else {
+        // Connecté ou page publique → navigation normale
+        navigate(path);
+      }
+    } catch (error) {
+      console.error("Erreur lors de la vérification de l'auth :", error);
+      navigate("/connexion"); // fallback sécurité
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <>
-      {/* Skip link */}
-      <a href="#main-content" className="skip-link">
-        Aller au contenu
-      </a>
-
       <header role="banner" className="header">
         {/* Logo */}
         <div className="header-left">
@@ -27,28 +51,33 @@ export const Header: React.FC = () => {
         </div>
 
         {/* Navigation principale */}
-        <nav
-          className="header-nav extra"
-          aria-label="Navigation principale"
-        >
-          <SquareButton onClick={() => handleClick("accueil")}>Accueil</SquareButton>
-          <SquareButton onClick={() => handleClick("favoris")}>Favoris</SquareButton>
-          <SquareButton onClick={() => handleClick("mes notes")}>Mes Notes</SquareButton>
+        <nav className="header-nav extra" aria-label="Navigation principale">
+          <SquareButton onClick={() => handleClick("/")}>Accueil</SquareButton>
+          <SquareButton onClick={() => handleClick("/favoris")}>Favoris</SquareButton>
+          <SquareButton onClick={() => handleClick("/notes")}>Mes Notes</SquareButton>
         </nav>
 
-		{/* Actions supplémentaires */}
         <div className="header-right">
           <div className="button-gaps">
-            <SquareButton ariaLabel="Rechercher" onClick={() => handleClick("search")}>
+            <SquareButton ariaLabel="Rechercher">
               <span className="material-symbols-outlined">search</span>
             </SquareButton>
-            <SquareButton ariaLabel="Mode sombre" onClick={() => handleClick("theme")}>
+            <SquareButton ariaLabel="Mode sombre">
               <span className="material-symbols-outlined">dark_mode</span>
             </SquareButton>
           </div>
+
           <div className="button-gaps extra">
-            <SquareButton onClick={() => navigate("/feed")}>Partager</SquareButton>
-            <SquareButton onClick={() => handleClick("connexion")}>Connexion</SquareButton>
+            <SquareButton className="sqr-button-dark-background" onClick={() => handleClick("/feed")}>Partager</SquareButton>
+
+            {/* Connexion seulement si pas connecté */}
+            {!localStorage.getItem("user") && (
+              <SquareButton className="sqr-button-dark-background" onClick={() => handleClick("/connexion")}>Connexion</SquareButton>
+            )}
+
+            {localStorage.getItem("user") && (
+              <SquareButton className="sqr-button-dark-background" onClick={() => handleClick("/logout")}>Déconnexion</SquareButton>
+            )}
           </div>
         </div>
       </header>
