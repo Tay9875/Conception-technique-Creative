@@ -1,7 +1,7 @@
 /* client/src/Auth.css */
 .auth-container {
     display: flex;
-    justify_content: center;
+    justify-content: center;
     align-items: center;
     min-height: 100vh;
     background-color: #F3E8FF; /* Fond violet très clair */
@@ -58,22 +58,12 @@
     box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
 }
 
-.btn-primary {
+.sqr-btn-primary {
+    display: flex;
+    justify-content: center;
     width: 100%;
     padding: 12px;
-    background-color: #7C3AED; /* Le violet principal du bouton */
-    color: white;
-    border: none;
-    border-radius: 50px; /* Bouton très arrondi */
-    font-size: 1rem;
-    font-weight: bold;
     cursor: pointer;
-    margin-top: 1rem;
-    transition: background 0.3s;
-}
-
-.btn-primary:hover {
-    background-color: #6D28D9;
 }
 
 .toggle-text {
