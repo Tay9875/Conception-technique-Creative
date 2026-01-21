@@ -13,7 +13,7 @@
   	box-sizing: border-box;
   	display: flex;
   	flex-direction: column;
-  	align-items: flex-start;
+  	align-items: center;
   	padding: 2.5vw 8.672vw 5vw;
   	text-align: center;
   	font-size: 30px;
