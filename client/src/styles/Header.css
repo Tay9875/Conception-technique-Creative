@@ -83,6 +83,11 @@ a, nav{
 	gap: 8px;
 }
 
+.active{
+    background-color: #7C3AED;
+    color: white;
+}
+
 /* Quand l'écran devient petit (ex : moins de 600px), on cache certains éléments */
 @media (max-width: 1000px) {
   .extra {
