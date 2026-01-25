@@ -15,6 +15,7 @@
 
 .blogcard:focus, .blogcard:hover {
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.1), 0 6px 10px 0 rgba(0, 0, 0, 0.1);
+    color: #7C3AED;
 }
 
 .blogcard-container {
