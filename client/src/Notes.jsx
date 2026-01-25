@@ -42,7 +42,7 @@ function Notes() {
         </div>
         <div className="notes-section-heading">
           <div className="notes-heading">
-            <h2 className="heading">Mes Notes Personnelles</h2>
+            <h2 className="note-heading">Mes Notes Personnelles</h2>
             <p className="paragraph">Notez vos réflexions, questions à poser au médecin, ou idées personnelles</p>
           </div>
           <div className="nouvelle-note" onClick={() => setIsModalOpen(true)}>
