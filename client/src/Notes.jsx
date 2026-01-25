@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate,Link } from 'react-router-dom';
 import './Notes.css';
 import AccessibleModal from "./components/AccessibleModal.tsx";
+import { NoteCard } from './components/NoteCard.tsx';
 import NoteForm from "./components/NoteForm.tsx";
 import { Header } from './components/Header.tsx';
 import { Container } from './components/Container.tsx';
