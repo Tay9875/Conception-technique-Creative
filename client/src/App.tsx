@@ -2,6 +2,7 @@ import { Routes, Route } from "react-router-dom";
 import React, { useState, useEffect } from 'react';
 import './App.css';
 import Auth from './Auth';
+import ProtectedRoute from "./components/ProtectedRoutes.tsx";
 import Feed from './Feed';
 import { Header } from './components/Header.tsx';
 import { Container } from './components/Container.tsx';
@@ -38,9 +39,19 @@ function App() {
         <Route path="/" element={<Accueil />} />
         <Route path="/login" element={<Auth onLoginSuccess={setUser} />} />
         <Route path="/logout" element={<Auth onLoginSuccess={undefined} />} />
-        <Route path="/favoris" element={<Favoris />} />
-        <Route path="/notes" element={<Notes />} />
-        <Route path="/feed" element={<Feed user={user} onLogout={undefined} />} />
+        <Route path="/favoris" element={
+          <ProtectedRoute user={user}>
+              <Favoris />
+            </ProtectedRoute>
+          } />
+        <Route path="/notes" element={
+          <ProtectedRoute user={user}>
+              <Notes />
+            </ProtectedRoute>} />
+        <Route path="/feed" element={
+          <ProtectedRoute user={user}>
+              <Feed user={user} onLogout={undefined} />
+            </ProtectedRoute>} />
       </Routes>
     </div>
   );
