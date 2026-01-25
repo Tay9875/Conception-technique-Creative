@@ -1,0 +1,37 @@
+.notes-section{
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    text-align: left;
+    font-family: Inter;
+    padding: 4vw 3.2vw 0vw;
+}
+
+.retour{
+    color: #7c3aed;
+}
+
+.heading {
+    font-size: 32px;
+    font-weight: normal;
+}
+
+.paragraph, .notes-section-infos{
+    color: #6b7280;
+}
+
+.notes-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: auto;
+    padding: 4vw 3.2vw;
+    gap: 16px;
+}
+
+.notes-section-heading{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: auto;
+}
