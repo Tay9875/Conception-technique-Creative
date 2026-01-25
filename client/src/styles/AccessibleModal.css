@@ -11,11 +11,30 @@
   z-index: 9999;         /* toujours au-dessus de la page */
 }
 
+.modal-heading{
+    width: 100%;
+    position: relative;
+    background-color: #7c3aed;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0px 24px;
+    box-sizing: border-box;
+    gap: 20px;
+    text-align: left;
+    color: white;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+}
+
 .modal-content {
   background-color: #fff;
-  padding: 32px;
-  border-radius: 12px;
+  border-radius: 14px;
   max-width: 500px;
   width: 100%;
-  color: #000;
+}
+
+.modal-form {
+    padding: 24px;
+    width: 100%;
 }

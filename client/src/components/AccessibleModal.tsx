@@ -82,12 +82,20 @@ export default function AccessibleModal({
       aria-labelledby="modal-title"
     >
       <div ref={modalRef} className="modal-content">
-        <div style={{ display: "flex", justifyContent: "space-between" }}>
-          <h2 id="modal-title">{title}</h2>
-          <SquareButton className="sqr-button-dark-background" onClick={onClose} aria-label="Fermer la fenêtre">✕ Annuler</SquareButton>
+        <div className="modal-heading">
+          <h3 id="modal-title">{title}</h3>
+          <SquareButton className="sqr-button-dark-background" onClick={onClose} aria-label="Fermer la fenêtre">
+            <span
+                className="material-symbols-outlined"
+                aria-hidden="true"
+            >
+                close
+            </span>
+          </SquareButton>
         </div>
-
-        {children}
+        <div className="modal-form">
+            {children}
+        </div>
       </div>
     </div>,
     modalRoot
