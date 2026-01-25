@@ -1,0 +1,21 @@
+.modal {
+  position: fixed;       /* fixe sur toute la page, pas relative à un parent */
+  top: 0;
+  left: 0;
+  width: 100vw;          /* 100% de la largeur de la fenêtre */
+  height: 100vh;         /* 100% de la hauteur de la fenêtre */
+  background-color: rgba(0, 0, 0, 0.6); /* arrière-plan semi-transparent */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;         /* toujours au-dessus de la page */
+}
+
+.modal-content {
+  background-color: #fff;
+  padding: 32px;
+  border-radius: 12px;
+  max-width: 500px;
+  width: 100%;
+  color: #000;
+}
