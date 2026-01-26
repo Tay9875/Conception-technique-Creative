@@ -21,6 +21,7 @@ import { Footer } from './components/Footer.tsx';
 import Accueil from "./Accueil.jsx";
 import Favoris from "./Favoris.jsx";
 import Notes from "./Notes.jsx";
+import Article from "./Article.jsx";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -37,6 +38,7 @@ function App() {
     <div className="App">
       <Routes>
         <Route path="/" element={<Accueil />} />
+        <Route path="/article" element={<Article />} />
         <Route path="/login" element={<Auth onLoginSuccess={setUser} />} />
         <Route path="/logout" element={<Auth onLoginSuccess={undefined} />} />
         <Route path="/favoris" element={
