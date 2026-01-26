@@ -6,9 +6,9 @@ export const NoteCard: React.FC = () => {
     <article className="notecard" aria-labelledby="note-card">
         <div className="note-header">
             <div className="note-header-info">
-                <p className="note-title" aria-label="note-title">{title}</p>
+                <p className="note-title" aria-label="note-title">Titre</p>
                 <div className="note-tools">
-                    <SquareButton>
+                    <SquareButton ariaLabel="modify note">
                         <span
                             className="material-symbols-outlined"
                             aria-hidden="true"
@@ -16,7 +16,7 @@ export const NoteCard: React.FC = () => {
                             edit
                         </span>
                     </SquareButton>
-                    <SquareButton>
+                    <SquareButton ariaLabel="delete note">
                         <span
                             className="material-symbols-outlined"
                             aria-hidden="true"
@@ -29,7 +29,7 @@ export const NoteCard: React.FC = () => {
             <span className="note-created-date" aria-label="note-created-date">9 Janvier 2026</span>
         </div>
         <div className="note-content">
-          <p className="paragraph">{contenu}</p>
+          <p className="paragraph">Contenu</p>
         </div>
     </article>
   );
