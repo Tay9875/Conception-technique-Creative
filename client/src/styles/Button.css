@@ -5,7 +5,6 @@
     background-color: white;
     height: 50px;
     color: #0a0a0a;
-    border: none;
     padding: 10px 20px;
     border-radius: 30px;
     border: 1px solid rgba(139, 92, 246, 0.15);
@@ -25,10 +24,32 @@
 }
 
 .btn:hover {
+    border-radius: 30px;
     background-color: rgba(124, 58, 237, 0.10);
 }
 
 .btn:disabled {
-  background-color: #cccccc;
-  cursor: not-allowed;
+    border-radius: 30px;
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+.dark-addon {
+    border-radius: 30px;
+    background-color: #7C3AED;
+    color: white;
+    border: 1px solid rgba(139, 92, 246, 0.15);
+}
+
+.dark-addon:hover {
+    border-radius: 30px;
+    background-color: #ddd6fe;
+    color: #7C3AED;
+}
+
+.dark-addon:focus {
+    border-radius: 30px;
+    background-color: #ddd6fe;
+    color: #7C3AED;
+    border: 1px solid #7C3AED;
 }
