@@ -13,6 +13,18 @@
     gap: 8px;
 }
 
+.blogcard-link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+.blogcard-link:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 4px;
+}
+
+
 .blogcard:focus, .blogcard:hover {
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.1), 0 6px 10px 0 rgba(0, 0, 0, 0.1);
     color: #7C3AED;

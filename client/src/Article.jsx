@@ -1,6 +1,7 @@
 import './Article.css';
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { Header } from './components/Header.tsx';
 import AccessibleModal from "./components/AccessibleModal.tsx";
 import { SquareButton } from './components/SquareButton.tsx';
 import { Tag } from './components/Tags.tsx';
@@ -20,6 +21,7 @@ function Article() {
 
   return (
     <>
+    <Header />
     <section className="article-container">
         <article className="article">
             <Link to="/" className="article-link">
@@ -51,7 +53,7 @@ function Article() {
 
             <div className="article-tools">
                 <div className="article-appreciation">
-                    <SquareButton className="sqr-button-background">
+                    <SquareButton className="sqr-button-dark-background">
                         <span
                             className="material-symbols-outlined"
                             aria-hidden="true"
