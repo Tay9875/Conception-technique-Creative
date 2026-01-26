@@ -1,0 +1,42 @@
+.sqr-button-red {
+    background-color: #d4183d;
+    color: white;
+}
+
+.report-fieldset{
+    border: none;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    gap: 8px;
+}
+
+.centered-button {
+    display: flex;
+    justify-content: center;
+}
+
+.report-warning{
+    width: 100%;
+  	position: relative;
+  	border-radius: 10px;
+  	background-color: rgba(212, 24, 61, 0.1);
+  	border: 1px solid rgba(212, 24, 61, 0.3);
+  	box-sizing: border-box;
+  	display: flex;
+  	flex-direction: column;
+  	align-items: flex-start;
+  	padding: 17px 17px ;
+  	gap: 8px;
+  	text-align: center;
+  	font-size: 14px;
+  	font-family: Inter;
+}
+
+.report-options{
+    width: 100%;
+    display: grid;
+    grid-template-columns: auto auto;
+    gap: 8px;
+}
+
