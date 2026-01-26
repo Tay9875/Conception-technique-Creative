@@ -15,26 +15,58 @@ const filters = [
   "Sommeil",
 ];
 
+type SortType = "Récents" | "Populaires";
+
 interface ContainerProps {
   children: ReactNode;
+  onCategoryChange?: (category: string) => void;
+  onSortChange?: (sort: SortType) => void;
 }
 
-export const Container: React.FC<ContainerProps> = ({ children }) => {
-  const [activeFilter, setActiveFilter] = useState("Tous");
-  const [sort, setSort] = useState<"Récents" | "Populaires">("Récents");
+export const Container: React.FC<ContainerProps> = ({
+  children,
+  onCategoryChange,
+  onSortChange,
+}) => {
+  const [activeCategory, setActiveCategory] = useState("Tous");
+  const [activeSort, setActiveSort] = useState<SortType>("Récents");
+
+  const handleCategoryChange = (category: string) => {
+    setActiveCategory(category);
+    onCategoryChange?.(category);
+  };
+
+  const handleSortChange = (sort: SortType) => {
+    setActiveSort(sort);
+    onSortChange?.(sort);
+  };
 
   return (
     <section className="container">
-      {/* FILTRES PRINCIPAUX */}
+      {/* FILTRES CATÉGORIES */}
       <section className="categoryfilter">
-        <nav className="filters-nav" aria-label="Sujets">
-          <ul className="filters-list">
+        <nav
+          className="filters-nav"
+          aria-label="Filtrer les articles par catégorie"
+        >
+          <ul
+            className="filters-list"
+            role="radiogroup"
+            aria-labelledby="category-filter-label"
+          >
+            <li id="category-filter-label" className="sr-only">
+              Catégories
+            </li>
+
             {filters.map((label) => (
               <li key={label}>
                 <Button
                   type="button"
-                  aria-pressed={activeFilter === label}
-                  onClick={() => setActiveFilter(label)}
+                  role="radio"
+                  aria-checked={activeCategory === label}
+                  aria-current={activeCategory === label ? "true" : undefined}
+                  className={activeCategory === label ? "active" : ""}
+                  onClick={() => handleCategoryChange(label)}
                 >
                   <span
                     className="material-symbols-outlined"
@@ -50,20 +82,22 @@ export const Container: React.FC<ContainerProps> = ({ children }) => {
         </nav>
       </section>
 
-      {/* CONTENU PRINCIPAL */}
+      {/* CONTENU */}
       <section className="mainContent">
         {/* TRI */}
         <div
           className="other-filters"
-          role="group"
+          role="radiogroup"
           aria-labelledby="sort-label"
         >
           <p id="sort-label">Trier par :</p>
 
           <SquareButton
-            className="sqr-button-background"
-            aria-pressed={sort === "Récents"}
-            onClick={() => setSort("Récents")}
+            role="radio"
+            aria-checked={activeSort === "Récents"}
+            aria-current={activeSort === "Récents" ? "true" : undefined}
+            className={`sqr-button-background ${activeSort === "Récents" ? "active" : ""}`}
+            onClick={() => handleSortChange("Récents")}
           >
             <span
               className="material-symbols-outlined"
@@ -75,9 +109,11 @@ export const Container: React.FC<ContainerProps> = ({ children }) => {
           </SquareButton>
 
           <SquareButton
-            className="sqr-button-background"
-            aria-pressed={sort === "Populaires"}
-            onClick={() => setSort("Populaires")}
+            role="radio"
+            aria-checked={activeSort === "Populaires"}
+            aria-current={activeSort === "Populaires" ? "true" : undefined}
+            className={`sqr-button-background ${activeSort === "Populaires" ? "active" : ""}`}
+            onClick={() => handleSortChange("Populaires")}
           >
             <span
               className="material-symbols-outlined"
@@ -88,6 +124,11 @@ export const Container: React.FC<ContainerProps> = ({ children }) => {
             <span>Populaires</span>
           </SquareButton>
         </div>
+
+        {/* ANNONCE CHANGEMENT (lecteurs d’écran) */}
+        <p className="sr-only" aria-live="polite">
+          {`Filtre actif : ${activeCategory}, tri : ${activeSort}`}
+        </p>
 
         {/* POSTS */}
         <div className="posts-content">
