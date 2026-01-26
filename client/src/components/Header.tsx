@@ -23,7 +23,8 @@ export const Header: React.FC = () => {
   const handleLogout = () => {
     setUser(null);
     localStorage.removeItem("user");
-    navigate("/");
+
+    window.location.href = "/";
   };
 
   const handleClick = (path: string) => {
