@@ -1,9 +1,11 @@
+import { Link } from "react-router-dom";
 import "../styles/BlogCard.css";
 import { Tag } from "./Tags.tsx";
 
 export const BlogCard: React.FC = () => {
   return (
     <article className="blogcard" aria-labelledby="blog-title">
+      <Link to="/article" className="blogcard-link">
       <div className="text">
         <div className="tags">
           <Tag>Bien-être</Tag>
@@ -68,6 +70,7 @@ export const BlogCard: React.FC = () => {
           </div>
         </footer>
       </div>
+      </Link>
     </article>
   );
 };
