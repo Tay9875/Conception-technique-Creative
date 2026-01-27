@@ -8,16 +8,16 @@
     height: 283px;
     position: relative;
     border-radius: 14px;
-    background-color: #fff;
+    background-color: var(--block-background-color);
     padding: 25px;
     border: 1px solid rgba(139, 92, 246, 0.15);
     box-sizing: border-box;
     text-align: center;
     font-size: 14px;
-    color: var(--text-color);
+    color: var(--main-text-color);
 }
 
 .empty-text {
     font-size: 18px;
-    color: var(--light-text-color);
+    color: var(--main-light-text-color);
 }

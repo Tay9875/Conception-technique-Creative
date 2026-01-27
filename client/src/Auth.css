@@ -54,7 +54,7 @@
 }
 
 .form-input:focus {
-    border-color: #7C3AED;
+    border-color:var(--main-color);
     box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
 }
 
@@ -68,12 +68,12 @@
 
 .toggle-text {
     margin-top: 1.5rem;
-    color: #6B7280;
+    color: var(--main-light-text-color);
     font-size: 0.9rem;
 }
 
 .toggle-link {
-    color: #7C3AED;
+    color:var(--main-color);
     font-weight: bold;
     cursor: pointer;
     text-decoration: underline;

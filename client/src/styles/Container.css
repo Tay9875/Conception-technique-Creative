@@ -58,13 +58,13 @@
 /* Filters nav */
 .filters-list button.active {
   background-color:var(--main-color);
-  color: #fff;
+  color: var(--main-text-color);
 }
 
 /* Other filters */
 .other-filters .sqr-button-background.active {
   background-color:var(--main-color);
-  color: #fff;
+  color: var(--main-text-color);
 }
 
 .sqr-button-background{
@@ -84,6 +84,7 @@
     display: flex;
     flex-direction: row;
     gap: 12px;
+    color: var(--main-text-color);
 }
 
 .material-symbols-outlined {

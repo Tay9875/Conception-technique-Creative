@@ -2,8 +2,8 @@ button {
     display: flex;
     flex-direction: row;
     align-items: center;
-    background-color: white;
-    color: #0a0a0a;
+    background-color: var(--occasional-background);
+    color: var(--main-text-color);
     border: none;
     padding: 10px 16px;
     border-radius: 10px;
@@ -20,8 +20,8 @@ button {
     flex-direction: row;
     align-items: center;
     height: 40px;
-    background-color: white;
-    color: #0a0a0a;
+    background-color: var(--occasional-background);
+    color: var(--main-text-color);
     border: none;
     padding: 10px 16px;
     border-radius: 20px;
@@ -33,19 +33,20 @@ button {
 }
 
 .sqr-button-background{
-    background-color: #ddd6fe;
+    background-color: var(--light-color);
+    color: var(--main-text-color);
     height: 40px;
 }
 
 .sqr-button-dark-background{
-    background-color: #7C3AED;
-    color: white;
+    background-color:var(--main-color);
+    color: var(--optional-text-color);
 }
 
 /* Focus visible pour keyboard users */
 .sqr-button:focus {
-    background-color: #7C3AED;
-    color: white;
+    background-color:var(--main-color);
+    color: var(--main-text-color);
     outline-offset: 2px;
 }
 

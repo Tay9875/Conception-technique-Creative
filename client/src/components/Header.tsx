@@ -4,7 +4,12 @@ import logo from "../styles/images/logo.png";
 import { SquareButton } from "./SquareButton.tsx";
 import { useNavigate, useLocation } from "react-router-dom";
 
-export const Header: React.FC = () => {
+type HeaderProps = {
+  theme: string;
+  setTheme: (theme: string) => void;
+};
+
+export const Header: React.FC<HeaderProps> = ({ theme, setTheme }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const isActive = (path: string) => location.pathname === path;
@@ -80,7 +85,11 @@ export const Header: React.FC = () => {
           <SquareButton ariaLabel="Rechercher">
             <span className="material-symbols-outlined">search</span>
           </SquareButton>
-          <SquareButton ariaLabel="Mode sombre">
+          <SquareButton 
+            ariaLabel="Mode clair ou sombre" 
+            onClick={() =>
+              setTheme(theme === "light" ? "dark" : "light")
+            }>
             <span className="material-symbols-outlined">dark_mode</span>
           </SquareButton>
         </div>

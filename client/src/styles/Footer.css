@@ -14,9 +14,9 @@ body{
     width: 100%;
     height: auto;
     padding: 41px 32px 41px;
-    background: white;
+    background: var(--block-background-color);
     justify-content: center;
     align-items: flex-end;
     text-align: center;
-    color: var(--light-text-color);
+    color: var(--main-light-text-color);
 }

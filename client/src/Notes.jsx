@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate,Link } from 'react-router-dom';
 import './Notes.css';
 import AccessibleModal from "./components/AccessibleModal.tsx";
@@ -14,6 +14,15 @@ import { Footer } from './components/Footer.tsx';
 function Notes() {
   const navigate = useNavigate();
 
+  const [theme, setTheme] = useState(
+      () => localStorage.getItem("theme") || "light"
+  );
+
+  useEffect(() => {
+      document.documentElement.setAttribute("data-theme", theme);
+      localStorage.setItem("theme", theme);
+  }, [theme]);
+  
   // État pour savoir si la modale est ouverte
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -25,7 +34,7 @@ function Notes() {
 
   return (
     <>
-    <Header />
+    <Header theme={theme} setTheme={setTheme}/>
     <section className="notes-section">
       <div className="notes-section-container">
         <div className="notes-section-lien">
@@ -62,6 +71,7 @@ function Notes() {
       </div>
     </section>
     <section className="notes-container">
+      <NoteCard></NoteCard>
       <AccessibleModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}

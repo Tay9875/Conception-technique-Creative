@@ -22,6 +22,7 @@
   	border-radius: 10px;
   	background-color: rgba(212, 24, 61, 0.1);
   	border: 1px solid rgba(212, 24, 61, 0.3);
+    color: var(--main-text-color);
   	box-sizing: border-box;
   	display: flex;
   	flex-direction: column;

@@ -4,8 +4,8 @@
   left: 0;
   right: 0;
   height: 64px;
-  background: var(--background, #fff);
-  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  background: var(--background, var(--block-background-color));
+  border-top: var(--border-shadow);
   display: none;
   justify-content: space-around;
   align-items: center;
@@ -14,7 +14,7 @@
 }
 
 .bottom-nav-main{
-    background-color: white;
+    background-color: transparent;
 }
 
 .bottom-nav-item {
@@ -24,7 +24,7 @@
   flex-direction: column;
   align-items: center;
   font-size: 12px;
-  color: var(--light-text-color);
+  color: var(--main-light-text-color);
   cursor: pointer;
   gap: 3px;
 }

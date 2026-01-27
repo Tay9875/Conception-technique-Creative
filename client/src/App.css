@@ -1,22 +1,52 @@
 .App {
   text-align: center;
-  background-color: #F9FAFB;
+  background-color: var(--main-background-color);
   width: 100%;
 }
 
 :root{
   --main-color: #7c3aed;
   --light-color: #ddd6fe;
-  --text-color: #0a0a0a;
-  --light-text-color: #6b7280;
+
+  --main-text-color: #0a0a0a;
+  --main-light-text-color: #6b7280;
+  --optional-text-color: white;
+
+  --header-background: linear-gradient(135deg, #faf5ff, #ede9fe);
   --header-color: #59168b;
+
+  --main-background-color: #F9FAFB;
+  --block-background-color: white;
+  --occasional-background: transparent;
+
+  --comment-background: rgba(124, 58, 237, 0.1);
+
+  --border-shadow: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+:root[data-theme="dark"] {
+  --main-color: #A78BFA;
+  --light-color: #3C0366;
+  
+  --main-text-color: white;
+  --main-light-text-color: #6b7280;
+
+  --header-background: linear-gradient(135deg, #3C0366 0%, #2F0D68 100%);
+  --header-color: #c4b5fd;
+
+  --main-background-color: #0f172a;
+  --block-background-color: #1A1A24;
+  --occasional-background: transparent;
+
+  --comment-background: #c4b5fd;
+  --border-shadow: 0.582px solid #000;
 }
 
 .section {
   	width: 100%;
   	height: auto;
   	position: relative;
-  	background: linear-gradient(135deg, #faf5ff, #ede9fe);
+  	background: var(--header-background);
   	border-bottom: 1px solid rgba(139, 92, 246, 0.15);
   	box-sizing: border-box;
   	display: flex;
@@ -25,7 +55,7 @@
   	padding: 2.5vw 8.672vw 5vw;
   	text-align: center;
   	font-size: 30px;
-  	color: #59168b;
+  	color: var(--header-color);
   	font-family: Inter;
 }
 

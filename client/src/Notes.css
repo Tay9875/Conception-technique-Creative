@@ -8,16 +8,17 @@
 }
 
 .retour{
-    color: #7c3aed;
+    color:var(--main-color);
 }
 
 .note-heading {
     font-size: 32px;
     font-weight: normal;
+    color: var(--main-text-color);
 }
 
 .paragraph, .notes-section-infos{
-    color: #6b7280;
+    color: var(--main-light-text-color);
 }
 
 .notes-container {

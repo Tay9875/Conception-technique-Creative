@@ -10,6 +10,15 @@ import ReportForm from "./components/ReportForm.tsx";
 function Article() {
     const navigate = useNavigate();
 
+    const [theme, setTheme] = useState(
+        () => localStorage.getItem("theme") || "light"
+    );
+
+    useEffect(() => {
+        document.documentElement.setAttribute("data-theme", theme);
+        localStorage.setItem("theme", theme);
+    }, [theme]);
+
     // État pour savoir si la modale est ouverte
     const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -21,7 +30,7 @@ function Article() {
 
   return (
     <>
-    <Header />
+    <Header theme={theme} setTheme={setTheme}/>
     <section className="article-container">
         <article className="article">
             <Link to="/" className="article-link">
@@ -33,7 +42,7 @@ function Article() {
                 </span>
                 Retour aux articles
             </Link>
-            <div className="text">
+            <section className="article-text">
                 <div className="tags">
                     <Tag>Bien-être</Tag>
                 </div>
@@ -49,9 +58,9 @@ function Article() {
                         J'ai trouvé que la méditation et les exercices de respiration m'ont beaucoup aidé à gérer le stress lié aux traitements. Cela m'a permis de rester plus calme et concentré sur mon rétablissement.
                     </p>
                 </div>
-            </div>
+            </section>
 
-            <div className="article-tools">
+            <section className="article-tools">
                 <div className="article-appreciation">
                     <SquareButton className="sqr-button-dark-background">
                         <span
@@ -84,9 +93,9 @@ function Article() {
                         Signaler
                     </SquareButton>
                 </div>
-            </div>
+            </section>
 
-            <div className="article-comment-section">
+            <section className="article-comment-section">
                 <SquareButton>
                     <span
                         className="material-symbols-outlined"
@@ -97,7 +106,7 @@ function Article() {
                     <span>0 Commentaires</span>
                 </SquareButton>
                 <div className="article-comments">
-                    <div className="comment">
+                    <section className="comment">
                         <div className="comment-info">
                             <div className="comment-author">
                                 <span
@@ -113,10 +122,10 @@ function Article() {
                         <div className="comment-content">
                             <p>Contenu du commentaire</p>
                         </div>
-                    </div>
+                    </section>
                 </div>
 
-            </div>
+            </section>
         </article>
     </section>
 
