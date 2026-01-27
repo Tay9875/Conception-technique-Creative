@@ -31,8 +31,18 @@
 }
 
 .notes-section-heading{
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: auto min-content;
+    align-items: flex-end;
     gap: auto;
+}
+
+.no-resize{
+    min-width: 175px;
+}
+
+@media (max-width: 800px) {
+  .notes-section-heading {
+    grid-template-columns: auto;
+  }
 }

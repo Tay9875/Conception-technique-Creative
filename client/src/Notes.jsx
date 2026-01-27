@@ -55,7 +55,7 @@ function Notes() {
             <p className="paragraph">Notez vos réflexions, questions à poser au médecin, ou idées personnelles</p>
           </div>
           <div className="nouvelle-note" onClick={() => setIsModalOpen(true)}>
-            <SquareButton className="sqr-button-dark-background">
+            <SquareButton className="sqr-button-dark-background no-resize">
               <span
                 className="material-symbols-outlined"
                 aria-hidden="true"
