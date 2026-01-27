@@ -14,10 +14,10 @@
     box-sizing: border-box;
     text-align: center;
     font-size: 14px;
-    color: #0a0a0a;
+    color: var(--text-color);
 }
 
 .empty-text {
     font-size: 18px;
-    color: #6b7280;
+    color: var(--light-text-color);
 }

@@ -57,18 +57,18 @@
 
 /* Filters nav */
 .filters-list button.active {
-  background-color: #7C3AED;
+  background-color:var(--main-color);
   color: #fff;
 }
 
 /* Other filters */
 .other-filters .sqr-button-background.active {
-  background-color: #7C3AED;
+  background-color:var(--main-color);
   color: #fff;
 }
 
 .sqr-button-background{
-    background-color: #ddd6fe;
+    background-color: var(--light-color);
     padding: 0px 16px;
 }
 

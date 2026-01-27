@@ -4,6 +4,14 @@
   width: 100%;
 }
 
+:root{
+  --main-color: #7c3aed;
+  --light-color: #ddd6fe;
+  --text-color: #0a0a0a;
+  --light-text-color: #6b7280;
+  --header-color: #59168b;
+}
+
 .section {
   	width: 100%;
   	height: auto;
@@ -38,4 +46,8 @@
 
 .section-paragraph {
   font-size: 1.8vw;
+}
+
+.main-content {
+  padding-bottom: 64px;
 }
