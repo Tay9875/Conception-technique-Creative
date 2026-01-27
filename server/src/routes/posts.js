@@ -6,9 +6,8 @@ const db = require('../database/db');
 // 1. RÉCUPÉRER TOUS LES POSTS (GET)
 router.get('/', async (req, res) => {
     try {
-        // On jointure aussi avec post_tags et tags pour récupérer le nom du tag
         const sql = `
-            SELECT posts.*, users.firstname, users.lastname, tags.title as tag_title
+            SELECT posts.*, users.firstname, users.lastname, tags.title as tag_title, tags.id as tag_id
             FROM posts 
             JOIN users ON posts.user_id = users.id 
             LEFT JOIN post_tags ON posts.id = post_tags.post_id

@@ -1,19 +1,19 @@
-// client/src/Feed.jsx
 import React, { useState, useEffect } from 'react';
-import './Feed.css';
 import PostCard from './PostCard';
+import './Feed.css';
 
 export default function Feed({ user, onLogout }) {
     const [posts, setPosts] = useState([]);
-    const [tags, setTags] = useState([]); // Stocke la liste des tags
-    // On ajoute tag_id au formulaire
+    const [tags, setTags] = useState([]);
     const [newPost, setNewPost] = useState({ title: '', description: '', tag_id: '' });
+    
+    const [selectedTag, setSelectedTag] = useState(null);
 
-    const API_URL = 'https://conception-technique-creative-backend.onrender.com/api'; 
+    const API_URL = 'https://conception-technique-creative-backend.onrender.com/api';
 
     useEffect(() => {
         fetchPosts();
-        fetchTags(); // On charge les tags au lancement
+        fetchTags();
     }, []);
 
     const fetchPosts = async () => {
@@ -38,16 +38,24 @@ export default function Feed({ user, onLogout }) {
             const response = await fetch(`${API_URL}/posts`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                // On envoie le tag_id avec le reste
                 body: JSON.stringify({ ...newPost, user_id: user.id }) 
             });
             
             if (response.ok) {
-                setNewPost({ title: '', description: '', tag_id: '' }); // Reset
+                setNewPost({ title: '', description: '', tag_id: '' });
                 fetchPosts();
+                setSelectedTag(null); // Remettre sur "Tous" après un post
             }
         } catch (error) { console.error(error); }
     };
+
+    // --- LOGIQUE DE FILTRAGE ---
+    // Si selectedTag est null, on garde tout. Sinon, on compare les ID.
+    const filteredPosts = selectedTag 
+        ? posts.filter(post => post.tag_id === selectedTag) 
+        : posts;
+
+    // console.log("🔍 Mes Posts reçus :", posts);
 
     return (
         <div className="feed-container">
@@ -55,6 +63,26 @@ export default function Feed({ user, onLogout }) {
                 <h1 className="feed-title">Bonjour, {user.firstname} 👋</h1>
                 <button onClick={onLogout} className="logout-btn">Se déconnecter</button>
             </header>
+
+            {/* --- BARRE DE FILTRES --- */}
+            <div className="filter-container">
+                <button 
+                    className={`filter-btn ${selectedTag === null ? 'active' : ''}`} 
+                    onClick={() => setSelectedTag(null)}
+                >
+                    ✨ Tous
+                </button>
+                
+                {tags.map(tag => (
+                    <button 
+                        key={tag.id}
+                        className={`filter-btn ${selectedTag === tag.id ? 'active' : ''}`}
+                        onClick={() => setSelectedTag(tag.id)}
+                    >
+                        {tag.title}
+                    </button>
+                ))}
+            </div>
 
             <div className="create-post-card">
                 <h3>Partagez votre expérience</h3>
@@ -68,7 +96,6 @@ export default function Feed({ user, onLogout }) {
                         required
                     />
                     
-                    {/* --- NOUVEAU SELECTEUR DE TAGS --- */}
                     <select 
                         className="post-input post-select"
                         value={newPost.tag_id}
@@ -94,9 +121,14 @@ export default function Feed({ user, onLogout }) {
             </div>
 
             <div className="posts-list">
-                {posts.map((post) => (
-                    <PostCard key={post.id} post={post} user={user} />
-                ))}
+                {/* On utilise filteredPosts au lieu de posts */}
+                {filteredPosts.length > 0 ? (
+                    filteredPosts.map((post) => (
+                        <PostCard key={post.id} post={post} user={user} />
+                    ))
+                ) : (
+                    <p className="no-posts">Aucun post ne correspond à ce filtre.</p>
+                )}
             </div>
         </div>
     );
