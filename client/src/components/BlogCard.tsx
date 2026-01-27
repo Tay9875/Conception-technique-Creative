@@ -1,35 +1,62 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
 import "../styles/BlogCard.css";
 import { Tag } from "./Tags.tsx";
 
 export const BlogCard: React.FC = () => {
+  const navigate = useNavigate();
+
+  const [isLiked, setIsLiked] = useState(false);
+  const [likesCount, setLikesCount] = useState(0);
+
+  const handleLike = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation(); // empêche la navigation
+
+    setIsLiked((prev) => !prev);
+    setLikesCount((prev) => (isLiked ? prev - 1 : prev + 1));
+
+    // 🔜 prêt pour le fetch
+    /*
+    fetch("/api/favorites", {
+      method: isLiked ? "DELETE" : "POST",
+      body: JSON.stringify({ articleId }),
+    });
+    */
+  };
+
+  const handleCardClick = () => {
+    navigate("/article");
+  };
+
   return (
-    <article className="blogcard" aria-labelledby="blog-title">
-      <Link to="/article" className="blogcard-link">
+    <article
+      className="blogcard"
+      aria-labelledby="blog-title"
+      onClick={handleCardClick}
+      tabIndex={0}
+      onKeyDown={(e) => e.key === "Enter" && handleCardClick()}
+    >
       <div className="text">
-        <div className="tags">
+        <div className="blogcard-tags">
           <Tag>Bien-être</Tag>
         </div>
 
         <div className="blogcard-container">
           <header className="heading">
-            <h3 id="blog-title" className="title">
+            <h3 id="blog-title" className="blogcard-title">
               Commentaires sur la gestion du stress pendant les traitements
             </h3>
           </header>
 
-          <p className="paragraph">
+          <p className="blogcard-paragraph">
             J'ai trouvé que la méditation et les exercices de respiration m'ont beaucoup aidé à gérer le stress lié aux traitements. Cela m'a permis de rester plus calme et concentré sur mon rétablissement.
           </p>
         </div>
 
-        <footer className="tools">
-          <div className="infos">
-            <p className="author">
-              <span
-                className="material-symbols-outlined"
-                aria-hidden="true"
-              >
+        <footer className="blogcard-tools">
+          <div className="blogcard-infos">
+            <p className="blogcard-author">
+              <span className="material-symbols-outlined" aria-hidden="true">
                 person
               </span>
               <span className="sr-only">Marie D.</span>
@@ -40,37 +67,39 @@ export const BlogCard: React.FC = () => {
             </time>
           </div>
 
-          <div className="action">
+          <div className="blogcard-action">
+            {/* ❤️ FAVORI */}
             <button
               type="button"
-              className="like-btn"
-              aria-label="Aimer cet article"
+              className="transparent-btn"
+              aria-pressed={isLiked}
+              aria-label={
+                isLiked
+                  ? "Retirer des favoris"
+                  : "Ajouter aux favoris"
+              }
+              onClick={handleLike}
             >
-              <span
-                className="material-symbols-outlined"
-                aria-hidden="true"
-              >
-                favorite
+              <span className="material-symbols-outlined" aria-hidden="true">
+                {isLiked ? "favorite" : "favorite_border"}
               </span>
-              <span aria-live="polite">0</span>
+              <span aria-live="polite">{likesCount}</span>
             </button>
 
-            <button
-              type="button"
-              className="comment-btn"
+            {/* 💬 COMMENTAIRES */}
+            <Link
+              to="/article#comments"
+              className="transparent-btn"
               aria-label="Voir les commentaires"
+              onClick={(e) => e.stopPropagation()}
             >
-              <span
-                className="material-symbols-outlined"
-                aria-hidden="true"
-              >
+              <span className="material-symbols-outlined" aria-hidden="true">
                 sms
               </span>
-            </button>
+            </Link>
           </div>
         </footer>
       </div>
-      </Link>
     </article>
   );
 };
