@@ -19,7 +19,7 @@
 /* Focus visible pour keyboard users */
 .btn:focus {
     background-color:var(--main-color);
-    color: white;
+    color: var(--optional-text-color);
     outline-offset: 2px;
 }
 
@@ -37,7 +37,7 @@
 .dark-addon {
     border-radius: 30px;
     background-color:var(--main-color);
-    color: white;
+    color: var(--occasional-text-color);
     border: 1px solid rgba(139, 92, 246, 0.15);
 }
 
@@ -51,5 +51,5 @@
     border-radius: 30px;
     background-color: var(--light-color);
     color:var(--main-color);
-    border: 1px solidvar(--main-color);
+    border: 1px solid var(--main-color);
 }

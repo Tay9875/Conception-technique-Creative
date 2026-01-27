@@ -58,13 +58,13 @@
 /* Filters nav */
 .filters-list button.active {
   background-color:var(--main-color);
-  color: var(--main-text-color);
+  color: var(--optional-text-color);
 }
 
 /* Other filters */
 .other-filters .sqr-button-background.active {
   background-color:var(--main-color);
-  color: var(--main-text-color);
+  color: var(--optional-text-color);
 }
 
 .sqr-button-background{

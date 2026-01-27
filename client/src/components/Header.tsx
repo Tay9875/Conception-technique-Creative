@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import "../styles/Header.css";
-import logo from "../styles/images/logo.png";
 import { SquareButton } from "./SquareButton.tsx";
 import { useNavigate, useLocation } from "react-router-dom";
 
@@ -57,7 +56,6 @@ export const Header: React.FC<HeaderProps> = ({ theme, setTheme }) => {
           className="logo-link"
         >
           <img
-            src={logo}
             alt="Oncarya"
             className="logo-image"
             width={40}
