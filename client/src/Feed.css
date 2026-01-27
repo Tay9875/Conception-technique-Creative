@@ -191,3 +191,45 @@
     color: #374151;
     line-height: 1.4;
 }
+
+.filter-container {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 2rem;
+    overflow-x: auto;
+    padding-bottom: 10px;
+    white-space: nowrap;
+    scrollbar-width: thin;
+    scrollbar-color: #E9D5FF transparent;
+}
+
+.filter-btn {
+    background-color: white;
+    border: 1px solid #E9D5FF;
+    color: #4B5563;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.filter-btn:hover {
+    border-color: #7C3AED;
+    color: #7C3AED;
+}
+
+.filter-btn.active {
+    background-color: #7C3AED;
+    color: white;
+    border-color: #7C3AED;
+    font-weight: bold;
+    box-shadow: 0 4px 6px rgba(124, 58, 237, 0.2);
+}
+
+.no-posts {
+    text-align: center;
+    color: #9CA3AF;
+    font-style: italic;
+    margin-top: 2rem;
+}
