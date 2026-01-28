@@ -11,17 +11,8 @@ export const BlogCard: React.FC = () => {
 
   const handleLike = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation(); // empêche la navigation
-
     setIsLiked((prev) => !prev);
     setLikesCount((prev) => (isLiked ? prev - 1 : prev + 1));
-
-    // 🔜 prêt pour le fetch
-    /*
-    fetch("/api/favorites", {
-      method: isLiked ? "DELETE" : "POST",
-      body: JSON.stringify({ articleId }),
-    });
-    */
   };
 
   const handleCardClick = () => {
@@ -32,9 +23,15 @@ export const BlogCard: React.FC = () => {
     <article
       className="blogcard"
       aria-labelledby="blog-title"
+      tabIndex={0} // navigable au clavier
       onClick={handleCardClick}
-      tabIndex={0}
-      onKeyDown={(e) => e.key === "Enter" && handleCardClick()}
+      onKeyDown={(e) => {
+        // Activation avec Enter ou Space
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          handleCardClick();
+        }
+      }}
     >
       <div className="text">
         <div className="blogcard-tags">
@@ -49,14 +46,19 @@ export const BlogCard: React.FC = () => {
           </header>
 
           <p className="blogcard-paragraph">
-            J'ai trouvé que la méditation et les exercices de respiration m'ont beaucoup aidé à gérer le stress lié aux traitements. Cela m'a permis de rester plus calme et concentré sur mon rétablissement.
+            J'ai trouvé que la méditation et les exercices de respiration
+            m'ont beaucoup aidé à gérer le stress lié aux traitements. Cela
+            m'a permis de rester plus calme et concentré sur mon rétablissement.
           </p>
         </div>
 
         <footer className="blogcard-tools">
           <div className="blogcard-infos">
             <p className="blogcard-author">
-              <span className="material-symbols-outlined" aria-hidden="true">
+              <span
+                className="material-symbols-outlined"
+                aria-hidden="true"
+              >
                 person
               </span>
               <span className="sr-only">Marie D.</span>
@@ -74,13 +76,14 @@ export const BlogCard: React.FC = () => {
               className="transparent-btn"
               aria-pressed={isLiked}
               aria-label={
-                isLiked
-                  ? "Retirer des favoris"
-                  : "Ajouter aux favoris"
+                isLiked ? "Retirer des favoris" : "Ajouter aux favoris"
               }
               onClick={handleLike}
             >
-              <span className="material-symbols-outlined" aria-hidden="true">
+              <span
+                className="material-symbols-outlined"
+                aria-hidden="true"
+              >
                 {isLiked ? "favorite" : "favorite_border"}
               </span>
               <span aria-live="polite">{likesCount}</span>
@@ -93,7 +96,10 @@ export const BlogCard: React.FC = () => {
               aria-label="Voir les commentaires"
               onClick={(e) => e.stopPropagation()}
             >
-              <span className="material-symbols-outlined" aria-hidden="true">
+              <span
+                className="material-symbols-outlined"
+                aria-hidden="true"
+              >
                 sms
               </span>
             </Link>

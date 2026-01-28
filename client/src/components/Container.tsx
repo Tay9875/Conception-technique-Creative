@@ -42,29 +42,20 @@ export const Container: React.FC<ContainerProps> = ({
   };
 
   return (
-    <section className="container">
+    <main className="container" id="main-content">
       {/* FILTRES CATÉGORIES */}
       <section className="categoryfilter">
         <nav
           className="filters-nav"
           aria-label="Filtrer les articles par catégorie"
         >
-          <ul
-            className="filters-list"
-            role="radiogroup"
-            aria-labelledby="category-filter-label"
-          >
-            <li id="category-filter-label" className="sr-only">
-              Catégories
-            </li>
-
+          <ul className="filters-list" role="radiogroup" aria-label="Catégories">
             {filters.map((label) => (
               <li key={label}>
                 <Button
                   type="button"
                   role="radio"
                   aria-checked={activeCategory === label}
-                  aria-current={activeCategory === label ? "true" : undefined}
                   className={activeCategory === label ? "active" : ""}
                   onClick={() => handleCategoryChange(label)}
                 >
@@ -85,18 +76,15 @@ export const Container: React.FC<ContainerProps> = ({
       {/* CONTENU */}
       <section className="mainContent">
         {/* TRI */}
-        <div
-          className="other-filters"
-          role="radiogroup"
-          aria-labelledby="sort-label"
-        >
+        <div className="other-filters" role="radiogroup" aria-labelledby="sort-label">
           <p id="sort-label">Trier par :</p>
 
           <SquareButton
             role="radio"
             aria-checked={activeSort === "Récents"}
-            aria-current={activeSort === "Récents" ? "true" : undefined}
-            className={`sqr-button-background ${activeSort === "Récents" ? "active" : ""}`}
+            className={`sqr-button-background ${
+              activeSort === "Récents" ? "active" : ""
+            }`}
             onClick={() => handleSortChange("Récents")}
           >
             <span
@@ -111,8 +99,9 @@ export const Container: React.FC<ContainerProps> = ({
           <SquareButton
             role="radio"
             aria-checked={activeSort === "Populaires"}
-            aria-current={activeSort === "Populaires" ? "true" : undefined}
-            className={`sqr-button-background ${activeSort === "Populaires" ? "active" : ""}`}
+            className={`sqr-button-background ${
+              activeSort === "Populaires" ? "active" : ""
+            }`}
             onClick={() => handleSortChange("Populaires")}
           >
             <span
@@ -131,10 +120,8 @@ export const Container: React.FC<ContainerProps> = ({
         </p>
 
         {/* POSTS */}
-        <div className="posts-content">
-          {children}
-        </div>
+        <div className="posts-content">{children}</div>
       </section>
-    </section>
+    </main>
   );
 };

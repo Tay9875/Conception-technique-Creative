@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import "../styles/Header.css";
 import { SquareButton } from "./SquareButton.tsx";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 
 type HeaderProps = {
-  theme: string;
-  setTheme: (theme: string) => void;
+  theme: "light" | "dark";
+  setTheme: (theme: "light" | "dark") => void;
 };
 
 export const Header: React.FC<HeaderProps> = ({ theme, setTheme }) => {
@@ -13,10 +13,10 @@ export const Header: React.FC<HeaderProps> = ({ theme, setTheme }) => {
   const location = useLocation();
   const isActive = (path: string) => location.pathname === path;
 
-  // ✅ Source de vérité unique
+  // Source de vérité utilisateur
   const [user, setUser] = useState<any>(null);
 
-  // 🔁 Synchronisation au refresh
+  // Synchronisation au refresh
   useEffect(() => {
     const savedUser = localStorage.getItem("user");
     if (savedUser) {
@@ -27,7 +27,6 @@ export const Header: React.FC<HeaderProps> = ({ theme, setTheme }) => {
   const handleLogout = () => {
     setUser(null);
     localStorage.removeItem("user");
-
     window.location.href = "/";
   };
 
@@ -38,7 +37,7 @@ export const Header: React.FC<HeaderProps> = ({ theme, setTheme }) => {
     if (protectedPaths.includes(path) && !isAuthenticated) {
       navigate("/login", {
         state: { from: path === "/login" ? "/" : path },
-        replace: true
+        replace: true,
       });
       return;
     }
@@ -48,47 +47,93 @@ export const Header: React.FC<HeaderProps> = ({ theme, setTheme }) => {
 
   return (
     <header role="banner" className="header">
-      {/* Logo */}
+      {/* Lien "Aller au contenu principal" */}
+      <a href="#main-content" className="skip-link">
+        Aller au contenu principal
+      </a>
+
+      {/* Logo / Accueil */}
       <div className="header-left">
-        <button
-          onClick={() => handleClick("/")}
-          aria-label="Accueil"
-          className="logo-link"
-        >
+        <Link to="/" className="logo-link" aria-label="Accueil">
           <img
-            alt="Oncarya"
+            src="/logo.svg"
+            alt=""
             className="logo-image"
             width={40}
             height={40}
           />
           <span className="logo-title">Oncarya</span>
-        </button>
+        </Link>
       </div>
 
       {/* Navigation principale */}
       <nav className="header-nav extra" aria-label="Navigation principale">
-        <SquareButton className={`${isActive("/") ? "active" : ""}`} onClick={() => handleClick("/")}>
-          Accueil
-        </SquareButton>
-        <SquareButton className={`${isActive("/favoris") ? "active" : ""}`} onClick={() => handleClick("/favoris")}>
-          Favoris
-        </SquareButton>
-        <SquareButton className={`${isActive("/notes") ? "active" : ""}`} onClick={() => handleClick("/notes")}>
-          Mes Notes
-        </SquareButton>
+        <ul className="nav-list">
+          <li>
+            <SquareButton
+              className={isActive("/") ? "is-active" : undefined}
+              aria-current={isActive("/") ? "page" : undefined}
+              onClick={() => handleClick("/")}
+            >
+              Accueil
+            </SquareButton>
+          </li>
+
+          <li>
+            <SquareButton
+              className={isActive("/favoris") ? "is-active" : undefined}
+              aria-current={isActive("/favoris") ? "page" : undefined}
+              onClick={() => handleClick("/favoris")}
+            >
+              Favoris
+            </SquareButton>
+          </li>
+
+          <li>
+            <SquareButton
+              className={isActive("/notes") ? "is-active" : undefined}
+              aria-current={isActive("/notes") ? "page" : undefined}
+              onClick={() => handleClick("/notes")}
+            >
+              Mes notes
+            </SquareButton>
+          </li>
+        </ul>
       </nav>
 
+      {/* Actions */}
       <div className="header-right">
         <div className="button-gaps">
-          <SquareButton ariaLabel="Rechercher">
-            <span className="material-symbols-outlined">search</span>
+          {/* Recherche (fonctionnalité à venir) */}
+          <SquareButton
+            ariaLabel="Recherche (fonctionnalité à venir)"
+            disabled
+          >
+            <span
+              className="material-symbols-outlined"
+              aria-hidden="true"
+            >
+              search
+            </span>
           </SquareButton>
-          <SquareButton 
-            ariaLabel="Mode clair ou sombre" 
+
+          {/* Thème clair / sombre */}
+          <SquareButton
+            ariaLabel={
+              theme === "light"
+                ? "Activer le mode sombre"
+                : "Activer le mode clair"
+            }
             onClick={() =>
               setTheme(theme === "light" ? "dark" : "light")
-            }>
-            <span className="material-symbols-outlined">dark_mode</span>
+            }
+          >
+            <span
+              className="material-symbols-outlined"
+              aria-hidden="true"
+            >
+              dark_mode
+            </span>
           </SquareButton>
         </div>
 
@@ -100,7 +145,6 @@ export const Header: React.FC<HeaderProps> = ({ theme, setTheme }) => {
             Partager
           </SquareButton>
 
-          {/* 👤 Connexion / Déconnexion */}
           {!user && (
             <SquareButton
               className="sqr-button-dark-background"

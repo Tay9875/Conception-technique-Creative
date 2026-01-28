@@ -12,13 +12,11 @@ interface AccessibleModalProps {
 
 function getOrCreateModalRoot(): HTMLElement {
   let modalRoot = document.getElementById("modal-root");
-
   if (!modalRoot) {
     modalRoot = document.createElement("div");
     modalRoot.setAttribute("id", "modal-root");
     document.body.appendChild(modalRoot);
   }
-
   return modalRoot;
 }
 
@@ -31,10 +29,16 @@ export default function AccessibleModal({
   const modalRef = useRef<HTMLDivElement>(null);
   const previouslyFocused = useRef<HTMLElement | null>(null);
 
+  // Générer un id unique pour aria-labelledby
+  const titleIdRef = useRef(`modal-title-${Math.random().toString(36).substr(2, 9)}`);
+
   useEffect(() => {
     if (!isOpen) return;
 
     previouslyFocused.current = document.activeElement as HTMLElement;
+
+    // Bloquer scroll arrière
+    document.body.style.overflow = "hidden";
 
     const focusableElements = modalRef.current?.querySelectorAll<HTMLElement>(
       'button, [href], input, textarea, select, [tabindex]:not([tabindex="-1"])'
@@ -67,6 +71,7 @@ export default function AccessibleModal({
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
       previouslyFocused.current?.focus();
+      document.body.style.overflow = "auto";
     };
   }, [isOpen, onClose]);
 
@@ -79,23 +84,22 @@ export default function AccessibleModal({
       className="modal"
       role="dialog"
       aria-modal="true"
-      aria-labelledby="modal-title"
+      aria-labelledby={titleIdRef.current}
     >
       <div ref={modalRef} className="modal-content">
         <div className="modal-heading">
-          <h3 id="modal-title">{title}</h3>
-          <SquareButton className="sqr-button-dark-background" onClick={onClose} aria-label="Fermer la fenêtre">
-            <span
-                className="material-symbols-outlined"
-                aria-hidden="true"
-            >
-                close
+          <h3 id={titleIdRef.current}>{title}</h3>
+          <SquareButton
+            className="sqr-button-dark-background"
+            onClick={onClose}
+            aria-label="Fermer la fenêtre"
+          >
+            <span className="material-symbols-outlined" aria-hidden="true">
+              close
             </span>
           </SquareButton>
         </div>
-        <div className="modal-form">
-            {children}
-        </div>
+        <div className="modal-form">{children}</div>
       </div>
     </div>,
     modalRoot
