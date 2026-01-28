@@ -8,6 +8,7 @@ import Accueil from "./Accueil.jsx";
 import Favoris from "./Favoris.jsx";
 import Notes from "./Notes.jsx";
 import Article from "./Article.jsx";
+import Profile from "./Profile.jsx";
 import BottomNav from "./components/BottomNav.tsx";
 
 function App() {
@@ -41,6 +42,11 @@ function App() {
           <ProtectedRoute user={user}>
               <Feed user={user} onLogout={undefined} />
             </ProtectedRoute>} />
+        <Route path="/profile" element={
+          <ProtectedRoute user={user}>
+              <Profile />
+            </ProtectedRoute>
+          } />
       </Routes>
       <BottomNav/>
     </div>
