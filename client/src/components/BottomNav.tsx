@@ -93,7 +93,7 @@ export default function BottomNav() {
 
         <li>
           <NavLink
-            to="/profil"
+            to="/profile"
             className={({ isActive }) =>
               `bottom-nav-item ${isActive ? "is-active" : ""}`
             }

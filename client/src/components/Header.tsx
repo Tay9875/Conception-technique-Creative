@@ -27,16 +27,16 @@ export const Header: React.FC<HeaderProps> = ({ theme, setTheme }) => {
   const handleLogout = () => {
     setUser(null);
     localStorage.removeItem("user");
-    window.location.href = "/";
+    navigate("/");
   };
 
   const handleClick = (path: string) => {
-    const protectedPaths = ["/favoris", "/notes", "/feed"];
+    const protectedPaths = ["/favoris", "/notes", "/feed", "/profile"];
     const isAuthenticated = Boolean(user);
 
     if (protectedPaths.includes(path) && !isAuthenticated) {
       navigate("/login", {
-        state: { from: path === "/login" ? "/" : path },
+        state: { from: path },
         replace: true,
       });
       return;
@@ -104,15 +104,12 @@ export const Header: React.FC<HeaderProps> = ({ theme, setTheme }) => {
       {/* Actions */}
       <div className="header-right">
         <div className="button-gaps">
-          {/* Recherche (fonctionnalité à venir) */}
+          {/* Recherche (à venir) */}
           <SquareButton
             ariaLabel="Recherche (fonctionnalité à venir)"
             disabled
           >
-            <span
-              className="material-symbols-outlined"
-              aria-hidden="true"
-            >
+            <span className="material-symbols-outlined" aria-hidden="true">
               search
             </span>
           </SquareButton>
@@ -128,10 +125,7 @@ export const Header: React.FC<HeaderProps> = ({ theme, setTheme }) => {
               setTheme(theme === "light" ? "dark" : "light")
             }
           >
-            <span
-              className="material-symbols-outlined"
-              aria-hidden="true"
-            >
+            <span className="material-symbols-outlined" aria-hidden="true">
               dark_mode
             </span>
           </SquareButton>
@@ -155,12 +149,31 @@ export const Header: React.FC<HeaderProps> = ({ theme, setTheme }) => {
           )}
 
           {user && (
-            <SquareButton
-              className="sqr-button-dark-background"
-              onClick={handleLogout}
-            >
-              Déconnexion
-            </SquareButton>
+            <>
+              <SquareButton
+                className={
+                  isActive("/profile")
+                    ? "sqr-button-dark-background is-active"
+                    : "sqr-button-dark-background"
+                }
+                aria-current={isActive("/profile") ? "page" : undefined}
+                onClick={() => handleClick("/profile")}
+              >
+                <span
+                  className="material-symbols-outlined profile-header"
+                  aria-hidden="true"
+                >
+                  account_circle
+                </span>
+              </SquareButton>
+
+              <SquareButton
+                className="sqr-button-dark-background"
+                onClick={handleLogout}
+              >
+                Déconnexion
+              </SquareButton>
+            </>
           )}
         </div>
       </div>
