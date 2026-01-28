@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import PostCard from './PostCard';
 import './Feed.css';
 import { Header } from './components/Header.tsx';
+import { useNavigate } from 'react-router-dom';
 
 export default function Feed({ user, onLogout }) {
     const navigate = useNavigate();
