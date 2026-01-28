@@ -1,8 +1,15 @@
 // client/src/Auth.jsx
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import './Auth.css';
+import { SquareButton } from './components/SquareButton.tsx';
+import { useNavigate, useLocation } from "react-router-dom";
 
 export default function Auth({ onLoginSuccess }) {
+    const navigate = useNavigate();
+    const location = useLocation();
+
+    const API_URL = process.env.REACT_APP_API_URL;
+
     const [isLogin, setIsLogin] = useState(true); // Bascule entre Login et Register
     const [formData, setFormData] = useState({
         firstname: '',
@@ -11,29 +18,42 @@ export default function Auth({ onLoginSuccess }) {
         password: ''
     });
 
+    const [error, setError] = useState("");
+    const errorRef = useRef(null);
+    const headingRef = useRef(null);
+
+    useEffect(() => {
+        // Annonce le changement Login / Register
+        headingRef.current?.focus();
+    }, [isLogin]);
+
+
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
-
+    
     const handleSubmit = async (e) => {
         e.preventDefault();
         const endpoint = isLogin ? 'login' : 'register';
-        const baseUrl = 'https://conception-technique-creative-backend.onrender.com';
         
         try {
 
-            const response = await fetch(`${baseUrl}/api/auth/${endpoint}`, {
+            const response = await fetch(`${API_URL}/auth/${endpoint}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData)
             });
 
             const data = await response.json();
+            alert(isLogin ? `Data ${data.user.firstname} !` : "Inscription réussie ! Connectez-vous.");
 
             if (response.ok) {
-                alert(isLogin ? `Bienvenue ${data.user.firstname} !` : "Inscription réussie ! Connectez-vous.");
+                alert(isLogin ? `Bienvenue ${data.user.firstname}!` : "Inscription réussie ! Connectez-vous.");
                 if (isLogin) {
-                    onLoginSuccess(data.user); 
+                    localStorage.setItem("user", JSON.stringify(data.user));
+                    onLoginSuccess?.(data.user);
+                    const from = location.state?.from || "/";
+                    navigate(from, { replace: true });
                 } else {
                     alert("Inscription réussie ! Connectez-vous.");
                     setIsLogin(true);
@@ -77,9 +97,9 @@ export default function Auth({ onLoginSuccess }) {
                         <input type="password" name="password" className="form-input" placeholder="••••••••" onChange={handleChange} required />
                     </div>
 
-                    <button type="submit" className="btn-primary">
+                    <SquareButton type="submit" className="sqr-button-dark-background sqr-btn-primary">
                         {isLogin ? 'Se connecter' : "S'inscrire"}
-                    </button>
+                    </SquareButton>
                 </form>
 
                 <p className="toggle-text">

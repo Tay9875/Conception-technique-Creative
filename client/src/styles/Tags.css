@@ -1,0 +1,12 @@
+.tag {
+  	height: auto;
+  	border-radius: 30px;
+    padding: 5px 10px;
+  	background-color: rgba(124, 58, 237, 0.1);
+  	text-align: center;
+  	font-size: 14px;
+    font-weight: normal;
+  	color:var(--main-color);
+    border: none;
+    border-radius: 30px;
+}

@@ -1,0 +1,48 @@
+.notes-section{
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    text-align: left;
+    font-family: Inter;
+    padding: 4vw 3.2vw 0vw;
+}
+
+.retour{
+    color:var(--main-color);
+}
+
+.note-heading {
+    font-size: 32px;
+    font-weight: normal;
+    color: var(--main-text-color);
+}
+
+.paragraph, .notes-section-infos{
+    color: var(--main-light-text-color);
+}
+
+.notes-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: auto;
+    padding: 4vw 3.2vw;
+    gap: 16px;
+}
+
+.notes-section-heading{
+    display: grid;
+    grid-template-columns: auto min-content;
+    align-items: flex-end;
+    gap: auto;
+}
+
+.no-resize{
+    min-width: 175px;
+}
+
+@media (max-width: 800px) {
+  .notes-section-heading {
+    grid-template-columns: auto;
+  }
+}

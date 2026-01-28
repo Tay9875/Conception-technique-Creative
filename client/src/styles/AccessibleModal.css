@@ -1,0 +1,40 @@
+.modal {
+  position: fixed;       /* fixe sur toute la page, pas relative à un parent */
+  top: 0;
+  left: 0;
+  width: 100vw;          /* 100% de la largeur de la fenêtre */
+  height: 100vh;         /* 100% de la hauteur de la fenêtre */
+  background-color: rgba(0, 0, 0, 0.6); /* arrière-plan semi-transparent */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;         /* toujours au-dessus de la page */
+}
+
+.modal-heading{
+    width: 100%;
+    position: relative;
+    background-color:var(--main-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0px 24px;
+    box-sizing: border-box;
+    gap: 20px;
+    text-align: left;
+    color: white;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+}
+
+.modal-content {
+  background-color: var(--block-background-color);
+  border-radius: 14px;
+  max-width: 500px;
+  width: 100%;
+}
+
+.modal-form {
+    padding: 24px;
+    width: 100%;
+}
