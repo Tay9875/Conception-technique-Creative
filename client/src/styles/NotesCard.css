@@ -27,6 +27,10 @@
     text-align: left;
 }
 
+.note-title{
+    font-size: 16px;
+}
+
 .note-tools{
     display: flex;
     flex-direction: row;

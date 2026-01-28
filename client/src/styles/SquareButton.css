@@ -40,7 +40,7 @@ button {
 
 .sqr-button-dark-background{
     background-color:var(--main-color);
-    color: var(--optional-text-color);
+    color: var(--switched-text-color);
 }
 
 /* Focus visible pour keyboard users */

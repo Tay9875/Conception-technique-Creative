@@ -12,8 +12,10 @@
   --light-color: #ddd6fe;
 
   --main-text-color: #0a0a0a;
+  --switched-text-color: white;
   --main-light-text-color: #6b7280;
   --optional-text-color: white;
+  --optional-dark-text-color: #0a0a0a;
 
   --header-background: linear-gradient(135deg, #faf5ff, #ede9fe);
   --header-color: #59168b;
@@ -34,8 +36,10 @@
   --light-color: #3C0366;
   
   --main-text-color: white;
-  --main-light-text-color: #6b7280;
+  --switched-text-color: #0a0a0a;
+  --main-light-text-color: #a1a1aa;
   --optional-text-color: white;
+  --optional-dark-text-color: #0a0a0a;
 
   --header-background: linear-gradient(135deg, #3C0366 0%, #2F0D68 100%);
   --header-color: #c4b5fd;
