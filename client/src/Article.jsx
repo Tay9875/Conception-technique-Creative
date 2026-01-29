@@ -54,26 +54,45 @@ function Article() {
                 </main>
 
                 {/* Barre d’outils de l’article */}
-                <section className="article-tools">
+                <section className="article-tools" aria-label="Actions sur l’article">
                     <div className="article-appreciation">
-                        <SquareButton className="sqr-button-dark-background" onClick={() => console.log("C'est utile, je sauvegarde")}>
-                            <span className="material-symbols-outlined" aria-hidden="true">favorite</span>
-                            C'est utile, je sauvegarde
+                        <SquareButton
+                        className="sqr-button-dark-background"
+                        onClick={() => console.log("C'est utile, je sauvegarde")}
+                        aria-label="Marquer l’article comme utile et le sauvegarder"
+                        >
+                        <span className="material-symbols-outlined" aria-hidden="true">
+                            favorite
+                        </span>
+                        <span className="sr-only">C'est utile, je sauvegarde</span>
                         </SquareButton>
 
-                        <SquareButton className="sqr-button-dark-background" onClick={() => setCommentsOpen(!commentsOpen)}
-                            aria-expanded={commentsOpen} aria-controls="comments-container"
+                        <SquareButton
+                        className="sqr-button-dark-background"
+                        onClick={() => setCommentsOpen(!commentsOpen)}
+                        aria-expanded={commentsOpen}
+                        aria-controls="comments-container"
+                        aria-haspopup="region"
+                        aria-label="Afficher ou masquer les commentaires"
                         >
-                            <span className="material-symbols-outlined" aria-hidden="true">sms</span>
-                            <span>Commentaires</span>
+                        <span className="material-symbols-outlined" aria-hidden="true">
+                            sms
+                        </span>
+                        <span className="sr-only">Commentaires</span>
                         </SquareButton>
                     </div>
 
-                    <SquareButton className="sqr-button-dark-background" onClick={() => setIsModalOpen(true)}>
-                        <span className="material-symbols-outlined" aria-hidden="true">report</span>
-                        Signaler
+                    <SquareButton
+                        className="sqr-button-dark-background"
+                        onClick={() => setIsModalOpen(true)}
+                        aria-label="Signaler cet article"
+                    >
+                        <span className="material-symbols-outlined" aria-hidden="true">
+                        report
+                        </span>
+                        <span className="sr-only">Signaler</span>
                     </SquareButton>
-                </section>
+                    </section>
 
                 {/* Section commentaires */}
                 {commentsOpen && <CommentSection isOpen={commentsOpen} />}
