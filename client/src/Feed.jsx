@@ -58,108 +58,105 @@ export default function Feed({ user, onLogout }) {
         } catch (error) { console.error(error); }
     };
 
+    const handleLike = async (postId) => {
+        try {
+            const response = await fetch(`${API_URL}/posts/${postId}/like`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ user_id: user.id })
+            });
+
+            if (response.ok) {
+                fetchPosts();
+            }
+        } catch (error) { console.error(error); }
+    };
+
     // --- LOGIQUE DE FILTRAGE ---
-    // Si selectedTag est null, on garde tout. Sinon, on compare les ID.
     const filteredPosts = selectedTag 
         ? posts.filter(post => post.tag_id === selectedTag) 
         : posts;
 
-    // console.log("🔍 Mes Posts reçus :", posts);
+    console.log("🔍 Mes Posts reçus :", posts);
 
     return (
         <>
-        <Header />
-        <div className="feed-container">
-            <header className="feed-header">
-                <h1 className="feed-title">Bonjour, {user.firstname} 👋</h1>
-                <button onClick={onLogout} className="logout-btn">Se déconnecter</button>
-            </header>
-
-            {/* --- BARRE DE FILTRES --- */}
-            <div className="filter-container">
-                <button 
-                    className={`filter-btn ${selectedTag === null ? 'active' : ''}`} 
-                    onClick={() => setSelectedTag(null)}
-                >
-                    ✨ Tous
-                </button>
+            <Header />
+            <div className="feed-container">
+                <header className="feed-header">
+                    <h1 className="feed-title">Bonjour, {user.firstname} 👋</h1>
+                    <button onClick={onLogout} className="logout-btn">Se déconnecter</button>
+                </header>
                 
-                {tags.map(tag => (
+                <div className="filter-container">
                     <button 
-                        key={tag.id}
-                        className={`filter-btn ${selectedTag === tag.id ? 'active' : ''}`}
-                        onClick={() => setSelectedTag(tag.id)}
+                        className={`filter-btn ${selectedTag === null ? 'active' : ''}`} 
+                        onClick={() => setSelectedTag(null)}
                     >
-                        {tag.title}
+                        ✨ Tous
                     </button>
-                ))}
-            </div>
-
-            <div className="create-post-card">
-                <h3>Partagez votre expérience</h3>
-                <form onSubmit={handleSubmit}>
-                    <input
-                        type="text"
-                        placeholder="Titre du sujet"
-                        className="post-input"
-                        value={newPost.title}
-                        onChange={(e) => setNewPost({ ...newPost, title: e.target.value })}
-                        required />
-
-                    {/* --- NOUVEAU SELECTEUR DE TAGS --- */}
-                    <select
-                        onChange={(e) => setNewPost({...newPost, title: e.target.value})}
-                        required
-                    />
                     
-                    <select 
-                        className="post-input post-select"
-                        value={newPost.tag_id}
-                        onChange={(e) => setNewPost({ ...newPost, tag_id: e.target.value })}
-                        required
-                    >
-                        <option value="">-- Choisir un sujet --</option>
-                        {tags.map(tag => (
-                            <option key={tag.id} value={tag.id}>{tag.title}</option>
-                        ))}
-                    </select>
+                    {tags.map(tag => (
+                        <button 
+                            key={tag.id}
+                            className={`filter-btn ${selectedTag === tag.id ? 'active' : ''}`}
+                            onClick={() => setSelectedTag(tag.id)}
+                        >
+                            {tag.title}
+                        </button>
+                    ))}
+                </div>
 
-                    <textarea
-                        placeholder="Racontez-nous..."
-                        className="post-input"
-                        rows="3"
-                        value={newPost.description}
-                        onChange={(e) => setNewPost({ ...newPost, description: e.target.value })}
-                        required />
-                    <button type="submit" className="btn-post">Publier</button>
-                </form>
+                <div className="create-post-card">
+                    <h3>Partagez votre expérience</h3>
+                    <form onSubmit={handleSubmit}>
+                        <input
+                            type="text"
+                            placeholder="Titre du sujet"
+                            className="post-input"
+                            value={newPost.title}
+                            onChange={(e) => setNewPost({ ...newPost, title: e.target.value })}
+                            required 
+                        />
+                        
+                        <select 
+                            className="post-input post-select"
+                            value={newPost.tag_id}
+                            onChange={(e) => setNewPost({ ...newPost, tag_id: e.target.value })}
+                            required
+                        >
+                            <option value="">-- Choisir un sujet --</option>
+                            {tags.map(tag => (
+                                <option key={tag.id} value={tag.id}>{tag.title}</option>
+                            ))}
+                        </select>
+
+                        <textarea
+                            placeholder="Racontez-nous..."
+                            className="post-input"
+                            rows="3"
+                            value={newPost.description}
+                            onChange={(e) => setNewPost({ ...newPost, description: e.target.value })}
+                            required 
+                        />
+                        <button type="submit" className="btn-post">Publier</button>
+                    </form>
+                </div>
+
+                <div className="posts-list">
+                    {filteredPosts.length > 0 ? (
+                        filteredPosts.map((post) => (
+                            <PostCard 
+                                key={post.id} 
+                                post={post} 
+                                user={user} 
+                            />
+                        ))
+                    ) : (
+                        <p className="no-posts">Aucun post ne correspond à ce filtre.</p>
+                    )}
+                </div>
             </div>
-
-            <div className="posts-list">
-                {posts.map((post) => (
-                    <div key={post.id} className="post-card">
-                        {/* Affiche le vrai nom du tag s'il existe */}
-                        {post.tag_title && <span className="post-tag">{post.tag_title}</span>}
-
-                        <h2 className="post-title">{post.title}</h2>
-                        <p className="post-desc">{post.description}</p>
-
-                        <div className="post-footer">
-                            <span>Par <strong>{post.firstname} {post.lastname}</strong></span>
-                            <span>{new Date(post.created_at).toLocaleDateString()}</span>
-                        </div>
-                    </div>
-                ))}
-                {/* On utilise filteredPosts au lieu de posts */}
-                {filteredPosts.length > 0 ? (
-                    filteredPosts.map((post) => (
-                        <PostCard key={post.id} post={post} user={user} />
-                    ))
-                ) : (
-                    <p className="no-posts">Aucun post ne correspond à ce filtre.</p>
-                )}
-            </div>
-        </div>
         </>
     );
 }

@@ -12,12 +12,13 @@ router.get('/', async (req, res) => {
             posts.*, 
             users.firstname, 
             users.lastname,
-            -- Compte le nombre total de likes pour chaque post
+            tags.title as tag_title, 
+            tags.id as tag_id_from_tag,
             (SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id) as like_count,
-            -- Vérifie si l'utilisateur actuel a liké (renvoie 1 ou 0)
             (SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id AND likes.user_id = ?) as is_liked
         FROM posts
         JOIN users ON posts.user_id = users.id
+        LEFT JOIN tags ON posts.tag_id = tags.id
         ORDER BY posts.created_at DESC
     `;
 
@@ -32,30 +33,28 @@ router.get('/', async (req, res) => {
 
 // 2. CRÉER UN NOUVEAU POST (POST)
 router.post('/', async (req, res) => {
-    const { title, description, user_id, tag_id } = req.body; // On récupère tag_id
+    // On récupère les infos
+    const { title, description, user_id, tag_id } = req.body; 
 
+    // Validation
     if (!title || !description || !user_id || !tag_id) {
         return res.status(400).json({ message: "Tous les champs (et le tag) sont requis." });
     }
 
     try {
-        // A. On insère le post
         const [result] = await db.query(
-            'INSERT INTO posts (title, description, user_id) VALUES (?, ?, ?)',
-            [title, description, user_id]
+            'INSERT INTO posts (title, description, user_id, tag_id) VALUES (?, ?, ?, ?)',
+            [title, description, user_id, tag_id]
         );
         
-        const newPostId = result.insertId;
+        // On renvoie l'ID du nouveau post
+        res.status(201).json({ 
+            id: result.insertId, 
+            message: "Post publié avec succès !" 
+        });
 
-        // B. On associe le tag au post dans la table de liaison
-        await db.query(
-            'INSERT INTO post_tags (post_id, tag_id) VALUES (?, ?)',
-            [newPostId, tag_id]
-        );
-
-        res.status(201).json({ message: "Post publié avec succès !" });
     } catch (error) {
-        console.error(error);
+        console.error("Erreur insertion post:", error);
         res.status(500).json({ message: "Erreur lors de la publication." });
     }
 });
