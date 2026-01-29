@@ -8,11 +8,11 @@
 }
 
 h1 {
-	font-size: 30px;
+	font-size: var(--large-font);
 }
 
 .section-paragraph {
-  font-size: 18px;
+  font-size: var(--medium-font);
 }
 
 .skip-link {

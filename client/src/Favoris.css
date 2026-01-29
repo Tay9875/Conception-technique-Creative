@@ -3,17 +3,17 @@
 }
 
 .section-heading{
-  font-size: 30px;
+  font-size: var(--large-font);
   font-weight: 1000;
   line-height: 1.1;
 }
 
 h1 {
-	font-size: 30px;
+	font-size: var(--large-font);
 }
 
 .section-paragraph {
-  font-size: 18px;
+  font-size: var(--medium-font);
 }
 
 .skip-link {

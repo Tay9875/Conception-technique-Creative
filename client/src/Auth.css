@@ -57,7 +57,7 @@
   	text-align: left;
   	color: var(--main-text-color);
     font-family: var(--font), sans-serif;
-    font-size: 16px;
+    font-size: var(--small-font);
     transition: all 0.3s;
 }
 
