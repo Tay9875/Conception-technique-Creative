@@ -116,6 +116,7 @@ export const Header: React.FC<HeaderProps> = ({ theme, setTheme }: HeaderProps) 
 
           {/* Thème clair / sombre */}
           <SquareButton
+            className="sqr-button-dark-background"
             ariaLabel={
               theme === "light"
                 ? "Activer le mode sombre"
@@ -125,7 +126,7 @@ export const Header: React.FC<HeaderProps> = ({ theme, setTheme }: HeaderProps) 
               setTheme(theme === "light" ? "dark" : "light")
             }
           >
-            <span className="material-symbols-outlined" aria-hidden="true">
+            <span className={`material-symbols-outlined theme-icon ${theme === "light" ? "icon-white" : "icon-black"}`} aria-hidden="true">
               dark_mode
             </span>
           </SquareButton>
