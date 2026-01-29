@@ -82,6 +82,11 @@ a, nav{
 	gap: 8px;
 }
 
+.theme-btn:focus{
+	background-color: var(--occasional-background);
+	border: solid 3px var(--main-color);
+}
+ 
 /* Bouton actif (page courante) */
 .sqr-button.is-active {
   background-color: var(--main-color);

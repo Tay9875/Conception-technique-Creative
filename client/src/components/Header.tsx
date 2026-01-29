@@ -106,6 +106,7 @@ export const Header: React.FC<HeaderProps> = ({ theme, setTheme }) => {
         <div className="button-gaps">
           {/* Thème clair / sombre */}
           <SquareButton
+          className="theme-btn"
             ariaLabel={
               theme === "light"
                 ? "Activer le mode sombre"
@@ -116,7 +117,7 @@ export const Header: React.FC<HeaderProps> = ({ theme, setTheme }) => {
             }
           >
             <span className="material-symbols-outlined" aria-hidden="true">
-              dark_mode
+              {theme === "light" ? "dark_mode" : "light_mode"}
             </span>
           </SquareButton>
         </div>
