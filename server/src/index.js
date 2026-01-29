@@ -8,7 +8,7 @@ const authRoutes = require('./routes/auth'); // C'est cette ligne qui te manquai
 const postRoutes = require('./routes/posts'); // Et celle-ci pour les posts
 const tagsRoutes = require('./routes/tags');
 const commentsRoutes = require('./routes/comments');
-require('./database/db'); // Test BDD
+const db = require('./database/db'); // Import du pool de connexion DB
 
 const app = express();
 const PORT = process.env.PORT || 3000;
