@@ -190,6 +190,34 @@ npm test    # Tests React
 node src/index.js  # Démarre le serveur Express
 ```
 
+
+---
+
+## 🧪 Tests front-end (React)
+
+Des tests automatisés sont présents pour le front-end React dans le dossier `client/src/App.test.js`.
+
+### Lancer les tests
+
+Placez-vous dans le dossier `client` puis exécutez :
+
+```bash
+cd client
+npm test
+```
+
+Les tests couvrent :
+- L'affichage du composant principal et du formulaire de connexion
+- L'accessibilité de l'application (audit via jest-axe)
+- Le comportement selon la connexion/déconnexion d'un utilisateur (localStorage)
+
+**Outils utilisés :**
+- @testing-library/react
+- @testing-library/jest-dom
+- jest-axe (accessibilité)
+
+---
+
 ### 📚 Ressources
 
 - [Conventional Commits](https://www.conventionalcommits.org/)
