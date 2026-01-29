@@ -37,6 +37,10 @@
     gap: auto;
 }
 
+h1{
+    font-size: 30px;
+}
+
 .no-resize{
     min-width: 175px;
 }

@@ -51,7 +51,7 @@ function Notes() {
 
             <div className="notes-section-heading">
               <div className="notes-heading">
-                <h2 className="note-heading">Mes Notes Personnelles</h2>
+                <h1 className="note-heading">Mes Notes Personnelles</h1>
                 <p className="paragraph">
                   Notez vos réflexions, questions à poser au médecin, ou idées
                   personnelles
