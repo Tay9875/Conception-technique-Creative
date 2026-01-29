@@ -81,3 +81,7 @@ CREATE TABLE IF NOT EXISTS reports (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE
 );
+
+-- Migration : Ajout des colonnes tag_id et is_banned à la table posts si elles n'existent pas déjà
+ALTER TABLE posts ADD COLUMN IF NOT EXISTS tag_id INT NULL;
+ALTER TABLE posts ADD COLUMN IF NOT EXISTS is_banned TINYINT(1) DEFAULT 0;
