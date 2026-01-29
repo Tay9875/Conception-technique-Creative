@@ -4,28 +4,29 @@
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background-color: #F3E8FF; /* Fond violet très clair */
+    background-color: var(--main-background-color);
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .auth-card {
-    background: white;
+    background: var(--block-background-color);
     padding: 2.5rem;
     border-radius: 20px; /* Arrondis comme sur la maquette */
-    box-shadow: 0 10px 25px rgba(124, 58, 237, 0.1);
+    border: 1px solid rgba(139, 92, 246, 0.15);
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.1), 0 6px 10px 0 rgba(0, 0, 0, 0.1);
     width: 100%;
     max-width: 400px;
     text-align: center;
 }
 
 .auth-title {
-    color: #4C1D95; /* Violet foncé */
+    color: var(--main-color); /* Violet foncé */
     margin-bottom: 0.5rem;
     font-size: 1.8rem;
 }
 
 .auth-subtitle {
-    color: #8B5CF6;
+    color: var(--main-text-color);
     margin-bottom: 2rem;
     font-size: 0.9rem;
 }
@@ -38,20 +39,28 @@
 .form-group label {
     display: block;
     margin-bottom: 0.5rem;
-    color: #5B21B6;
+    color: var(--main-text-color);
     font-weight: 600;
     font-size: 0.9rem;
 }
 
 .form-input {
     width: 100%;
-    padding: 12px;
-    border: 2px solid #E9D5FF;
-    border-radius: 12px;
-    font-size: 1rem;
-    outline: none;
+  	border-radius: 10px;
+  	background-color: var(--main-background-color);
+  	border: 1px solid rgba(139, 92, 246, 0.15);
+  	box-sizing: border-box;
+  	overflow: hidden;
+  	flex-shrink: 0;
+  	display: flex;
+  	padding: 8px 16px;
+  	text-align: left;
+  	color: var(--main-text-color);
+    font-family: var(--font), sans-serif;
+    font-size: 16px;
     transition: all 0.3s;
 }
+
 
 .form-input:focus {
     border-color:var(--main-color);
@@ -67,6 +76,9 @@
 }
 
 .toggle-text {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     margin-top: 1.5rem;
     color: var(--main-light-text-color);
     font-size: 0.9rem;
