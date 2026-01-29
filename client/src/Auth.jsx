@@ -67,13 +67,13 @@ export default function Auth({ onLoginSuccess }) {
   return (
     <div className="auth-container">
       <div className="auth-card">
-        <h2
+        <h1
           ref={headingRef}
           tabIndex={-1}
           className="auth-title"
         >
           {isLogin ? "Connexion" : "Rejoindre Oncarya"}
-        </h2>
+        </h1>
 
         <p className="auth-subtitle">Soutien et partage pour tous.</p>
 
