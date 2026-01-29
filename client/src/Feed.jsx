@@ -59,12 +59,11 @@ export default function Feed({ user, onLogout }) {
     };
 
     // --- LOGIQUE DE FILTRAGE ---
-    // Si selectedTag est null, on garde tout. Sinon, on compare les ID.
     const filteredPosts = selectedTag 
         ? posts.filter(post => post.tag_id === selectedTag) 
         : posts;
 
-    // console.log("🔍 Mes Posts reçus :", posts);
+    console.log("🔍 Mes Posts reçus :", posts); 
 
     return (
         <>
@@ -105,12 +104,6 @@ export default function Feed({ user, onLogout }) {
                         value={newPost.title}
                         onChange={(e) => setNewPost({ ...newPost, title: e.target.value })}
                         required />
-
-                    {/* --- NOUVEAU SELECTEUR DE TAGS --- */}
-                    <select
-                        onChange={(e) => setNewPost({...newPost, title: e.target.value})}
-                        required
-                    />
                     
                     <select 
                         className="post-input post-select"
