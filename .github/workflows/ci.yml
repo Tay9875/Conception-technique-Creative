@@ -50,6 +50,7 @@ jobs:
           echo "✅ Branch name '$BRANCH_NAME' is valid"
 
   lint-client:
+    if: github.event_name == 'pull_request'
     name: Lint Client
     runs-on: ubuntu-latest
     defaults:
@@ -74,6 +75,7 @@ jobs:
         continue-on-error: true
 
   lint-server:
+    if: github.event_name == 'pull_request'
     name: Lint Server
     runs-on: ubuntu-latest
     defaults:
