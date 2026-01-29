@@ -3,7 +3,7 @@
     flex-direction: column;
     justify-content: flex-start;
     text-align: left;
-    font-family: Inter;
+    font-family: var(--font);
     padding: 4vw 3.2vw 0vw;
 }
 
@@ -35,6 +35,10 @@
     grid-template-columns: auto min-content;
     align-items: flex-end;
     gap: auto;
+}
+
+h1{
+    font-size: 30px;
 }
 
 .no-resize{

@@ -6,10 +6,13 @@
 
 :root{
 
-  --logo: url("./styles/images/logo.png");
-  
+  --logo: url("./styles/images/logo_white_theme.png");
+
+  --font: Inter;
+
   --main-color: #7c3aed;
   --light-color: #ddd6fe;
+  --other-light-color: #ddd6fe;
 
   --main-text-color: #0a0a0a;
   --switched-text-color: white;
@@ -32,8 +35,11 @@
 :root[data-theme="dark"] {
   --logo: url("./styles/images/logo_dark_theme.png");
   
+  --font: Inter;
+
   --main-color: #A78BFA;
   --light-color: #3C0366;
+  --other-light-color: #1A1A24;
   
   --main-text-color: white;
   --switched-text-color: #0a0a0a;
@@ -66,7 +72,7 @@
   	text-align: center;
   	font-size: 30px;
   	color: var(--header-color);
-  	font-family: Inter;
+  	font-family: var(--font);
 }
 
 .container {
@@ -76,16 +82,6 @@
   	flex-direction: column;
   	align-items: flex-start;
     gap: 12px;
-}
-
-.section-heading{
-  font-size: 3vw;
-  font-weight: 800;
-  line-height: 1.1;
-}
-
-.section-paragraph {
-  font-size: 1.8vw;
 }
 
 .main-content {
