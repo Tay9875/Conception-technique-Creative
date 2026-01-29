@@ -42,7 +42,7 @@
     justify-content: space-between;
     gap: 20px;
     text-align: center;
-    font-size: 16px;
+    font-size: var(--small-font);
     color: var(--main-text-color);
     font-family: var(--font);
 }

@@ -17,7 +17,7 @@
 }
 
 .profile-icon {
-    font-size: 100px;
+    font-size: var(--extra-large-font);
     color: var(--main-color);
 }
 

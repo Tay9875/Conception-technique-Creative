@@ -9,6 +9,14 @@
   --logo: url("./styles/images/logo_white_theme.png");
 
   --font: Inter;
+  --extra-large-font: 4.6875rem;/* 75px */
+  --large-font: 2rem;/* 32px */
+  --medium-large-font: 1.5rem;/* 24px */
+  --medium-font: 1.125rem;/* 18px */
+  --small-font: 1rem;/* 16px */
+  --smaller-font: 0.875rem;/* 14px */
+  --smallest-font: 0.75rem;/* 12px */
+
 
   --main-color: #7c3aed;
   --light-color: #ddd6fe;
@@ -36,6 +44,13 @@
   --logo: url("./styles/images/logo_dark_theme.png");
   
   --font: Inter;
+  --extra-large-font: 4.6875rem;/* 75px */
+  --large-font: 2rem;/* 32px */
+  --medium-large-font: 1.5rem;/* 24px */
+  --medium-font: 1.125rem;/* 18px */
+  --small-font: 1rem;/* 16px */
+  --smaller-font: 0.875rem;/* 14px */
+  --smallest-font: 0.75rem;/* 12px */
 
   --main-color: #A78BFA;
   --light-color: #3C0366;
@@ -70,7 +85,7 @@
   	align-items: center;
   	padding: 2.5vw 8.672vw 5vw;
   	text-align: center;
-  	font-size: 30px;
+  	font-size: var(--large-font);
   	color: var(--header-color);
   	font-family: var(--font);
 }
