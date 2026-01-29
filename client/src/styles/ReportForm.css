@@ -30,7 +30,7 @@
   	padding: 17px 17px ;
   	gap: 8px;
   	text-align: center;
-  	font-size: 14px;
+  	font-size: var(--smaller-font);
   	font-family: var(--font);
 }
 

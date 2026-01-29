@@ -13,7 +13,7 @@
   	box-sizing: border-box;
   	gap: 8px;
   	text-align: left;
-  	font-size: 14px;
+  	font-size: var(--smaller-font);
   	font-family: var(--font);
 }
 

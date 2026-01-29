@@ -7,7 +7,7 @@
     padding: 24px;
     gap: 16px;
     text-align: left;
-    font-size: 16px;
+    font-size: var(--small-font);
     color: var(--main-text-color);
 }
 
@@ -30,7 +30,7 @@
   	text-align: left;
   	color: var(--main-text-color);
     font-family: var(--font);
-    font-size: 16px;
+    font-size: var(--small-font);
 }
 
 .btn-option {

@@ -13,11 +13,11 @@
     border: 1px solid rgba(139, 92, 246, 0.15);
     box-sizing: border-box;
     text-align: center;
-    font-size: 14px;
+    font-size: var(--smaller-font);
     color: var(--main-text-color);
 }
 
 .empty-text {
-    font-size: 18px;
+    font-size: var(--medium-font);
     color: var(--main-light-text-color);
 }
