@@ -104,16 +104,6 @@ export const Header: React.FC<HeaderProps> = ({ theme, setTheme }) => {
       {/* Actions */}
       <div className="header-right">
         <div className="button-gaps">
-          {/* Recherche (à venir) */}
-          <SquareButton
-            ariaLabel="Recherche (fonctionnalité à venir)"
-            disabled
-          >
-            <span className="material-symbols-outlined" aria-hidden="true">
-              search
-            </span>
-          </SquareButton>
-
           {/* Thème clair / sombre */}
           <SquareButton
             ariaLabel={
