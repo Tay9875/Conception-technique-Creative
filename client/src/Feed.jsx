@@ -1,162 +1,148 @@
-import React, { useState, useEffect } from 'react';
-import PostCard from './PostCard';
-import './Feed.css';
-import { Header } from './components/Header.tsx';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+import { Header } from "./components/Header.tsx";
+import "./Feed.css";
 
-export default function Feed({ user, onLogout }) {
-    const navigate = useNavigate();
-    
-    const [posts, setPosts] = useState([]);
-    const [tags, setTags] = useState([]);
-    const [newPost, setNewPost] = useState({ title: '', description: '', tag_id: '' });
-    
-    const [selectedTag, setSelectedTag] = useState(null);
+export default function Feed({ user }) {
+  const navigate = useNavigate();
+  const API_URL = "https://conception-technique-creative-backend.onrender.com/api";
 
-    const API_URL = 'https://conception-technique-creative-backend.onrender.com/api';
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [tagId, setTagId] = useState("");
+  const [tags, setTags] = useState([]);
 
-    useEffect(() => {
-        fetchPosts();
-        fetchTags();
-    }, []);
+  const [statusMessage, setStatusMessage] = useState("");
+  const [error, setError] = useState(false);
 
-    const fetchPosts = async () => {
-        try {
-            if (!user || !user.id) return;
-            
-            const response = await fetch(`${API_URL}/posts?user_id=${user.id}`);
-            
-            if (!response.ok) throw new Error("Erreur fetch posts");
-            
-            const data = await response.json();
-            setPosts(data);
-        } catch (error) { console.error(error); }
-    };
+  const statusRef = useRef(null);
 
-    const fetchTags = async () => {
-        try {
-            const response = await fetch(`${API_URL}/tags`);
-            const data = await response.json();
-            setTags(data);
-        } catch (error) { console.error(error); }
-    };
+  /* 🔹 Récupération des tags */
+  useEffect(() => {
+    fetch(`${API_URL}/tags`)
+      .then((res) => res.json())
+      .then(setTags)
+      .catch(console.error);
+  }, []);
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        try {
-            const response = await fetch(`${API_URL}/posts`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ ...newPost, user_id: user.id }) 
-            });
-            
-            if (response.ok) {
-                setNewPost({ title: '', description: '', tag_id: '' });
-                fetchPosts();
-                setSelectedTag(null); // Remettre sur "Tous" après un post
-            }
-        } catch (error) { console.error(error); }
-    };
+  /* 🔹 Focus lecteur d’écran sur message */
+  useEffect(() => {
+    if (statusMessage) {
+      statusRef.current?.focus();
+    }
+  }, [statusMessage]);
 
-    const handleLike = async (postId) => {
-        try {
-            const response = await fetch(`${API_URL}/posts/${postId}/like`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ user_id: user.id })
-            });
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError(false);
+    setStatusMessage("");
 
-            if (response.ok) {
-                fetchPosts();
-            }
-        } catch (error) { console.error(error); }
-    };
+    if (!title.trim() || !description.trim() || !tagId) {
+      setError(true);
+      setStatusMessage("Tous les champs obligatoires doivent être remplis.");
+      return;
+    }
 
-    // --- LOGIQUE DE FILTRAGE ---
-    const filteredPosts = selectedTag 
-        ? posts.filter(post => post.tag_id === selectedTag) 
-        : posts;
+    try {
+      const response = await fetch(`${API_URL}/posts`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title,
+          description,
+          tag_id: tagId,
+          user_id: user.id, // 🔥 obligatoire
+        }),
+      });
 
-    console.log("🔍 Mes Posts reçus :", posts);
+      if (!response.ok) {
+        const err = await response.json();
+        console.error("Erreur backend :", err);
+        throw new Error("Erreur publication");
+      }
 
-    return (
-        <>
-            <Header />
-            <div className="feed-container">
-                <header className="feed-header">
-                    <h1 className="feed-title">Bonjour, {user.firstname} 👋</h1>
-                    <button onClick={onLogout} className="logout-btn">Se déconnecter</button>
-                </header>
-                
-                <div className="filter-container">
-                    <button 
-                        className={`filter-btn ${selectedTag === null ? 'active' : ''}`} 
-                        onClick={() => setSelectedTag(null)}
-                    >
-                        ✨ Tous
-                    </button>
-                    
-                    {tags.map(tag => (
-                        <button 
-                            key={tag.id}
-                            className={`filter-btn ${selectedTag === tag.id ? 'active' : ''}`}
-                            onClick={() => setSelectedTag(tag.id)}
-                        >
-                            {tag.title}
-                        </button>
-                    ))}
-                </div>
+      setStatusMessage("Article publié avec succès 🎉");
+      setTitle("");
+      setDescription("");
+      setTagId("");
 
-                <div className="create-post-card">
-                    <h3>Partagez votre expérience</h3>
-                    <form onSubmit={handleSubmit}>
-                        <input
-                            type="text"
-                            placeholder="Titre du sujet"
-                            className="post-input"
-                            value={newPost.title}
-                            onChange={(e) => setNewPost({ ...newPost, title: e.target.value })}
-                            required 
-                        />
-                        
-                        <select 
-                            className="post-input post-select"
-                            value={newPost.tag_id}
-                            onChange={(e) => setNewPost({ ...newPost, tag_id: e.target.value })}
-                            required
-                        >
-                            <option value="">-- Choisir un sujet --</option>
-                            {tags.map(tag => (
-                                <option key={tag.id} value={tag.id}>{tag.title}</option>
-                            ))}
-                        </select>
+      setTimeout(() => navigate("/"), 1200);
+    } catch (err) {
+      setError(true);
+      setStatusMessage("Une erreur est survenue lors de la publication.");
+    }
+  };
 
-                        <textarea
-                            placeholder="Racontez-nous..."
-                            className="post-input"
-                            rows="3"
-                            value={newPost.description}
-                            onChange={(e) => setNewPost({ ...newPost, description: e.target.value })}
-                            required 
-                        />
-                        <button type="submit" className="btn-post">Publier</button>
-                    </form>
-                </div>
+  return (
+    <>
+      <Header />
 
-                <div className="posts-list">
-                    {filteredPosts.length > 0 ? (
-                        filteredPosts.map((post) => (
-                            <PostCard 
-                                key={post.id} 
-                                post={post} 
-                                user={user} 
-                            />
-                        ))
-                    ) : (
-                        <p className="no-posts">Aucun post ne correspond à ce filtre.</p>
-                    )}
-                </div>
-            </div>
-        </>
-    );
+      <main className="feed-container" id="main-content">
+        <header className="feed-header">
+          <h1>Créer un article</h1>
+          <p>Partage ton expérience avec la communauté 💬</p>
+        </header>
+
+        {/* Message d’état accessible */}
+        {statusMessage && (
+          <p
+            ref={statusRef}
+            tabIndex={-1}
+            aria-live="assertive"
+            className={`status-message ${error ? "error" : "success"}`}
+          >
+            {statusMessage}
+          </p>
+        )}
+
+        <form className="feed-form" onSubmit={handleSubmit} noValidate>
+          <div className="form-group">
+            <label htmlFor="title">Titre *</label>
+            <input
+              id="title"
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              required
+              aria-required="true"
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="tag">Catégorie *</label>
+            <select
+              id="tag"
+              value={tagId}
+              onChange={(e) => setTagId(e.target.value)}
+              required
+              aria-required="true"
+            >
+              <option value="">— Choisir une catégorie —</option>
+              {tags.map((tag) => (
+                <option key={tag.id} value={tag.id}>
+                  {tag.title}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="description">Contenu *</label>
+            <textarea
+              id="description"
+              rows={6}
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              required
+              aria-required="true"
+            />
+          </div>
+
+          <button type="submit" className="btn-primary">
+            Publier l’article
+          </button>
+        </form>
+      </main>
+    </>
+  );
 }
