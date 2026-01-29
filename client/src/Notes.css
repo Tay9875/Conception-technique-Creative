@@ -3,7 +3,7 @@
     flex-direction: column;
     justify-content: flex-start;
     text-align: left;
-    font-family: Inter;
+    font-family: var(--font);
     padding: 4vw 3.2vw 0vw;
 }
 
