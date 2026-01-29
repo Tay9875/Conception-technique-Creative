@@ -22,7 +22,12 @@ export default function Feed({ user, onLogout }) {
 
     const fetchPosts = async () => {
         try {
-            const response = await fetch(`${API_URL}/posts`);
+            if (!user || !user.id) return;
+            
+            const response = await fetch(`${API_URL}/posts?user_id=${user.id}`);
+            
+            if (!response.ok) throw new Error("Erreur fetch posts");
+            
             const data = await response.json();
             setPosts(data);
         } catch (error) { console.error(error); }

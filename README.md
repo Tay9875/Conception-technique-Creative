@@ -1,6 +1,72 @@
-# Conception-technique-Creative
+# 📱 Oncarya
 
-Projet Conception technique & Créative
+## 📌 Présentation du projet
+Ce projet est une application web d’entraide destinée aux patients atteints de cancer.  
+Elle vise à proposer un espace non médicalisé, accessible et bienveillant, permettant le partage d’expériences et de conseils du quotidien entre patients.
+
+L’application est librement accessible sur le web, sans obligation de création de compte pour consulter les contenus.
+
+---
+
+## 🏗️ Architecture générale
+Le projet repose sur une architecture **Web App + API REST**, permettant de séparer l’interface utilisateur de la logique métier.
+
+- Front-end : Application web React  
+- Back-end : API REST Node.js / Express  
+- Base de données : MySQL  
+
+Cette architecture favorise la maintenabilité, l’évolutivité et la clarté du code.
+
+---
+
+## 🎨 Front-end
+- **React** pour la création d’interfaces utilisateur dynamiques et modulaires  
+- Composants réutilisables pour une meilleure maintenabilité  
+- Utilisation de balises HTML sémantiques et bonnes pratiques ARIA pour l’accessibilité  
+
+---
+
+## ⚙️ Back-end
+- **Node.js / Express** pour la création de l’API REST  
+- Gestion des requêtes, des données et des règles métier  
+- Communication avec la base de données MySQL  
+
+---
+
+## 🗄️ Base de données
+- **MySQL** (bdd relationnelle)
+- Stockage des données liées aux contenus, interactions et utilisateurs 
+- Structure adaptée à un projet simple et évolutif  
+
+---
+
+## 🧩 Organisation du projet
+- **Mono-repo GitHub** regroupant le front-end et le back-end  
+- Gestion du versioning via Git  
+- Collaboration facilitée et cohérence du projet  
+
+---
+
+## ☁️ Hébergement
+- **Render** pour l’hébergement du front-end et du back-end
+- Déploiement simple et rapide
+
+---
+
+## ♿ Accessibilité
+Une attention particulière est portée à l’accessibilité :
+- Utilisation de balises HTML sémantiques
+- Interface simple et lisible
+- Navigation claire et intuitive
+
+---
+
+## 🎯 Objectifs techniques
+Les choix techniques ont été réalisés afin de :
+- garantir une application simple et maintenable
+- assurer une bonne expérience utilisateur
+- faciliter les évolutions futures
+
 
 ## 🚀 CI/CD Pipeline
 

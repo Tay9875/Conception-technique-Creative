@@ -50,6 +50,7 @@ jobs:
           echo "✅ Branch name '$BRANCH_NAME' is valid"
 
   lint-client:
+    if: github.event_name == 'pull_request'
     name: Lint Client
     runs-on: ubuntu-latest
     defaults:
@@ -74,6 +75,7 @@ jobs:
         continue-on-error: true
 
   lint-server:
+    if: github.event_name == 'pull_request'
     name: Lint Server
     runs-on: ubuntu-latest
     defaults:
@@ -96,3 +98,27 @@ jobs:
       - name: Lint
         run: npm run lint
         continue-on-error: true
+
+  test-client:
+    if: github.event_name == 'pull_request'
+    name: Test Client
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: client
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: client/package-lock.json
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        run: npm test -- --ci --passWithNoTests

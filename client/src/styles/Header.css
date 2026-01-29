@@ -104,6 +104,13 @@ a, nav{
   outline: 1px solid var(--light-color);
 }
 
+.theme-icon.icon-white {
+  color: #fff;
+}
+.theme-icon.icon-black {
+  color: #111;
+}
+
 .skip-link {
   position: absolute;
   top: -40px;

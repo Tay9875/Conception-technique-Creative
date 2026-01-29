@@ -8,7 +8,7 @@ type HeaderProps = {
   setTheme: (theme: "light" | "dark") => void;
 };
 
-export const Header: React.FC<HeaderProps> = ({ theme, setTheme }) => {
+export const Header: React.FC<HeaderProps> = ({ theme, setTheme }: HeaderProps) => {
   const navigate = useNavigate();
   const location = useLocation();
   const isActive = (path: string) => location.pathname === path;
