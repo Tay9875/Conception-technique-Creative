@@ -134,10 +134,13 @@ export const Header: React.FC<HeaderProps> = ({ theme, setTheme }: HeaderProps) 
 
         <div className="button-gaps extra">
           <SquareButton
+            ariaLabel="Ajouter un article"
             className="sqr-button-dark-background"
             onClick={() => handleClick("/feed")}
           >
-            Partager
+            <span className="material-symbols-outlined" aria-hidden="true">
+              add_circle
+            </span>
           </SquareButton>
 
           {!user && (
