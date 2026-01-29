@@ -27,7 +27,8 @@ button {
 }
 
 .sqr-button-background{
-    background-color: var(--light-color);
+    background-color: var(--other-light-color);
+    padding: 0px 16px;
     color: var(--main-text-color);
     height: 40px;
 }

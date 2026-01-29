@@ -67,11 +67,6 @@
   color: var(--switched-text-color);
 }
 
-.sqr-button-background{
-    background-color: var(--light-color);
-    padding: 0px 16px;
-}
-
 .mainContent {
     display: flex;
     flex-direction: column;

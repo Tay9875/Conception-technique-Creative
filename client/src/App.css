@@ -12,6 +12,7 @@
 
   --main-color: #7c3aed;
   --light-color: #ddd6fe;
+  --other-light-color: #ddd6fe;
 
   --main-text-color: #0a0a0a;
   --switched-text-color: white;
@@ -38,6 +39,7 @@
 
   --main-color: #A78BFA;
   --light-color: #3C0366;
+  --other-light-color: #1A1A24;
   
   --main-text-color: white;
   --switched-text-color: #0a0a0a;
