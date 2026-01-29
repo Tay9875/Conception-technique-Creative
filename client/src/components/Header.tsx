@@ -98,6 +98,16 @@ export const Header: React.FC<HeaderProps> = ({ theme, setTheme }: HeaderProps) 
               Mes notes
             </SquareButton>
           </li>
+
+          <li>
+            <SquareButton
+              className={isActive("/mes_articles") ? "is-active" : undefined}
+              aria-current={isActive("/mes_articles") ? "page" : undefined}
+              onClick={() => handleClick("/mes_articles")}
+            >
+              Mes articles
+            </SquareButton>
+          </li>
         </ul>
       </nav>
 
