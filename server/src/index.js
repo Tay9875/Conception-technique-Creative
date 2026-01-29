@@ -56,6 +56,54 @@ app.use('/api/posts', postRoutes); // Utilise l'import postRoutes
 app.use('/api/tags', tagsRoutes);
 app.use('/api/comments', commentsRoutes);
 
+// --- ROUTE TEMPORAIRE POUR METTRE À JOUR LA BDD SUR RENDER ---
+app.get('/api/fix-db-structure', async (req, res) => {
+    try {
+        // 1. Créer la table tags si elle n'existe pas
+        await db.query(`
+            CREATE TABLE IF NOT EXISTS tags (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                title VARCHAR(50) NOT NULL UNIQUE
+            )
+        `);
+
+        // 2. Ajouter la colonne tag_id à posts (si elle manque, ça plantera pas grâce au try/catch ou on peut ignorer l'erreur)
+        try {
+            await db.query(`ALTER TABLE posts ADD COLUMN tag_id INT NULL`);
+            await db.query(`ALTER TABLE posts ADD CONSTRAINT fk_posts_tags FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE SET NULL`);
+            console.log("Colonne tag_id ajoutée !");
+        } catch (e) {
+            console.log("La colonne tag_id existe probablement déjà :", e.message);
+        }
+
+        // 3. Ajouter la colonne is_banned
+        try {
+            await db.query(`ALTER TABLE posts ADD COLUMN is_banned TINYINT(1) DEFAULT 0`);
+            console.log("Colonne is_banned ajoutée !");
+        } catch (e) {
+            console.log("La colonne is_banned existe probablement déjà :", e.message);
+        }
+
+        // 4. Créer la table Likes
+        await db.query(`
+            CREATE TABLE IF NOT EXISTS likes (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                user_id INT NOT NULL,
+                post_id INT NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE(user_id, post_id),
+                FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+                FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE
+            )
+        `);
+
+        res.send("Base de données mise à jour avec succès !");
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Erreur lors de la mise à jour : " + error.message);
+    }
+});
+
 app.listen(PORT, () => {
     console.log(`🚀 Serveur lancé sur http://localhost:${PORT}`);
 });
