@@ -5,6 +5,8 @@ export default function PostCard({ post, user }) {
     const [comments, setComments] = useState([]);
     const [showComments, setShowComments] = useState(false);
     const [newComment, setNewComment] = useState("");
+    const [isLiked, setIsLiked] = useState(post.is_liked === 1);
+    const [likeCount, setLikeCount] = useState(post.like_count);
     
     // URL API (Change selon Prod/Local)
     const API_URL = 'https://conception-technique-creative-backend.onrender.com/api';
@@ -45,11 +47,44 @@ export default function PostCard({ post, user }) {
         } catch (error) { console.error(error); }
     };
 
+    const handleLike = async () => {
+        try {
+            const response = await fetch(`${API_URL}/posts/${post.id}/like`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ user_id: user.id })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                
+                // Mise à jour visuelle immédiate
+                setIsLiked(data.liked);
+                setLikeCount(prev => data.liked ? prev + 1 : prev - 1);
+            }
+        } catch (error) {
+            console.error("Erreur like:", error);
+        }
+    };
+
     return (
         <div className="post-card">
             {post.tag_title && <span className="post-tag">{post.tag_title}</span>}
             <h2 className="post-title">{post.title}</h2>
             <p className="post-desc">{post.description}</p>
+            <button 
+                onClick={handleLike} 
+                style={{ 
+                    cursor: 'pointer', 
+                    background: 'none', 
+                    border: '1px solid #ccc',
+                    borderRadius: '5px',
+                    padding: '5px 10px',
+                    color: isLiked ? 'red' : 'black' // Change la couleur du texte/coeur
+                }}
+            >
+                {isLiked ? '❤️' : '🤍'} {likeCount}
+            </button>
             
             <div className="post-footer">
                 <span>Par <strong>{post.firstname} {post.lastname}</strong></span>
