@@ -15,21 +15,15 @@ button {
     gap: 8px;
 }
 
-.sqr-btn{
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    height: 40px;
-    background-color: var(--occasional-background);
+/* Focus visible pour keyboard users */
+.sqr-button:focus {
+    background-color:var(--main-color);
     color: var(--main-text-color);
-    border: none;
-    padding: 10px 16px;
-    border-radius: 20px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    outline: none;
-    gap: 8px;
+    outline-offset: 2px;
+}
+
+.sqr-button:hover {
+    background-color: rgba(124, 58, 237, 0.10);
 }
 
 .sqr-button-background{
@@ -43,18 +37,8 @@ button {
     color: var(--switched-text-color);
 }
 
-/* Focus visible pour keyboard users */
-.sqr-button:focus {
-    background-color:var(--main-color);
-    color: var(--main-text-color);
-    outline-offset: 2px;
-}
-
-.sqr-button:hover {
+.sqr-button-dark-background:hover {
     background-color: rgba(124, 58, 237, 0.10);
+    color: var(--main-text-color);
 }
 
-.sqr-btn:disabled {
-  background-color: #cccccc;
-  cursor: not-allowed;
-}
