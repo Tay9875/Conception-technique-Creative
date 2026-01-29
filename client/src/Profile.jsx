@@ -24,9 +24,9 @@ export default function Profile({ onLogout }) {
   }, [theme]);
 
   const handleLogout = () => {
+    setUser(null);
     localStorage.removeItem("user");
-    onLogout?.();
-    navigate("/");
+    navigate("/login");
   };
 
   const handleProfileUpdate = (updatedUser) => {
@@ -37,7 +37,7 @@ export default function Profile({ onLogout }) {
   };
 
   if (!user) {
-    navigate("/auth");
+    navigate("/login");
     return null;
   }
 
@@ -53,11 +53,19 @@ export default function Profile({ onLogout }) {
                     aria-hidden="true"
                     >
                     account_circle
-                    </span>
-
+                </span>
                 <p className="profile-subtitle">
                     Modifiez vos informations personnelles
                 </p>
+            </div>
+
+            <div className="sign-out">
+              <SquareButton
+                className="sign-out-btn"
+                onClick={handleLogout}
+              >
+                Déconnexion
+              </SquareButton>
             </div>
 
           <ProfileForm initialData={{
