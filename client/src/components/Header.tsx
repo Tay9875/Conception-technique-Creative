@@ -153,7 +153,7 @@ export const Header: React.FC<HeaderProps> = ({ theme, setTheme }) => {
                 <span
                   className="material-symbols-outlined profile-header"
                   aria-hidden="true"
-                  ariaLabel="profil"
+                  aria-label="profil"
                 >
                   account_circle
                 </span>
