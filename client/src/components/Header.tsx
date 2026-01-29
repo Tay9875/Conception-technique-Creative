@@ -104,19 +104,9 @@ export const Header: React.FC<HeaderProps> = ({ theme, setTheme }: HeaderProps) 
       {/* Actions */}
       <div className="header-right">
         <div className="button-gaps">
-          {/* Recherche (à venir) */}
-          <SquareButton
-            ariaLabel="Recherche (fonctionnalité à venir)"
-            disabled
-          >
-            <span className="material-symbols-outlined" aria-hidden="true">
-              search
-            </span>
-          </SquareButton>
-
           {/* Thème clair / sombre */}
           <SquareButton
-            className="sqr-button-dark-background"
+          className="theme-btn"
             ariaLabel={
               theme === "light"
                 ? "Activer le mode sombre"
@@ -126,8 +116,8 @@ export const Header: React.FC<HeaderProps> = ({ theme, setTheme }: HeaderProps) 
               setTheme(theme === "light" ? "dark" : "light")
             }
           >
-            <span className={`material-symbols-outlined theme-icon ${theme === "light" ? "icon-white" : "icon-black"}`} aria-hidden="true">
-              dark_mode
+            <span className="material-symbols-outlined" aria-hidden="true">
+              {theme === "light" ? "dark_mode" : "light_mode"}
             </span>
           </SquareButton>
         </div>
@@ -163,6 +153,7 @@ export const Header: React.FC<HeaderProps> = ({ theme, setTheme }: HeaderProps) 
                 <span
                   className="material-symbols-outlined profile-header"
                   aria-hidden="true"
+                  aria-label="profil"
                 >
                   account_circle
                 </span>
