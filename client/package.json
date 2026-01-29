@@ -43,7 +43,7 @@
     "react-dom": "^19.2.3",
     "react-hook-form": "^7.70.0",
     "react-resizable-panels": "^2.1.7",
-    "react-router-dom": "^7.12.0",
+    "react-router-dom": "^6.30.3",
     "react-scripts": "5.0.1",
     "recharts": "^3.6.0",
     "sonner": "^2.0.7",
@@ -54,7 +54,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "lint": "eslint src"
   },
@@ -78,6 +78,7 @@
   },
   "devDependencies": {
     "@types/react": "^19.2.10",
-    "eslint": "^8.57.1"
+    "eslint": "^8.57.1",
+    "jest-axe": "^10.0.0"
   }
 }
