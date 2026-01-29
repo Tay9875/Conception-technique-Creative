@@ -20,3 +20,20 @@
     font-size: 100px;
     color: var(--main-color);
 }
+
+.sign-out{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.sign-out-btn{
+    background-color: var(--occasional-background);
+	border: solid 3px var(--main-color);
+    color: var(--main-color);
+}
+
+.sign-out-btn:focus{
+	background-color: var(--occasional-background);
+	border: solid 3px var(--main-color);
+}
