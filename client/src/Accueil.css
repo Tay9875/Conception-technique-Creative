@@ -2,6 +2,19 @@
     width: 70%;
 }
 
+.section-heading{
+  font-weight: 1000;
+  line-height: 1.1;
+}
+
+h1 {
+	font-size: 30px;
+}
+
+.section-paragraph {
+  font-size: 18px;
+}
+
 .skip-link {
   position: absolute;
   top: -40px;
@@ -16,4 +29,10 @@
 
 .skip-link:focus {
   top: 0;
+}
+
+@media (max-width: 800px) {
+  .section-container {
+    width: 90%;
+  }
 }

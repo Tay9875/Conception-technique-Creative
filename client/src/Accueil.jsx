@@ -26,7 +26,7 @@ function Accueil() {
     <section className="section">
         <div className="section-container">
             <div className="section-heading">
-                    <h4>Partageons nos expériences, soutenons-nous mutuellement</h4>
+                    <h1>Partageons nos expériences, soutenons-nous mutuellement</h1>
             </div>
             <div className="section-paragraph">
                 <p>Bienvenue sur notre espace d'entraide où les patients peuvent échanger des conseils, partager leurs astuces et se soutenir dans leur parcours.</p>

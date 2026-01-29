@@ -24,12 +24,12 @@ function Favoris() {
       <Header theme={theme} setTheme={setTheme} />
 
       <main>
-        <section className="favoris-section">
-          <div className="favoris-container">
-            <div className="favoris-section-heading">
-              <h2>Mes conseils sauvegardés</h2>
+        <section className="section">
+          <div className="section-container">
+            <div className="section-heading">
+              <h1>Mes conseils sauvegardés</h1>
             </div>
-            <div className="favoris-section-paragraph">
+            <div className="section-paragraph">
               <p>
                 Retrouvez tous les conseils que vous avez sauvegardés pour les
                 relire facilement.
