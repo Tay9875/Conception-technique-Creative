@@ -12,12 +12,13 @@ router.get('/', async (req, res) => {
             posts.*, 
             users.firstname, 
             users.lastname,
-            -- Compte le nombre total de likes pour chaque post
+            tags.title as tag_title, 
+            tags.id as tag_id_from_tag,
             (SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id) as like_count,
-            -- Vérifie si l'utilisateur actuel a liké (renvoie 1 ou 0)
             (SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id AND likes.user_id = ?) as is_liked
         FROM posts
         JOIN users ON posts.user_id = users.id
+        LEFT JOIN tags ON posts.tag_id = tags.id
         ORDER BY posts.created_at DESC
     `;
 
