@@ -68,11 +68,6 @@ Les choix techniques ont été réalisés afin de :
 - faciliter les évolutions futures
 
 
-
-# Conception-technique-Creative
-
-Projet Conception technique & Créative
-
 ## 🚀 CI/CD Pipeline
 
 Ce projet utilise GitHub Actions pour l'intégration continue et le déploiement automatique.
