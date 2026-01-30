@@ -5,7 +5,7 @@
     border-radius: 14px;
     background-color: var(--block-background-color);
     padding: 25px;
-    border: 1px solid rgba(139, 92, 246, 0.15);
+    border: 1px solid var(--border-color);
     box-sizing: border-box;
     text-align: left;
     font-size: var(--smaller-font);
@@ -62,7 +62,7 @@
     justify-content: space-between;
     align-items: center;
     color: var(--main-light-text-color);
-    border-top: 1px solid rgba(139, 92, 246, 0.15);
+    border-top: 1px solid var(--border-color);
 }
 
 .blogcard-tags, .blogcard-infos, .blogcard-action{

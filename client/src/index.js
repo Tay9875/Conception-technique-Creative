@@ -4,12 +4,15 @@ import './index.css';
 import App from './App.tsx';
 import { BrowserRouter } from 'react-router-dom';
 import reportWebVitals from './reportWebVitals';
+import { PreferencesProvider } from './contexts/PreferencesContext';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <BrowserRouter>
-      <App />
+      <PreferencesProvider>
+        <App />
+      </PreferencesProvider>
     </BrowserRouter>
   </React.StrictMode>
 );
