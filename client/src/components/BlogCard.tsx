@@ -101,6 +101,12 @@ export const BlogCard: React.FC<BlogCardProps> = ({ article, user }) => {
       ? `${article.firstname} ${article.lastname}`
       : "Anonyme";
 
+  // Détermination du statut/role
+  let statusLabel = "Inconnu";
+  if (article.role_id === 1) statusLabel = "Patient";
+  else if (article.role_id === 2) statusLabel = "Ancien Patient";
+  else if (article.role_id === 3) statusLabel = "Proche";
+
   const displayTag =
     article.tag_title || (article.tag ? article.tag.title : null);
 
@@ -150,6 +156,11 @@ export const BlogCard: React.FC<BlogCardProps> = ({ article, user }) => {
               >
                 {authorName}
               </span>
+              {article.role_id && (
+                <span style={{marginLeft:8, fontStyle:'italic', color:'#666'}}>
+                  [ {statusLabel} ]
+                </span>
+              )}
             </p>
 
             <time className="date" dateTime={article.created_at}>
