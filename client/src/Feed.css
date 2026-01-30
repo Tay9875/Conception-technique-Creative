@@ -1,45 +1,24 @@
-/* client/src/Feed.css */
 .feed-container {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 2rem;
-    font-family: var(--font), sans-serif;
-    background-color: #F9FAFB;
-    min-height: 100vh;
-}
-
-/* En-tête */
-.feed-header {
+    width: 100%;
+    min-height: 100%;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
-    margin-bottom: 2rem;
+    flex-direction: column;
+    padding: 4vw 3.2vw;
+    color: var(--main-text-color);
 }
 
-.feed-title {
-    color: #4C1D95;
+.feed-card {
+  background-color: var(--block-background-color);
+  border-radius: 14px;
+  width: 100%;
+  max-width: 800px;
+  padding: 24px;
+  color: var(--main-text-color);
 }
 
-.logout-btn {
-    background: var(--occasional-background);
-    border: 1px solid var(--main-color);
-    color:var(--main-color);
-    padding: 8px 16px;
-    border-radius: 20px;
-    cursor: pointer;
-}
-
-/* Formulaire de création */
-.create-post-card {
-    background: white;
-    padding: 1.5rem;
-    border-radius: 16px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-    margin-bottom: 2rem;
-    border: 1px solid #E5E7EB;
-}
-
-.post-input {
+.feed-header{
     width: 100%;
     padding: 12px;
     margin-bottom: 10px;
@@ -171,6 +150,8 @@
 .comment-bubble {
     /* On garde tes styles existants et on s'assure que c'est une colonne */
     display: flex;
+    justify-content: center;
+    align-content: center;
     flex-direction: column;
     gap: 4px;
 }
@@ -229,9 +210,7 @@
     box-shadow: 0 4px 6px rgba(124, 58, 237, 0.2);
 }
 
-.no-posts {
-    text-align: center;
-    color: #9CA3AF;
-    font-style: italic;
-    margin-top: 2rem;
+.feed-h1{
+    font-size: var(--large-font);
+    color: var(--main-color);
 }

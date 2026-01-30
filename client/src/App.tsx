@@ -7,6 +7,7 @@ import Feed from './Feed';
 import Accueil from "./Accueil.jsx";
 import Favoris from "./Favoris.jsx";
 import Notes from "./Notes.jsx";
+import MesArticles from "./MesArticles.jsx";
 import Article from "./Article.jsx";
 import Profile from "./Profile.jsx";
 import BottomNav from "./components/BottomNav.tsx";
@@ -26,7 +27,7 @@ function App() {
   return (
     <div className="App">
       <Routes>
-        <Route path="/" element={<Accueil />} />
+        <Route path="/" element={<Accueil user={user} />} />
         <Route path="/article" element={<Article />} />
         <Route path="/login" element={<Auth onLoginSuccess={setUser} />} />
         <Route path="/logout" element={<Auth onLoginSuccess={undefined} />} />
@@ -39,6 +40,11 @@ function App() {
           <ProtectedRoute user={user}>
               <Notes />
             </ProtectedRoute>} />
+        <Route path="/mes_articles" element={
+          <ProtectedRoute user={user}>
+              <MesArticles user={user} />
+            </ProtectedRoute>
+          } />
         <Route path="/feed" element={
           <ProtectedRoute user={user}>
               <Feed user={user} onLogout={undefined} />

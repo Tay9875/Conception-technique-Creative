@@ -1,162 +1,96 @@
-import React, { useState, useEffect } from 'react';
-import PostCard from './PostCard';
-import './Feed.css';
-import { Header } from './components/Header.tsx';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+import { Header } from "./components/Header.tsx";
+import FeedForm from "./components/FeedForm.tsx";
+import "./Feed.css";
 
-export default function Feed({ user, onLogout }) {
-    const navigate = useNavigate();
-    
-    const [posts, setPosts] = useState([]);
-    const [tags, setTags] = useState([]);
-    const [newPost, setNewPost] = useState({ title: '', description: '', tag_id: '' });
-    
-    const [selectedTag, setSelectedTag] = useState(null);
+export default function Feed({ user }) {
+  const navigate = useNavigate();
+  const API_URL = "https://conception-technique-creative-backend.onrender.com/api";
 
-    const API_URL = 'https://conception-technique-creative-backend.onrender.com/api';
+  const [tags, setTags] = useState([]);
+  const [statusMessage, setStatusMessage] = useState("");
+  const [error, setError] = useState(false);
+  const [theme, setTheme] = useState(
+    () => localStorage.getItem("theme") || "light"
+  );
 
-    useEffect(() => {
-        fetchPosts();
-        fetchTags();
-    }, []);
+  const statusRef = useRef(null);
 
-    const fetchPosts = async () => {
-        try {
-            if (!user || !user.id) return;
-            
-            const response = await fetch(`${API_URL}/posts?user_id=${user.id}`);
-            
-            if (!response.ok) throw new Error("Erreur fetch posts");
-            
-            const data = await response.json();
-            setPosts(data);
-        } catch (error) { console.error(error); }
-    };
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+    localStorage.setItem("theme", theme);
+  }, [theme]);
 
-    const fetchTags = async () => {
-        try {
-            const response = await fetch(`${API_URL}/tags`);
-            const data = await response.json();
-            setTags(data);
-        } catch (error) { console.error(error); }
-    };
+  /* 🔹 Récupération des tags */
+  useEffect(() => {
+    fetch(`${API_URL}/tags`)
+      .then((res) => res.json())
+      .then(setTags)
+      .catch(console.error);
+  }, []);
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        try {
-            const response = await fetch(`${API_URL}/posts`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ ...newPost, user_id: user.id }) 
-            });
-            
-            if (response.ok) {
-                setNewPost({ title: '', description: '', tag_id: '' });
-                fetchPosts();
-                setSelectedTag(null); // Remettre sur "Tous" après un post
-            }
-        } catch (error) { console.error(error); }
-    };
+  /* 🔹 Focus lecteur d’écran sur message */
+  useEffect(() => {
+    if (statusMessage) {
+      statusRef.current?.focus();
+    }
+  }, [statusMessage]);
 
-    const handleLike = async (postId) => {
-        try {
-            const response = await fetch(`${API_URL}/posts/${postId}/like`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ user_id: user.id })
-            });
+  const handleCreatePost = async ({ title, description, tag_id }) => {
+    setError(false);
+    setStatusMessage("");
 
-            if (response.ok) {
-                fetchPosts();
-            }
-        } catch (error) { console.error(error); }
-    };
+    try {
+      const response = await fetch(`${API_URL}/posts`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title,
+          description,
+          tag_id,
+          user_id: user.id,
+        }),
+      });
 
-    // --- LOGIQUE DE FILTRAGE ---
-    const filteredPosts = selectedTag 
-        ? posts.filter(post => post.tag_id === selectedTag) 
-        : posts;
+      if (!response.ok) {
+        throw new Error("Erreur création article");
+      }
 
-    console.log("🔍 Mes Posts reçus :", posts);
+      setStatusMessage("Article publié avec succès 🎉");
+      setTimeout(() => navigate("/"), 1200);
+    } catch (err) {
+      setError(true);
+      setStatusMessage("Une erreur est survenue lors de la publication.");
+    }
+  };
 
-    return (
-        <>
-            <Header />
-            <div className="feed-container">
-                <header className="feed-header">
-                    <h1 className="feed-title">Bonjour, {user.firstname} 👋</h1>
-                    <button onClick={onLogout} className="logout-btn">Se déconnecter</button>
+  return (
+    <>
+      <Header theme={theme} setTheme={setTheme} />
+
+      <main className="feed-container" id="main-content">
+        <section className="feed-card" aria-labelledby="feed-title">
+            <header className="feed-header">
+                <h1 className="feed-h1">Créer un article</h1>
+                <p>Partage ton expérience avec la communauté</p>
                 </header>
-                
-                <div className="filter-container">
-                    <button 
-                        className={`filter-btn ${selectedTag === null ? 'active' : ''}`} 
-                        onClick={() => setSelectedTag(null)}
-                    >
-                        ✨ Tous
-                    </button>
-                    
-                    {tags.map(tag => (
-                        <button 
-                            key={tag.id}
-                            className={`filter-btn ${selectedTag === tag.id ? 'active' : ''}`}
-                            onClick={() => setSelectedTag(tag.id)}
-                        >
-                            {tag.title}
-                        </button>
-                    ))}
-                </div>
 
-                <div className="create-post-card">
-                    <h3>Partagez votre expérience</h3>
-                    <form onSubmit={handleSubmit}>
-                        <input
-                            type="text"
-                            placeholder="Titre du sujet"
-                            className="post-input"
-                            value={newPost.title}
-                            onChange={(e) => setNewPost({ ...newPost, title: e.target.value })}
-                            required 
-                        />
-                        
-                        <select 
-                            className="post-input post-select"
-                            value={newPost.tag_id}
-                            onChange={(e) => setNewPost({ ...newPost, tag_id: e.target.value })}
-                            required
-                        >
-                            <option value="">-- Choisir un sujet --</option>
-                            {tags.map(tag => (
-                                <option key={tag.id} value={tag.id}>{tag.title}</option>
-                            ))}
-                        </select>
+                {/* Message accessible */}
+                {statusMessage && (
+                <p
+                    ref={statusRef}
+                    tabIndex={-1}
+                    aria-live="assertive"
+                    className={`status-message ${error ? "error" : "success"}`}
+                >
+                    {statusMessage}
+                </p>
+                )}
 
-                        <textarea
-                            placeholder="Racontez-nous..."
-                            className="post-input"
-                            rows="3"
-                            value={newPost.description}
-                            onChange={(e) => setNewPost({ ...newPost, description: e.target.value })}
-                            required 
-                        />
-                        <button type="submit" className="btn-post">Publier</button>
-                    </form>
-                </div>
-
-                <div className="posts-list">
-                    {filteredPosts.length > 0 ? (
-                        filteredPosts.map((post) => (
-                            <PostCard 
-                                key={post.id} 
-                                post={post} 
-                                user={user} 
-                            />
-                        ))
-                    ) : (
-                        <p className="no-posts">Aucun post ne correspond à ce filtre.</p>
-                    )}
-                </div>
-            </div>
-        </>
-    );
+                <FeedForm tags={tags} onSubmit={handleCreatePost} />
+        </section>
+      </main>
+    </>
+  );
 }
