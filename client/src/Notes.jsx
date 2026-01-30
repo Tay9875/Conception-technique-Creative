@@ -5,16 +5,17 @@ import AccessibleModal from "./components/AccessibleModal.tsx";
 import { NoteCard } from "./components/NoteCard.tsx";
 import NoteForm from "./components/NoteForm.tsx";
 import { Header } from "./components/Header.tsx";
-import { Container } from "./components/Container.tsx";
 import { Empty } from "./components/Empty.tsx";
 import { SquareButton } from "./components/SquareButton.tsx";
 import { Footer } from "./components/Footer.tsx";
 
-function Notes() {
+function Notes({ user }) {
   const navigate = useNavigate();
   const [theme, setTheme] = useState(
     () => localStorage.getItem("theme") || "light"
   );
+
+  const API_URL = "https://conception-technique-creative-backend.onrender.com/api";
 
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
@@ -22,10 +23,68 @@ function Notes() {
   }, [theme]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [notes, setNotes] = useState([]);
 
-  const handleNoteSubmit = (data) => {
-    console.log("Nouvelle note :", data);
-    setIsModalOpen(false);
+  // --- Récupération des notes ---
+  const fetchNotes = async () => {
+    if (!user || !user.id) return;
+
+    try {
+      const response = await fetch(`${API_URL}/notes?user_id=${user.id}`);
+      const data = await response.json();
+      setNotes(data);
+    } catch (error) {
+      console.error("Erreur récupération notes :", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchNotes();
+  }, [user]);
+
+  // --- Création de note ---
+  const handleNoteSubmit = async (data) => {
+    if (!user || !user.id) return alert("Vous devez être connecté pour créer une note.");
+
+    try {
+      const response = await fetch(`${API_URL}/notes`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user_id: user.id, title: data.titre, content: data.contenu }),
+      });
+
+      if (response.ok) {
+        const newNote = await response.json();
+        setNotes(prev => [newNote, ...prev]); // ajout en tête
+        setIsModalOpen(false);
+      } else {
+        const err = await response.json();
+        alert(err.message || "Erreur création note");
+      }
+    } catch (error) {
+      console.error("Erreur création note :", error);
+    }
+  };
+
+  // --- Suppression de note ---
+  const handleDeleteNote = async (noteId) => {
+    if (!window.confirm("Voulez-vous vraiment supprimer cette note ?")) return;
+
+    try {
+      const response = await fetch(`${API_URL}/notes/${noteId}`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+      });
+
+      if (response.ok) {
+        setNotes(prev => prev.filter(note => note.id !== noteId));
+      } else {
+        const err = await response.json();
+        alert(err.message || "Erreur suppression note");
+      }
+    } catch (error) {
+      console.error("Erreur suppression note :", error);
+    }
   };
 
   return (
@@ -53,8 +112,7 @@ function Notes() {
               <div className="notes-heading">
                 <h1 className="note-heading">Mes Notes Personnelles</h1>
                 <p className="paragraph">
-                  Notez vos réflexions, questions à poser au médecin, ou idées
-                  personnelles
+                  Notez vos réflexions, questions à poser au médecin, ou idées personnelles
                 </p>
               </div>
 
@@ -74,15 +132,30 @@ function Notes() {
 
             <div className="notes-section-infos">
               <p>
-                Vos notes personnelles sont privées et stockées localement sur
-                votre appareil.
+                Vos notes personnelles sont privées et stockées localement sur votre appareil.
               </p>
             </div>
           </div>
         </section>
 
         <section className="notes-container">
-          <NoteCard title="Titre de la note" content="Contenu de la note"/>
+          {notes.length > 0 ? (
+            notes.map(note => (
+              <NoteCard
+                key={note.id}
+                id={note.id}
+                title={note.title}
+                content={note.content}
+                date={new Date(note.created_at).toLocaleDateString("fr-FR")}
+                onDelete={handleDeleteNote}
+              />
+            ))
+          ) : (
+            <Empty aria-label="Pas de notes disponibles">
+              <p className="empty-text">Vous n'avez pas encore de notes personnelles.</p>
+            </Empty>
+          )}
+
           <AccessibleModal
             isOpen={isModalOpen}
             onClose={() => setIsModalOpen(false)}
@@ -90,12 +163,6 @@ function Notes() {
           >
             <NoteForm onSubmit={handleNoteSubmit} />
           </AccessibleModal>
-
-          <Empty aria-label="Pas de conseils disponibles">
-            <p className="empty-text">
-              Vous n'avez pas encore de notes personnelles.
-            </p>
-          </Empty>
         </section>
       </main>
 
