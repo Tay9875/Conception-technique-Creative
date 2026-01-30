@@ -13,62 +13,59 @@ function Accueil() {
   );
 
   const [articles, setArticles] = useState([]);
-  const [filteredArticles, setFilteredArticles] = useState([]);
+  const [tags, setTags] = useState([]);
+  
+  const [selectedTag, setSelectedTag] = useState(null);
+  const [activeSort, setActiveSort] = useState("Récents");
 
-  const API_URL =
-    "https://conception-technique-creative-backend.onrender.com/api";
+  // URL API (Change en localhost:3000 si tu es en local)
+  const API_URL = "https://conception-technique-creative-backend.onrender.com/api";
+  // const API_URL = "http://localhost:3000/api";
 
+  // Gestion du Thème
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
     localStorage.setItem("theme", theme);
   }, [theme]);
-
-  /* 🔹 Fetch articles */
+  
   useEffect(() => {
-    const fetchArticles = async () => {
-      try {
-        const response = await fetch(`${API_URL}/posts`);
-        if (!response.ok) throw new Error("Erreur chargement articles");
-        const data = await response.json();
-        setArticles(data);
-        setFilteredArticles(data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
     fetchArticles();
+    fetchTags();
   }, []);
 
-  /* 🔹 Filtrage catégorie */
-  const handleCategoryChange = (category) => {
-    if (category === "Tous") {
-      setFilteredArticles(articles);
+  const fetchArticles = async () => {
+    try {
+      const response = await fetch(`${API_URL}/posts`);
+      if (!response.ok) throw new Error("Erreur chargement articles");
+      const data = await response.json();
+      setArticles(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const fetchTags = async () => {
+    try {
+      const response = await fetch(`${API_URL}/tags`);
+      if (!response.ok) throw new Error("Erreur chargement tags");
+      const data = await response.json();
+      setTags(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  
+  let displayedArticles = selectedTag
+    ? articles.filter((article) => article.tag_id === selectedTag)
+    : articles;
+    
+  displayedArticles = [...displayedArticles].sort((a, b) => {
+    if (activeSort === "Populaires") {
+      return (b.like_count || 0) - (a.like_count || 0);
     } else {
-      setFilteredArticles(
-        articles.filter(
-          (article) => article.tag?.title === category
-        )
-      );
+      return new Date(b.created_at) - new Date(a.created_at);
     }
-  };
-
-  /* 🔹 Tri */
-  const handleSortChange = (sort) => {
-    const sorted = [...filteredArticles];
-
-    if (sort === "Récents") {
-      sorted.sort(
-        (a, b) => new Date(b.created_at) - new Date(a.created_at)
-      );
-    }
-
-    if (sort === "Populaires") {
-      sorted.sort((a, b) => (b.likes || 0) - (a.likes || 0));
-    }
-
-    setFilteredArticles(sorted);
-  };
+  });
 
   return (
     <>
@@ -78,9 +75,7 @@ function Accueil() {
       <section className="section">
         <div className="section-container">
           <div className="section-heading">
-            <h1>
-              Partageons nos expériences, soutenons-nous mutuellement
-            </h1>
+            <h1>Partageons nos expériences, soutenons-nous mutuellement</h1>
           </div>
           <div className="section-paragraph">
             <p>
@@ -91,13 +86,16 @@ function Accueil() {
         </div>
       </section>
 
-      {/* CONTENU */}
+      {/* CONTENU (Avec passage des props dynamiques au Container) */}
       <Container
-        onCategoryChange={handleCategoryChange}
-        onSortChange={handleSortChange}
+        tags={tags}
+        selectedTag={selectedTag}
+        onTagChange={setSelectedTag}
+        activeSort={activeSort}
+        onSortChange={setActiveSort}
       >
-        {filteredArticles.length > 0 ? (
-          filteredArticles.map((article) => (
+        {displayedArticles.length > 0 ? (
+          displayedArticles.map((article) => (
             <BlogCard key={article.id} article={article} />
           ))
         ) : (
