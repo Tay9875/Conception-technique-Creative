@@ -103,4 +103,43 @@ router.post('/:id/like', async (req, res) => {
     }
 });
 
+// POST /api/posts/:id/report (Signaler un post)
+router.post('/:id/report', async (req, res) => {
+    const postId = req.params.id;
+    const { user_id } = req.body;
+
+    if (!user_id) return res.status(401).json({ message: "Vous devez être connecté pour signaler." });
+
+    try {
+        await db.query(
+            'INSERT INTO reports (user_id, post_id) VALUES (?, ?)', 
+            [user_id, postId]
+        );
+
+        const [rows] = await db.query(
+            'SELECT COUNT(*) as count FROM reports WHERE post_id = ?', 
+            [postId]
+        );
+        const reportCount = rows[0].count;
+
+        if (reportCount >= 3) {
+            await db.query('UPDATE posts SET is_banned = 1 WHERE id = ?', [postId]);
+            
+            return res.json({ 
+                message: "Signalement pris en compte. Ce post a été supprimé automatiquement par la communauté.", 
+                banned: true 
+            });
+        }
+
+        res.json({ message: "Signalement pris en compte.", banned: false });
+
+    } catch (error) {
+        if (error.code === 'ER_DUP_ENTRY') {
+            return res.status(400).json({ message: "Vous avez déjà signalé ce post." });
+        }
+        console.error(error);
+        res.status(500).json({ message: "Erreur serveur lors du signalement." });
+    }
+});
+
 module.exports = router;
