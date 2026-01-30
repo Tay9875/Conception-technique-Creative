@@ -1,235 +1,31 @@
-/* client/src/Feed.css */
 .feed-container {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 2rem;
-    font-family: 'Segoe UI', sans-serif;
-    background-color: #F9FAFB;
-    min-height: 100vh;
-}
-
-/* En-tête */
-.feed-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 2rem;
-}
-
-.feed-title {
-    color: #4C1D95;
-}
-
-.logout-btn {
-    background: var(--occasional-background);
-    border: 1px solid var(--main-color);
-    color:var(--main-color);
-    padding: 8px 16px;
-    border-radius: 20px;
-    cursor: pointer;
-}
-
-/* Formulaire de création */
-.create-post-card {
-    background: white;
-    padding: 1.5rem;
-    border-radius: 16px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-    margin-bottom: 2rem;
-    border: 1px solid #E5E7EB;
-}
-
-.post-input {
     width: 100%;
-    padding: 12px;
-    margin-bottom: 10px;
-    border: 1px solid #E9D5FF;
-    border-radius: 10px;
-    font-family: inherit;
-}
-
-.btn-post {
-    background-color:var(--main-color);
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 20px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-/* Liste des posts */
-.post-card {
-    background: white;
-    padding: 1.5rem;
-    border-radius: 16px;
-    margin-bottom: 1.5rem;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-    border-left: 5px solidvar(--main-color); /* Petite touche violette */
-}
-
-.post-tag {
-    background-color: #EDE9FE;
-    color:var(--main-color);
-    padding: 4px 12px;
-    border-radius: 12px;
-    font-size: 0.8rem;
-    font-weight: bold;
-    display: inline-block;
-    margin-bottom: 0.5rem;
-}
-
-.post-title {
-    margin: 0.5rem 0;
-    color: #1F2937;
-}
-
-.post-desc {
-    color: #4B5563;
-    line-height: 1.5;
-}
-
-.post-footer {
-    margin-top: 1rem;
-    font-size: 0.85rem;
-    color: #9CA3AF;
+    min-height: 100%;
     display: flex;
-    justify-content: space-between;
-}
-
-.post-select {
-    background-color: white;
-    cursor: pointer;
-    color: #4B5563;
-}
-
-.post-select:focus {
-    border-color:var(--main-color);
-    color: #1F2937;
-}
-
-/* Séparateur discret */
-.divider {
-    border: 0;
-    border-top: 1px solid #E5E7EB;
-    margin: 1rem 0;
-}
-
-.btn-text {
-    background: none;
-    border: none;
-    color: #7C3AED;
-    cursor: pointer;
-    font-size: 0.9rem;
-    font-weight: 600;
-    padding: 0;
-}
-
-.comments-section {
-    margin-top: 1rem;
-    background-color: #F9FAFB;
-    padding: 1rem;
-    border-radius: 12px;
-}
-
-.comment-bubble {
-    background: white;
-    padding: 8px 12px;
-    border-radius: 8px;
-    font-size: 0.9rem;
-    margin-bottom: 8px;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-}
-
-.comment-form {
-    display: flex;
-    gap: 10px;
-    margin-top: 10px;
-}
-
-.comment-input {
-    flex: 1;
-    padding: 8px;
-    border: 1px solid #E9D5FF;
-    border-radius: 20px;
-    outline: none;
-}
-
-.btn-small {
-    background-color: #7C3AED;
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 20px;
-    cursor: pointer;
-    font-size: 0.8rem;
-}
-
-/* Dans client/src/Feed.css */
-
-.comment-bubble {
-    /* On garde tes styles existants et on s'assure que c'est une colonne */
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.comment-header {
-    display: flex;
-    justify-content: space-between; /* Nom à gauche, Date à droite */
+    justify-content: center;
     align-items: center;
-    font-size: 0.9rem;
-    margin-bottom: 2px;
+    flex-direction: column;
+    padding: 4vw 3.2vw;
+    color: var(--main-text-color);
 }
 
-.comment-date {
-    font-size: 0.75rem; /* Plus petit */
-    color: #9CA3AF;     /* Gris discret */
+.feed-card {
+  background-color: var(--block-background-color);
+  border-radius: 14px;
+  width: 100%;
+  max-width: 800px;
+  padding: 24px;
+  color: var(--main-text-color);
 }
 
-.comment-content {
-    color: #374151;
-    line-height: 1.4;
-}
-
-.filter-container {
+.feed-header{
+    width: 100%;
     display: flex;
-    gap: 10px;
-    margin-bottom: 2rem;
-    overflow-x: auto;
-    padding-bottom: 10px;
-    white-space: nowrap;
-    scrollbar-width: thin;
-    scrollbar-color: #E9D5FF transparent;
+    justify-content: center;
+    align-content: center;
+    flex-direction: column;
 }
 
-.filter-btn {
-    background-color: white;
-    border: 1px solid #E9D5FF;
-    color: #4B5563;
-    padding: 8px 16px;
-    border-radius: 20px;
-    font-size: 0.9rem;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.filter-btn:hover {
-    border-color: #7C3AED;
-    color: #7C3AED;
-}
-
-.filter-btn.active {
-    background-color: #7C3AED;
-    color: white;
-    border-color: #7C3AED;
-    font-weight: bold;
-    box-shadow: 0 4px 6px rgba(124, 58, 237, 0.2);
-}
-
-.no-posts {
-    text-align: center;
-    color: #9CA3AF;
-    font-style: italic;
-    margin-top: 2rem;
+h1{
+    font-size: var(--large-font);
 }
