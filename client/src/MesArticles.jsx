@@ -28,6 +28,10 @@ function MesArticles() {
     setIsModalOpen(false);
   };
 
+  const handleClick = () => {
+    navigate("/"); // Redirige vers l'accueil
+  };
+
   return (
     <>
       <Header theme={theme} setTheme={setTheme} />
@@ -78,7 +82,11 @@ function MesArticles() {
             <p className="empty-text">
               Malheureusement, il n'y a pas encore de conseils.
             </p>
-            <SquareButton className="sqr-button-dark-background">
+            <SquareButton
+              className="sqr-button-dark-background"
+              onClick={handleClick}
+              aria-label="Découvrir des conseils et revenir à l'accueil"
+            >
               Découvrir des conseils
             </SquareButton>
           </Empty>

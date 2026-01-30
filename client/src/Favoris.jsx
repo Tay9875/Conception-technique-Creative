@@ -18,6 +18,10 @@ function Favoris() {
     document.documentElement.setAttribute("data-theme", theme);
     localStorage.setItem("theme", theme);
   }, [theme]);
+  
+  const handleClick = () => {
+    navigate("/"); // Redirige vers l'accueil
+  };
 
   return (
     <>
@@ -43,7 +47,11 @@ function Favoris() {
             <p className="empty-text">
               Malheureusement, il n'y a pas encore de conseils.
             </p>
-            <SquareButton className="sqr-button-dark-background">
+            <SquareButton 
+              className="sqr-button-dark-background"
+              onClick={handleClick}
+              aria-label="Découvrir des conseils et revenir à l'accueil"
+            >
               Découvrir des conseils
             </SquareButton>
           </Empty>
