@@ -1,4 +1,4 @@
-.profile-form {
+.feed-form {
     width: 100%;
     position: relative;
     box-sizing: border-box;
@@ -8,10 +8,9 @@
     gap: 16px;
     text-align: left;
     font-size: var(--small-font);
-    color: var(--main-text-color);
 }
 
-.profile-field {
+.feed-field {
     display: flex;
     flex-direction: column;
     gap: 8.5px;
@@ -33,6 +32,10 @@
     font-size: var(--small-font);
 }
 
-.btn-option {
+.select-options{
+    font-family: var(--font);
+}
+
+.feed-btn-option {
     align-self: center;
 }

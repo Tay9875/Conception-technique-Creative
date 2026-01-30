@@ -98,7 +98,7 @@
 
 .posts-content {
     display: grid;
-    grid-template-columns: auto auto auto;
+    grid-template-columns: 1fr 1fr 1fr;
     padding: 10px;
     width: 100%;
     height: auto;
@@ -108,12 +108,12 @@
 /* Quand l'écran devient petit (ex : moins de 600px), on cache certains éléments */
 @media (max-width: 1000px) {
   .posts-content {
-    grid-template-columns: auto auto;
+    grid-template-columns: 1fr 1fr;
   }
 }
 
 @media (max-width: 600px) {
   .posts-content {
-    grid-template-columns: auto;
+    grid-template-columns: 1fr;
   }
 }
