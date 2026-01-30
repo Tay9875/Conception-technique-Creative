@@ -30,7 +30,7 @@ export default function BottomNav() {
 
         <li>
           <NavLink
-            to="/favoris"
+            to="/notes"
             className={({ isActive }) =>
               `bottom-nav-item ${isActive ? "is-active" : ""}`
             }
@@ -42,9 +42,9 @@ export default function BottomNav() {
               className="material-symbols-outlined"
               aria-hidden="true"
             >
-              favorite
+              edit_note
             </span>
-            <span className="bottom-nav-text">Favoris</span>
+            <span className="bottom-nav-text">Notes</span>
           </NavLink>
         </li>
 
@@ -73,7 +73,7 @@ export default function BottomNav() {
 
         <li>
           <NavLink
-            to="/notes"
+            to="/mes_articles"
             className={({ isActive }) =>
               `bottom-nav-item ${isActive ? "is-active" : ""}`
             }
@@ -85,9 +85,9 @@ export default function BottomNav() {
               className="material-symbols-outlined"
               aria-hidden="true"
             >
-              edit_note
+              auto_stories
             </span>
-            <span className="bottom-nav-text">Notes</span>
+            <span className="bottom-nav-text">Mes Articles</span>
           </NavLink>
         </li>
 

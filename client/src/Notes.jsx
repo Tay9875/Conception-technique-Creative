@@ -82,7 +82,6 @@ function Notes() {
         </section>
 
         <section className="notes-container">
-          <NoteCard title="Titre de la note" content="Contenu de la note"/>
           <AccessibleModal
             isOpen={isModalOpen}
             onClose={() => setIsModalOpen(false)}
