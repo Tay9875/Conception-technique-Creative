@@ -16,7 +16,7 @@
     align-items: left;
     flex-direction: column;
     text-align: left;
-    padding: 25px;
+    padding: 50px;
     background-color: var(--block-background-color);
     border: 1px solid rgba(139, 92, 246, 0.15);
     box-sizing: border-box;
