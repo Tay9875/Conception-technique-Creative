@@ -57,6 +57,9 @@ export default function Profile({ onLogout }) {
                 <p className="profile-subtitle">
                     Modifiez vos informations personnelles
                 </p>
+                <p className="profile-status" style={{marginTop:8, fontWeight:500}}>
+                  Statut : {user.role_id === 1 ? "Patient" : user.role_id === 2 ? "Ancien Patient" : user.role_id === 3 ? "Proche" : "Inconnu"}
+                </p>
             </div>
 
             <div className="sign-out">

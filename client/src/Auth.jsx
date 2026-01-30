@@ -14,6 +14,7 @@ export default function Auth({ onLoginSuccess }) {
     lastname: "",
     email: "",
     password: "",
+    role_id: "1",
   });
 
   const [error, setError] = useState("");
@@ -117,6 +118,23 @@ export default function Auth({ onLoginSuccess }) {
                   required
                   aria-required="true"
                 />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="role_id">Rôle</label>
+                <select
+                  id="role_id"
+                  name="role_id"
+                  className="form-input"
+                  value={formData.role_id}
+                  onChange={handleChange}
+                  required
+                  aria-required="true"
+                >
+                  <option value="1">Patient</option>
+                  <option value="2">Ancien Patient</option>
+                  <option value="3">Proche</option>
+                </select>
               </div>
             </>
           )}
