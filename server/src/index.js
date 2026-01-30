@@ -8,6 +8,7 @@ const authRoutes = require('./routes/auth'); // C'est cette ligne qui te manquai
 const postRoutes = require('./routes/posts'); // Et celle-ci pour les posts
 const tagsRoutes = require('./routes/tags');
 const commentsRoutes = require('./routes/comments');
+const usersRoutes = require('./routes/users');
 const db = require('./database/db'); // Import du pool de connexion DB
 
 const app = express();
@@ -55,6 +56,7 @@ app.use('/api/auth', authRoutes); // Utilise l'import authRoutes
 app.use('/api/posts', postRoutes); // Utilise l'import postRoutes
 app.use('/api/tags', tagsRoutes);
 app.use('/api/comments', commentsRoutes);
+app.use('/api/users', usersRoutes);
 
 // --- ROUTE TEMPORAIRE POUR METTRE À JOUR LA BDD SUR RENDER ---
 app.get('/api/fix-db-structure', async (req, res) => {

@@ -5,7 +5,7 @@ const path = require('path');
 const mysql = require('mysql2/promise');
 
 const migrate = async () => {
-  const connection = await mysql.createConnection({
+  const connection = await mysql.createPool({
     host: process.env.DB_HOST,
     port: process.env.DB_PORT ? Number(process.env.DB_PORT) : undefined,
     user: process.env.DB_USER,
