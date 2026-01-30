@@ -7,6 +7,7 @@ const cors = require('cors');
 const authRoutes = require('./routes/auth'); // C'est cette ligne qui te manquait !
 const postRoutes = require('./routes/posts'); // Et celle-ci pour les posts
 const tagsRoutes = require('./routes/tags');
+const postRoutes = require('./routes/notes');
 const commentsRoutes = require('./routes/comments');
 const db = require('./database/db'); // Import du pool de connexion DB
 
@@ -53,6 +54,7 @@ boot().catch((err) => {
 // --- DÉCLARATION DES ROUTES ---
 app.use('/api/auth', authRoutes); // Utilise l'import authRoutes
 app.use('/api/posts', postRoutes); // Utilise l'import postRoutes
+app.use('api/notes', noteRoutes);
 app.use('/api/tags', tagsRoutes);
 app.use('/api/comments', commentsRoutes);
 
@@ -84,7 +86,20 @@ app.get('/api/fix-db-structure', async (req, res) => {
             console.log("La colonne is_banned existe probablement déjà :", e.message);
         }
 
-        // 4. Créer la table Likes
+        // 4. Créer la table notes si elle n'existe pas
+        await db.query(`
+            CREATE TABLE IF NOT EXISTS notes (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                title VARCHAR(50) NOT NULL,
+                content VARCHAR(255) NOT NULL,
+                user_id INT NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE(user_id),
+                FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+            )
+        `);
+
+        // 5. Créer la table Likes
         await db.query(`
             CREATE TABLE IF NOT EXISTS likes (
                 id INT AUTO_INCREMENT PRIMARY KEY,

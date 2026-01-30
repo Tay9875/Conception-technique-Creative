@@ -25,14 +25,24 @@ CREATE TABLE IF NOT EXISTS users (
     FOREIGN KEY (pathology_id) REFERENCES pathologies(id)
 );
 
--- 4. Table Tags (Créée avant Posts car Posts en a besoin)
+-- 4. Table Notes (NOUVEAU)
+CREATE TABLE IF NOT EXISTS notes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(50) NOT NULL,
+    content VARCHAR(255) NOT NULL,
+    user_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(user_id), -- Un utilisateur ne peut avoir qu'une seule note
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- 5. Table Tags
 CREATE TABLE IF NOT EXISTS tags (
     id INT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(50) NOT NULL UNIQUE
 );
 
--- 5. Table Posts
--- Mise à jour : Ajout de tag_id (pour la catégorie) et is_banned (modération)
+-- 6. Table Posts
 CREATE TABLE IF NOT EXISTS posts (
     id INT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
@@ -46,7 +56,7 @@ CREATE TABLE IF NOT EXISTS posts (
     FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE SET NULL
 );
 
--- 6. Table Comments
+-- 7. Table Comments
 CREATE TABLE IF NOT EXISTS comments (
     id INT AUTO_INCREMENT PRIMARY KEY,
     description TEXT NOT NULL,
@@ -58,7 +68,7 @@ CREATE TABLE IF NOT EXISTS comments (
     FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE
 );
 
--- 7. Table Likes (NOUVEAU)
+-- 8. Table Likes
 CREATE TABLE IF NOT EXISTS likes (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
@@ -70,7 +80,7 @@ CREATE TABLE IF NOT EXISTS likes (
     FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE
 );
 
--- 8. Table Reports (NOUVEAU - Signalements)
+-- 9. Table Reports
 CREATE TABLE IF NOT EXISTS reports (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
