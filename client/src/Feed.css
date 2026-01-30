@@ -28,4 +28,5 @@
 
 h1{
     font-size: var(--large-font);
+    color: var(--main-color);
 }
