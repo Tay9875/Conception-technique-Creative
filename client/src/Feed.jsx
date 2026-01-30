@@ -11,9 +11,17 @@ export default function Feed({ user }) {
   const [tags, setTags] = useState([]);
   const [statusMessage, setStatusMessage] = useState("");
   const [error, setError] = useState(false);
+  const [theme, setTheme] = useState(
+    () => localStorage.getItem("theme") || "light"
+  );
 
   const statusRef = useRef(null);
 
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+    localStorage.setItem("theme", theme);
+  }, [theme]);
+  
   /* 🔹 Récupération des tags */
   useEffect(() => {
     fetch(`${API_URL}/tags`)
@@ -59,7 +67,7 @@ export default function Feed({ user }) {
 
   return (
     <>
-      <Header />
+      <Header theme={theme} setTheme={setTheme} />
 
       <main className="feed-container" id="main-content">
         <section className="feed-card" aria-labelledby="feed-title">
