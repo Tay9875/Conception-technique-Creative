@@ -180,9 +180,8 @@ export const BlogCard: React.FC<BlogCardProps> = ({ article, user }) => {
               onClick={handleLike}
             >
               <span className="material-symbols-outlined" aria-hidden="true">
-                {isLiked ? "favorite" : "favorite_border"}
+                {isLiked ? "bookmark_heart" : "favorite"}
               </span>
-              <span aria-live="polite">{likesCount}</span>
             </button>
 
             {/* 💬 COMMENTAIRES */}

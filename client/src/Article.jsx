@@ -188,16 +188,12 @@ function Article({ user }) {
                 aria-label={isLiked ? "Retirer des favoris" : "Ajouter aux favoris"}
                 aria-pressed={isLiked}
                 onClick={handleLike}
-              >
-                <span
-                  className="material-symbols-outlined"
-                  aria-hidden="true"
                 >
-                  {isLiked ? "favorite" : "favorite_border"}
+                <span className="material-symbols-outlined" aria-hidden="true">
+                    {isLiked ? "bookmark_heart" : "favorite"}
                 </span>
-                {/* On peut afficher le compteur ici si on veut */}
-                <span style={{marginLeft: '5px', fontSize: '0.9rem'}}>{likesCount}</span>
-              </SquareButton>
+                <span style={{ marginLeft: "5px", fontSize: "0.9rem" }}>{likesCount}</span>
+                </SquareButton>
 
               <SquareButton
                 className="sqr-button-dark-background"
