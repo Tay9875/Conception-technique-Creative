@@ -140,7 +140,7 @@ function MesArticles({ user }) {
       <Header theme={theme} setTheme={setTheme} />
 
       <main>
-        /* En-tête de la page */}
+        {/* En-tête de la page */}
           <section className="articles-section">
             <div className="articles-section-container">
               <div className="articles-section-lien">
