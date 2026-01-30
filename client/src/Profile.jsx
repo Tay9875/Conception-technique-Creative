@@ -1,6 +1,5 @@
 // client/src/Profile.jsx
 import React, { useState, useEffect } from "react";
-const API_URL = 'https://conception-technique-creative-backend.onrender.com/api';
 import "./Profile.css";
 import { Header } from "./components/Header.tsx";
 import { SquareButton } from "./components/SquareButton.tsx";
@@ -8,6 +7,7 @@ import ProfileForm from "./components/ProfileForm.tsx";
 import { useNavigate } from "react-router-dom";
 
 export default function Profile({ onLogout }) {
+  const API_URL = 'https://conception-technique-creative-backend.onrender.com/api';
   const navigate = useNavigate();
 
   const [theme, setTheme] = useState(
