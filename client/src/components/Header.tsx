@@ -99,15 +99,21 @@ export const Header: React.FC<HeaderProps> = ({ theme, setTheme }: HeaderProps) 
             </SquareButton>
           </li>
 
-          <li>
+            <li>
             <SquareButton
               className={isActive("/mes_articles") ? "is-active" : undefined}
               aria-current={isActive("/mes_articles") ? "page" : undefined}
-              onClick={() => handleClick("/mes_articles")}
+              onClick={() => {
+              if (!user) {
+                navigate("/login", { state: { from: "/mes_articles" }, replace: true });
+              } else {
+                handleClick("/mes_articles");
+              }
+              }}
             >
               Mes articles
             </SquareButton>
-          </li>
+            </li>
         </ul>
       </nav>
 

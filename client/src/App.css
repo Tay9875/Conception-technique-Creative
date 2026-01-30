@@ -38,6 +38,7 @@
   --comment-background: rgba(124, 58, 237, 0.1);
 
   --border-shadow: 1px solid rgba(0, 0, 0, 0.1);
+  --border-color: rgba(139, 92, 246, 0.15);
 }
 
 :root[data-theme="dark"] {
@@ -71,6 +72,7 @@
 
   --comment-background: #c4b5fd;
   --border-shadow: 0.582px solid #000;
+  --border-color: rgba(167, 139, 250, 0.3);
 }
 
 .section {
@@ -78,7 +80,7 @@
   	height: auto;
   	position: relative;
   	background: var(--header-background);
-  	border-bottom: 1px solid rgba(139, 92, 246, 0.15);
+  	border-bottom: 1px solid var(--border-color);
   	box-sizing: border-box;
   	display: flex;
   	flex-direction: column;

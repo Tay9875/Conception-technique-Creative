@@ -7,7 +7,7 @@ import { Empty } from "./components/Empty.tsx";
 import { Footer } from "./components/Footer.tsx";
 import BottomNav from "./components/BottomNav.tsx";
 
-function Accueil() {
+function Accueil({ user }) {
   const [theme, setTheme] = useState(
     () => localStorage.getItem("theme") || "light"
   );
@@ -96,7 +96,7 @@ function Accueil() {
       >
         {displayedArticles.length > 0 ? (
           displayedArticles.map((article) => (
-            <BlogCard key={article.id} article={article} />
+            <BlogCard key={article.id} article={article} user={user} />
           ))
         ) : (
           <Empty aria-label="Aucun article disponible">
