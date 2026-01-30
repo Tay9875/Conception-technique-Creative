@@ -10,6 +10,7 @@ import Notes from "./Notes.jsx";
 import Article from "./Article.jsx";
 import Profile from "./Profile.jsx";
 import BottomNav from "./components/BottomNav.tsx";
+import AccessibilityButton from './components/AccessibilityButton';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -49,6 +50,7 @@ function App() {
           } />
       </Routes>
       <BottomNav/>
+      <AccessibilityButton />
     </div>
   );
 }
