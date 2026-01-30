@@ -32,6 +32,10 @@
     font-size: var(--small-font);
 }
 
+.select-options{
+    font-family: var(--font);
+}
+
 .feed-btn-option {
     align-self: center;
 }

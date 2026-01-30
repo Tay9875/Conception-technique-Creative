@@ -21,7 +21,7 @@ export default function Feed({ user }) {
     document.documentElement.setAttribute("data-theme", theme);
     localStorage.setItem("theme", theme);
   }, [theme]);
-  
+
   /* 🔹 Récupération des tags */
   useEffect(() => {
     fetch(`${API_URL}/tags`)
@@ -72,7 +72,7 @@ export default function Feed({ user }) {
       <main className="feed-container" id="main-content">
         <section className="feed-card" aria-labelledby="feed-title">
             <header className="feed-header">
-                <h1>Créer un article</h1>
+                <h1 className="feed-h1">Créer un article</h1>
                 <p>Partage ton expérience avec la communauté</p>
                 </header>
 
