@@ -39,9 +39,11 @@ function MesArticles({ user }) {
   // Chargement initial des données
   useEffect(() => {
     fetchTags();
+    console.log("🔍 [DEBUG] Effet de chargement des articles pour l'utilisateur :", user);
     
     // On ne charge les articles que si l'utilisateur est bien identifié
     if (user && user.id) {
+      console.log("📡 [DEBUG] Appel de fetchMyArticles car utilisateur connecté.");
       fetchMyArticles();
     }
   }, [user]);
@@ -59,23 +61,34 @@ function MesArticles({ user }) {
   };
 
   const fetchMyArticles = async () => {
-    if (!user || !user.id) return;
+    console.log("🔍 [DEBUG] User actuel reçu :", user); // Est-ce que user est null ?
+    
+    if (!user || !user.id) {
+        console.warn("⚠️ [DEBUG] Pas d'ID utilisateur trouvé !");
+        return;
+    }
 
     try {
-      // 1. On demande au serveur les posts (le paramètre ?user_id est géré par le back s'il est configuré)
+      console.log(`📡 [DEBUG] Fetching : ${API_URL}/posts?user_id=${user.id}`);
+      
       const response = await fetch(`${API_URL}/posts?user_id=${user.id}`);
       if (!response.ok) throw new Error("Erreur articles");
-      const data = await response.json();
-
-      // 2. FILTRAGE DE SÉCURITÉ CÔTÉ CLIENT
-      // On s'assure de ne garder QUE les posts de l'utilisateur connecté.
-      // Note : On utilise '==' au lieu de '===' pour gérer les cas où l'ID est une String ("6") vs Number (6)
-      const myPosts = data.filter((post) => post.user_id == user.id);
-      console.log("Articles récupérés pour l'utilisateur :", myPosts);
       
+      const data = await response.json();
+      console.log("📦 [DEBUG] Données brutes reçues de l'API :", data);
+
+      // Le filtrage avec logs détaillés
+      const myPosts = data.filter((post) => {
+          // On vérifie le type (String ou Number ?)
+          const isMatch = post.user_id == user.id;
+          console.log(`👉 Comparaison : Post UserID (${post.user_id}) [${typeof post.user_id}] vs Moi (${user.id}) [${typeof user.id}] -> Match ? ${isMatch}`);
+          return isMatch;
+      });
+      
+      console.log("✅ [DEBUG] Articles finaux mis dans le state :", myPosts);
       setArticles(myPosts);
     } catch (error) {
-      console.error("Erreur fetchMyArticles:", error);
+      console.error(error);
     }
   };
 
@@ -127,37 +140,37 @@ function MesArticles({ user }) {
       <Header theme={theme} setTheme={setTheme} />
 
       <main>
-        {/* En-tête de la page */}
-        <section className="articles-section">
-          <div className="articles-section-container">
-            <div className="articles-section-lien">
-              <Link to="/" className="retour" aria-label="Retour à la page d'accueil">
-                <span className="material-symbols-outlined" aria-hidden="true">arrow_back</span>
-                Retour aux conseils
-              </Link>
-            </div>
-
-            <div className="articles-section-heading">
-              <div className="articles-heading">
-                <h1 className="note-heading">Mes Articles</h1>
-                <p className="paragraph">Apportez un soutien en partageant vos conseils</p>
+        /* En-tête de la page */}
+          <section className="articles-section">
+            <div className="articles-section-container">
+              <div className="articles-section-lien">
+                <Link to="/" className="retour" aria-label="Retour à la page d'accueil">
+            <span className="material-symbols-outlined" aria-hidden="true">arrow_back</span>
+            Retour aux conseils
+                </Link>
               </div>
 
-              <div className="nouvel-article">
+              <div className="articles-section-heading">
+                <div className="articles-heading">
+            <h1 className="note-heading">Mes Articles</h1>
+            <p className="paragraph">Apportez un soutien en partageant vos conseils</p>
+                </div>
+
+                <div className="nouvel-article">
                 <SquareButton
                   className="sqr-button-dark-background no-resize"
-                  onClick={() => setIsModalOpen(true)}
+                  onClick={() => navigate("/feed")}
                   aria-label="Créer un nouvel article"
                 >
                   <span className="material-symbols-outlined" aria-hidden="true">add</span>
                   Nouvel Article
                 </SquareButton>
+                </div>
               </div>
             </div>
-          </div>
-        </section>
+          </section>
 
-        {/* Conteneur principal avec filtres et grille d'articles */}
+          {/* Conteneur principal avec filtres et grille d'articles */}
         <Container
           tags={tags}
           selectedTag={selectedTag}

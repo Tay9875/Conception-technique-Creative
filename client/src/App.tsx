@@ -41,7 +41,7 @@ function App() {
             </ProtectedRoute>} />
         <Route path="/mes_articles" element={
           <ProtectedRoute user={user}>
-              <MesArticles />
+              <MesArticles user={user} />
             </ProtectedRoute>
           } />
         <Route path="/feed" element={
