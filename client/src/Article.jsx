@@ -1,6 +1,6 @@
 import "./Article.css";
 import React, { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom"; // J'ai ajouté useNavigate au cas où
 import { Header } from "./components/Header.tsx";
 import AccessibleModal from "./components/AccessibleModal.tsx";
 import { SquareButton } from "./components/SquareButton.tsx";
@@ -8,18 +8,28 @@ import { Tag } from "./components/Tags.tsx";
 import ReportForm from "./components/ReportForm.tsx";
 import { CommentSection } from "./components/CommentSection.tsx";
 
-function Article() {
+// 1. AJOUT de la prop 'user' pour l'authentification
+function Article({ user }) {
   const { id } = useParams();
+  const navigate = useNavigate();
+
   const [theme, setTheme] = useState(
     () => localStorage.getItem("theme") || "light"
   );
+  
   const [article, setArticle] = useState(null);
   const [error, setError] = useState(null);
+  
+  // États pour les intéractions
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [commentsOpen, setCommentsOpen] = useState(false);
+  
+  // 2. ÉTATS pour le Like
+  const [isLiked, setIsLiked] = useState(false);
+  const [likesCount, setLikesCount] = useState(0);
 
-  const API_URL =
-    "https://conception-technique-creative-backend.onrender.com/api";
+  const API_URL = "https://conception-technique-creative-backend.onrender.com/api";
+  // const API_URL = "http://localhost:3000/api";
 
   /* 🎨 Thème */
   useEffect(() => {
@@ -27,27 +37,29 @@ function Article() {
     localStorage.setItem("theme", theme);
   }, [theme]);
 
-  /* 📡 Récupération de l’article via la liste */
+  /* 📡 Récupération de l’article */
   useEffect(() => {
     if (!id) return;
 
     const fetchArticle = async () => {
       try {
+        // Idéalement, faire un call /posts/:id si l'API le permet
+        // Ici je garde ta logique de liste complète pour être sûr
         const response = await fetch(`${API_URL}/posts`);
-        if (!response.ok) {
-          throw new Error("Erreur chargement articles");
-        }
+        if (!response.ok) throw new Error("Erreur chargement articles");
 
         const posts = await response.json();
-        const foundArticle = posts.find(
-          (post) => String(post.id) === String(id)
-        );
+        // Comparaison souple (String/Number)
+        const foundArticle = posts.find((post) => String(post.id) === String(id));
 
-        if (!foundArticle) {
-          throw new Error("Article introuvable");
-        }
+        if (!foundArticle) throw new Error("Article introuvable");
 
         setArticle(foundArticle);
+        
+        // 3. INITIALISATION des états du like avec les données reçues
+        setIsLiked(foundArticle.is_liked === 1);
+        setLikesCount(foundArticle.like_count || 0);
+
       } catch (err) {
         console.error(err);
         setError("Impossible de charger l’article.");
@@ -56,6 +68,57 @@ function Article() {
 
     fetchArticle();
   }, [id]);
+
+  /* ❤️ FONCTION LIKE */
+  const handleLike = async () => {
+    if (!user || !user.id) return alert("Veuillez vous connecter pour aimer un article.");
+
+    // Mise à jour Optimiste (Immédiate)
+    const newLikedState = !isLiked;
+    setIsLiked(newLikedState);
+    setLikesCount(prev => newLikedState ? prev + 1 : prev - 1);
+
+    try {
+      await fetch(`${API_URL}/posts/${id}/like`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user_id: user.id }),
+      });
+    } catch (error) {
+      console.error("Erreur like:", error);
+      // En cas d'erreur, on pourrait annuler le changement d'état ici
+    }
+  };
+
+  /* 🚩 FONCTION SIGNALEMENT */
+  const handleReport = async () => {
+    if (!user || !user.id) return alert("Veuillez vous connecter pour signaler.");
+
+    try {
+        const response = await fetch(`${API_URL}/posts/${id}/report`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: user.id })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+            alert(data.message || "Signalement pris en compte.");
+            setIsModalOpen(false);
+            
+            // Si l'article est banni suite au signalement, on redirige
+            if (data.banned) {
+                alert("Cet article a été supprimé par la communauté suite aux signalements.");
+                navigate('/');
+            }
+        } else {
+            alert("Erreur : " + data.message);
+        }
+    } catch (error) {
+        console.error(error);
+    }
+  };
 
   /* ⏳ Chargement */
   if (!article && !error) {
@@ -93,9 +156,10 @@ function Article() {
 
           {/* 📄 Contenu */}
           <main className="article-text" id="main-content">
-            {article.tag?.title && (
+            {/* Gestion sécurisée du tag (tag peut être null) */}
+            {(article.tag_title || article.tag?.title) && (
               <div className="tags">
-                <Tag>{article.tag.title}</Tag>
+                <Tag>{article.tag_title || article.tag.title}</Tag>
               </div>
             )}
 
@@ -104,6 +168,10 @@ function Article() {
                 <h1 id="article-title" className="article-title">
                   {article.title}
                 </h1>
+                {/* Affichage auteur et date si dispo */}
+                <div className="article-meta" style={{fontSize: '0.9rem', color: '#666', marginBottom: '1rem'}}>
+                    Par {article.firstname} {article.lastname} • Le {new Date(article.created_at).toLocaleDateString()}
+                </div>
               </header>
 
               <p className="article-content">{article.description}</p>
@@ -113,17 +181,22 @@ function Article() {
           {/* 🧰 Actions */}
           <section className="article-tools" aria-label="Actions sur l’article">
             <div className="article-appreciation">
+              
+              {/* BOUTON LIKE CONNECTÉ */}
               <SquareButton
                 className="sqr-button-dark-background"
-                aria-label="Ajouter l’article aux favoris"
-                onClick={() => console.log("Favori")}
+                aria-label={isLiked ? "Retirer des favoris" : "Ajouter aux favoris"}
+                aria-pressed={isLiked}
+                onClick={handleLike}
               >
                 <span
                   className="material-symbols-outlined"
                   aria-hidden="true"
                 >
-                  favorite
+                  {isLiked ? "favorite" : "favorite_border"}
                 </span>
+                {/* On peut afficher le compteur ici si on veut */}
+                <span style={{marginLeft: '5px', fontSize: '0.9rem'}}>{likesCount}</span>
               </SquareButton>
 
               <SquareButton
@@ -163,6 +236,7 @@ function Article() {
               id="comments-container"
               isOpen={commentsOpen}
               articleId={article.id}
+              user={user} // 4. PASSAGE DE USER AUX COMMENTAIRES
             />
           )}
         </article>
@@ -176,7 +250,8 @@ function Article() {
       >
         <ReportForm
           onCancel={() => setIsModalOpen(false)}
-          onSubmit={() => setIsModalOpen(false)}
+          // 5. CONNEXION DU SUBMIT DU FORMULAIRE A L'API
+          onSubmit={handleReport} 
         />
       </AccessibleModal>
     </>
