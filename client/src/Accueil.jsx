@@ -1,86 +1,118 @@
-import './Accueil.css';
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-
-// Composants
-import { Header } from './components/Header.tsx'; // .tsx pas nécessaire dans l'import
-import { Container } from './components/Container.tsx';
-import { BlogCard } from './components/BlogCard.tsx';
-import { Footer } from './components/Footer.tsx';
+import "./Accueil.css";
+import React, { useState, useEffect } from "react";
+import { Header } from "./components/Header.tsx";
+import { Container } from "./components/Container.tsx";
+import { BlogCard } from "./components/BlogCard.tsx";
+import { Empty } from "./components/Empty.tsx";
+import { Footer } from "./components/Footer.tsx";
+import BottomNav from "./components/BottomNav.tsx";
 
 function Accueil() {
-    const navigate = useNavigate();
-    
-    // --- 1. ÉTATS (DATA) ---
-    const [tags, setTags] = useState([]); // Liste des tags
-    const [selectedTag, setSelectedTag] = useState(null); // Tag actif
-    const [activeSort, setActiveSort] = useState("Récents"); // Tri actif
-    
-    // Theme management
-    const [theme, setTheme] = useState(
-        () => localStorage.getItem("theme") || "light"
-    );
+  const [theme, setTheme] = useState(
+    () => localStorage.getItem("theme") || "light"
+  );
 
-    // Attention : Utilise ton URL locale pour le développement (Port 3000 ou 3001 selon ton serveur)
-    const API_URL = 'http://localhost:3000/api'; 
+  const [articles, setArticles] = useState([]);
+  const [filteredArticles, setFilteredArticles] = useState([]);
 
-    // --- 2. EFFETS ---
-    useEffect(() => {
-        document.documentElement.setAttribute("data-theme", theme);
-        localStorage.setItem("theme", theme);
-    }, [theme]);
+  const API_URL =
+    "https://conception-technique-creative-backend.onrender.com/api";
 
-    useEffect(() => {
-        fetchTags();
-    }, []);
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+    localStorage.setItem("theme", theme);
+  }, [theme]);
 
-    // --- 3. APPEL API ---
-    const fetchTags = async () => {
-        try {
-            const response = await fetch(`${API_URL}/tags`);
-            if (!response.ok) throw new Error("Erreur chargement tags");
-            const data = await response.json();
-            setTags(data); // On met à jour la liste qui sera envoyée au Container
-        } catch (error) { 
-            console.error("Erreur API Tags:", error); 
-        }
+  /* 🔹 Fetch articles */
+  useEffect(() => {
+    const fetchArticles = async () => {
+      try {
+        const response = await fetch(`${API_URL}/posts`);
+        if (!response.ok) throw new Error("Erreur chargement articles");
+        const data = await response.json();
+        setArticles(data);
+        setFilteredArticles(data);
+      } catch (error) {
+        console.error(error);
+      }
     };
 
-    return (
-        <>
-            <Header theme={theme} setTheme={setTheme}/>
-            
-            <section className="section">
-                <div className="section-container">
-                    <div className="section-heading">
-                            <h1>Partageons nos expériences, soutenons-nous mutuellement</h1>
-                    </div>
-                    <div className="section-paragraph">
-                        <p>Bienvenue sur notre espace d'entraide où les patients peuvent échanger des conseils, partager leurs astuces et se soutenir dans leur parcours.</p>
-                    </div>
-                </div>
-            </section>
+    fetchArticles();
+  }, []);
 
-            {/* --- 4. PASSAGE DES PROPS AU CONTAINER --- */}
-            {/* C'est ici que la magie opère : on donne les données au design */}
-            <Container
-                tags={tags}                     // La liste des tags récupérée par l'API
-                selectedTag={selectedTag}       // L'état du parent
-                onTagChange={setSelectedTag}    // La fonction pour changer l'état
-                activeSort={activeSort}         // L'état du tri
-                onSortChange={setActiveSort}    // La fonction pour changer le tri
-            >
-                {/* Pour l'instant tes cartes sont statiques, on verra après pour les rendre dynamiques */}
-                <BlogCard />
-                <BlogCard />
-                <BlogCard />
-                <BlogCard />
-                <BlogCard />
-            </Container>
+  /* 🔹 Filtrage catégorie */
+  const handleCategoryChange = (category) => {
+    if (category === "Tous") {
+      setFilteredArticles(articles);
+    } else {
+      setFilteredArticles(
+        articles.filter(
+          (article) => article.tag?.title === category
+        )
+      );
+    }
+  };
 
-            <Footer />
-        </>
-    );
+  /* 🔹 Tri */
+  const handleSortChange = (sort) => {
+    const sorted = [...filteredArticles];
+
+    if (sort === "Récents") {
+      sorted.sort(
+        (a, b) => new Date(b.created_at) - new Date(a.created_at)
+      );
+    }
+
+    if (sort === "Populaires") {
+      sorted.sort((a, b) => (b.likes || 0) - (a.likes || 0));
+    }
+
+    setFilteredArticles(sorted);
+  };
+
+  return (
+    <>
+      <Header theme={theme} setTheme={setTheme} />
+
+      {/* INTRO */}
+      <section className="section">
+        <div className="section-container">
+          <div className="section-heading">
+            <h1>
+              Partageons nos expériences, soutenons-nous mutuellement
+            </h1>
+          </div>
+          <div className="section-paragraph">
+            <p>
+              Bienvenue sur notre espace d'entraide où les patients
+              peuvent échanger des conseils et se soutenir.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* CONTENU */}
+      <Container
+        onCategoryChange={handleCategoryChange}
+        onSortChange={handleSortChange}
+      >
+        {filteredArticles.length > 0 ? (
+          filteredArticles.map((article) => (
+            <BlogCard key={article.id} article={article} />
+          ))
+        ) : (
+          <Empty aria-label="Aucun article disponible">
+            <p className="empty-text">
+              Aucun article ne correspond à ce filtre.
+            </p>
+          </Empty>
+        )}
+      </Container>
+
+      <Footer />
+      <BottomNav />
+    </>
+  );
 }
 
 export default Accueil;

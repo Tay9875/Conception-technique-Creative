@@ -3,30 +3,46 @@ import { useState } from "react";
 import "../styles/BlogCard.css";
 import { Tag } from "./Tags.tsx";
 
-export const BlogCard: React.FC = () => {
+interface Article {
+  id: number;
+  title: string;
+  description: string;
+  created_at: string;
+  author?: string;
+  tag?: {
+    title: string;
+  };
+}
+
+interface BlogCardProps {
+  article: Article;
+}
+
+export const BlogCard: React.FC<BlogCardProps> = ({ article }) => {
   const navigate = useNavigate();
 
   const [isLiked, setIsLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(0);
 
+  const titleId = `blog-title-${article.id}`;
+
   const handleLike = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation(); // empêche la navigation
+    e.stopPropagation();
     setIsLiked((prev) => !prev);
     setLikesCount((prev) => (isLiked ? prev - 1 : prev + 1));
   };
 
   const handleCardClick = () => {
-    navigate("/article");
+    navigate(`/article/${article.id}`);
   };
 
   return (
     <article
       className="blogcard"
-      aria-labelledby="blog-title"
-      tabIndex={0} // navigable au clavier
+      aria-labelledby={titleId}
+      tabIndex={0}
       onClick={handleCardClick}
       onKeyDown={(e) => {
-        // Activation avec Enter ou Space
         if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
           handleCardClick();
@@ -34,24 +50,25 @@ export const BlogCard: React.FC = () => {
       }}
     >
       <div className="text">
+        {/* TAG */}
         <div className="blogcard-tags">
-          <Tag>Bien-être</Tag>
+          {article.tag && <Tag>{article.tag.title}</Tag>}
         </div>
 
+        {/* CONTENU */}
         <div className="blogcard-container">
           <header className="heading">
-            <h3 id="blog-title" className="blogcard-title">
-              Commentaires sur la gestion du stress pendant les traitements
+            <h3 id={titleId} className="blogcard-title">
+              {article.title}
             </h3>
           </header>
 
           <p className="blogcard-paragraph">
-            J'ai trouvé que la méditation et les exercices de respiration
-            m'ont beaucoup aidé à gérer le stress lié aux traitements. Cela
-            m'a permis de rester plus calme et concentré sur mon rétablissement.
+            {article.description}
           </p>
         </div>
 
+        {/* FOOTER */}
         <footer className="blogcard-tools">
           <div className="blogcard-infos">
             <p className="blogcard-author">
@@ -61,11 +78,20 @@ export const BlogCard: React.FC = () => {
               >
                 person
               </span>
-              <span className="sr-only">Marie D.</span>
+              <span className="sr-only">
+                Auteur : {article.author || "Utilisateur"}
+              </span>
             </p>
 
-            <time className="date" dateTime="2024-06-12">
-              12 juin 2024
+            <time
+              className="date"
+              dateTime={article.created_at}
+            >
+              {new Date(article.created_at).toLocaleDateString("fr-FR", {
+                day: "numeric",
+                month: "long",
+                year: "numeric",
+              })}
             </time>
           </div>
 
@@ -76,7 +102,9 @@ export const BlogCard: React.FC = () => {
               className="transparent-btn"
               aria-pressed={isLiked}
               aria-label={
-                isLiked ? "Retirer des favoris" : "Ajouter aux favoris"
+                isLiked
+                  ? "Retirer cet article des favoris"
+                  : "Ajouter cet article aux favoris"
               }
               onClick={handleLike}
             >
@@ -91,9 +119,9 @@ export const BlogCard: React.FC = () => {
 
             {/* 💬 COMMENTAIRES */}
             <Link
-              to="/article#comments"
+              to={`/article/${article.id}#comments`}
               className="transparent-btn"
-              aria-label="Voir les commentaires"
+              aria-label="Voir les commentaires de cet article"
               onClick={(e) => e.stopPropagation()}
             >
               <span
