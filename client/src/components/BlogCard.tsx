@@ -1,11 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import "../styles/BlogCard.css";
-
-// Composant Tag simple
-const Tag = ({ children }: { children: React.ReactNode }) => (
-  <span className="tag-badge">{children}</span>
-);
+import { Tag } from "./Tags.tsx";
 
 interface Article {
   id: number;
