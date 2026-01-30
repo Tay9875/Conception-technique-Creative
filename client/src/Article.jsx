@@ -178,71 +178,71 @@ function Article({ user }) {
             </div>
           </main>
 
-          {/* 🧰 Actions */}
-          <section className="article-tools" aria-label="Actions sur l’article">
+          {user && user.id && (
+          <section className="article-tools" aria-label="Actions sur l'article">
             <div className="article-appreciation">
-              
-              {/* BOUTON LIKE CONNECTÉ */}
-              <SquareButton
-                className="sqr-button-dark-background"
-                aria-label={isLiked ? "Retirer des favoris" : "Ajouter aux favoris"}
-                aria-pressed={isLiked}
-                onClick={handleLike}
+            
+            {/* BOUTON LIKE CONNECTÉ */}
+            <SquareButton
+              className="sqr-button-dark-background"
+              aria-label={isLiked ? "Retirer des favoris" : "Ajouter aux favoris"}
+              aria-pressed={isLiked}
+              onClick={handleLike}
+            >
+              <span
+              className="material-symbols-outlined"
+              aria-hidden="true"
               >
-                <span
-                  className="material-symbols-outlined"
-                  aria-hidden="true"
-                >
-                  {isLiked ? "favorite" : "favorite_border"}
-                </span>
-                {/* On peut afficher le compteur ici si on veut */}
-                <span style={{marginLeft: '5px', fontSize: '0.9rem'}}>{likesCount}</span>
-              </SquareButton>
-
-              <SquareButton
-                className="sqr-button-dark-background"
-                aria-expanded={commentsOpen}
-                aria-controls="comments-container"
-                aria-haspopup="region"
-                aria-label="Afficher ou masquer les commentaires"
-                onClick={() => setCommentsOpen((prev) => !prev)}
-              >
-                <span
-                  className="material-symbols-outlined"
-                  aria-hidden="true"
-                >
-                  sms
-                </span>
-              </SquareButton>
-            </div>
+              {isLiked ? "favorite" : "favorite_border"}
+              </span>
+              <span style={{marginLeft: '5px', fontSize: '0.9rem'}}>{likesCount}</span>
+            </SquareButton>
 
             <SquareButton
               className="sqr-button-dark-background"
-              aria-label="Signaler cet article"
-              onClick={() => setIsModalOpen(true)}
+              aria-expanded={commentsOpen}
+              aria-controls="comments-container"
+              aria-haspopup="menu"
+              aria-label="Afficher ou masquer les commentaires"
+              onClick={() => setCommentsOpen((prev) => !prev)}
             >
               <span
-                className="material-symbols-outlined"
-                aria-hidden="true"
+              className="material-symbols-outlined"
+              aria-hidden="true"
               >
-                report
+              sms
               </span>
             </SquareButton>
+            </div>
+
+            <SquareButton
+            className="sqr-button-dark-background"
+            aria-label="Signaler cet article"
+            onClick={() => setIsModalOpen(true)}
+            >
+            <span
+              className="material-symbols-outlined"
+              aria-hidden="true"
+            >
+              report
+            </span>
+            </SquareButton>
           </section>
+          )}
 
           {/* 💬 Commentaires */}
           {commentsOpen && (
-            <CommentSection
-              id="comments-container"
-              isOpen={commentsOpen}
-              articleId={article.id}
-              user={user} // 4. PASSAGE DE USER AUX COMMENTAIRES
-            />
+          <CommentSection
+            id="comments-container"
+            isOpen={commentsOpen}
+            articleId={article.id}
+            user={user}
+          />
           )}
         </article>
-      </section>
+        </section>
 
-      {/* 🚨 Modale signalement */}
+        {/* 🚨 Modale signalement */}
       <AccessibleModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
