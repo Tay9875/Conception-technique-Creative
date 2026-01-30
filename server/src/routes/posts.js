@@ -59,22 +59,41 @@ router.post('/', async (req, res) => {
     }
 });
 
-// POST /api/posts/:id
-router.post('/:id', async (req, res) => {
-    const postId = req.params.id;
-    const userId = req.body.user_id;
+// GET /api/posts/:id
+router.get("/:id", async (req, res) => {
+  const postId = req.params.id;
 
-    if (!userId) return res.status(401).json({ message: "Non connecté" });
+  try {
+    const [rows] = await db.query(
+      `
+      SELECT 
+        posts.id,
+        posts.title,
+        posts.description,
+        tags.title AS tag_title
+      FROM posts
+      LEFT JOIN tags ON posts.tag_id = tags.id
+      WHERE posts.id = ?
+      `,
+      [postId]
+    );
 
-    try {
-        const [existingLike] = await db.query(
-            'SELECT * FROM likes WHERE user_id = ? AND post_id = ?', 
-            [userId, postId]
-        );
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Erreur serveur" });
+    if (rows.length === 0) {
+      return res.status(404).json({ message: "Article introuvable" });
     }
+
+    const post = rows[0];
+
+    res.json({
+      id: post.id,
+      title: post.title,
+      description: post.description,
+      tag: post.tag_title ? { title: post.tag_title } : null,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Erreur serveur" });
+  }
 });
 
 // POST /api/posts/:id/like
