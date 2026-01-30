@@ -1,5 +1,6 @@
 // client/src/Profile.jsx
 import React, { useState, useEffect } from "react";
+const API_URL = 'https://conception-technique-creative-backend.onrender.com/api';
 import "./Profile.css";
 import { Header } from "./components/Header.tsx";
 import { SquareButton } from "./components/SquareButton.tsx";
@@ -17,6 +18,22 @@ export default function Profile({ onLogout }) {
     const stored = localStorage.getItem("user");
     return stored ? JSON.parse(stored) : null;
   });
+
+  // Récupère le profil complet si role_id absent
+  useEffect(() => {
+    if (user && user.id && user.role_id === undefined) {
+      fetch(`${API_URL}/users/${user.id}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data && data.role_id) {
+            const updatedUser = { ...user, role_id: data.role_id };
+            setUser(updatedUser);
+            localStorage.setItem("user", JSON.stringify(updatedUser));
+          }
+        })
+        .catch(err => console.error("Erreur récupération profil:", err));
+    }
+  }, [user]);
 
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
