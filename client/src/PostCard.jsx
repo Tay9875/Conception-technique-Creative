@@ -87,8 +87,15 @@ export default function PostCard({ post, user }) {
             </button>
             
             <div className="post-footer">
-                <span>Par <strong>{post.firstname} {post.lastname}</strong></span>
-                <span>{new Date(post.created_at).toLocaleDateString()}</span>
+                    <span>Par <strong>{post.firstname} {post.lastname}</strong></span>
+                    {post.role_id && (
+                        <span style={{marginLeft:8, fontStyle:'italic', color:'#666'}}>
+                            [
+                            {post.role_id === 1 ? "Patient" : post.role_id === 2 ? "Ancien Patient" : post.role_id === 3 ? "Proche" : "Inconnu"}
+                            ]
+                        </span>
+                    )}
+                    <span>{new Date(post.created_at).toLocaleDateString()}</span>
             </div>
 
             <hr className="divider" />
