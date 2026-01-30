@@ -59,6 +59,24 @@ router.post('/', async (req, res) => {
     }
 });
 
+// POST /api/posts/:id
+router.post('/:id', async (req, res) => {
+    const postId = req.params.id;
+    const userId = req.body.user_id;
+
+    if (!userId) return res.status(401).json({ message: "Non connecté" });
+
+    try {
+        const [existingLike] = await db.query(
+            'SELECT * FROM likes WHERE user_id = ? AND post_id = ?', 
+            [userId, postId]
+        );
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Erreur serveur" });
+    }
+});
+
 // POST /api/posts/:id/like
 router.post('/:id/like', async (req, res) => {
     const postId = req.params.id;
