@@ -1,56 +1,93 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import "../styles/BlogCard.css";
-// import { Tag } from "./Tags"; // Utilise ton composant Tag si tu l'as
-// Sinon un simple span suffit pour le moment :
-const Tag = ({ children }: { children: React.ReactNode }) => <span className="tag-badge">{children}</span>;
 
-// Mise à jour de l'interface pour correspondre à ton Backend SQL
+// Composant Tag simple
+const Tag = ({ children }: { children: React.ReactNode }) => (
+  <span className="tag-badge">{children}</span>
+);
+
 interface Article {
   id: number;
   title: string;
   description: string;
   created_at: string;
-  firstname?: string; // Ajouté
-  lastname?: string;  // Ajouté
-  tag_title?: string; // SQL renvoie souvent ça avec un JOIN
+  firstname?: string;
+  lastname?: string;
+  tag_title?: string;
   like_count?: number;
-  is_liked?: number; // 0 ou 1
-  tag?: { title: string }; // Cas où l'API renvoie un objet imbriqué
+  is_liked?: number;
+  tag?: { title: string };
 }
 
 interface BlogCardProps {
   article: Article;
-  user?: any; // Pour gérer l'authentification du like
+  user?: any;
 }
 
 export const BlogCard: React.FC<BlogCardProps> = ({ article, user }) => {
   const navigate = useNavigate();
 
-  // Initialisation avec les données du backend
+  // --- ÉTATS ---
   const [isLiked, setIsLiked] = useState(article.is_liked === 1);
   const [likesCount, setLikesCount] = useState(article.like_count || 0);
+  
+  // État pour cacher le post s'il vient d'être banni
+  const [isVisible, setIsVisible] = useState(true);
 
   const titleId = `blog-title-${article.id}`;
-  const API_URL = "https://conception-technique-creative-backend.onrender.com/api"; 
+  const API_URL = "https://conception-technique-creative-backend.onrender.com/api";
   // const API_URL = "http://localhost:3000/api";
 
+  // --- GESTION DU LIKE ---
   const handleLike = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
-    
-    // UI Optimiste
+
+    if (!user || !user.id) return alert("Veuillez vous connecter pour aimer un article.");
+
     const newLikedState = !isLiked;
     setIsLiked(newLikedState);
     setLikesCount((prev) => (newLikedState ? prev + 1 : prev - 1));
 
-    if (user && user.id) {
-        try {
-            await fetch(`${API_URL}/posts/${article.id}/like`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ user_id: user.id })
-            });
-        } catch (error) { console.error(error); }
+    try {
+      await fetch(`${API_URL}/posts/${article.id}/like`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user_id: user.id }),
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  // --- GESTION DU SIGNALEMENT (NOUVEAU) ---
+  const handleReport = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation(); // Empêche d'ouvrir l'article
+
+    if (!user || !user.id) return alert("Veuillez vous connecter pour signaler un contenu.");
+
+    if (!window.confirm("Voulez-vous vraiment signaler ce contenu comme inapproprié ?")) return;
+
+    try {
+      const response = await fetch(`${API_URL}/posts/${article.id}/report`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user_id: user.id }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert(data.message);
+        // Si le post est banni (3ème signalement), on le cache visuellement
+        if (data.banned) {
+          setIsVisible(false);
+        }
+      } else {
+        alert("Erreur : " + data.message);
+      }
+    } catch (error) {
+      console.error("Erreur report:", error);
     }
   };
 
@@ -58,13 +95,17 @@ export const BlogCard: React.FC<BlogCardProps> = ({ article, user }) => {
     navigate(`/article/${article.id}`);
   };
 
-  // Gestion du nom de l'auteur
-  const authorName = article.firstname && article.lastname 
-    ? `${article.firstname} ${article.lastname}` 
-    : "Anonyme";
+  // Gestion des noms et tags
+  const authorName =
+    article.firstname && article.lastname
+      ? `${article.firstname} ${article.lastname}`
+      : "Anonyme";
 
-  // Gestion du titre du Tag (supporte les deux formats API)
-  const displayTag = article.tag_title || (article.tag ? article.tag.title : null);
+  const displayTag =
+    article.tag_title || (article.tag ? article.tag.title : null);
+
+  // Si le post est banni/caché, on ne rend rien
+  if (!isVisible) return null;
 
   return (
     <article
@@ -93,9 +134,7 @@ export const BlogCard: React.FC<BlogCardProps> = ({ article, user }) => {
             </h3>
           </header>
 
-          <p className="blogcard-paragraph">
-            {article.description}
-          </p>
+          <p className="blogcard-paragraph">{article.description}</p>
         </div>
 
         {/* FOOTER */}
@@ -105,8 +144,10 @@ export const BlogCard: React.FC<BlogCardProps> = ({ article, user }) => {
               <span className="material-symbols-outlined" aria-hidden="true">
                 person
               </span>
-              {/* ICI : On affiche le nom visuellement */}
-              <span className="author-name" style={{ marginLeft: '6px', fontWeight: '500' }}>
+              <span
+                className="author-name"
+                style={{ marginLeft: "6px", fontWeight: "500" }}
+              >
                 {authorName}
               </span>
             </p>
@@ -126,7 +167,9 @@ export const BlogCard: React.FC<BlogCardProps> = ({ article, user }) => {
               type="button"
               className="transparent-btn"
               aria-pressed={isLiked}
-              aria-label={isLiked ? "Retirer des favoris" : "Ajouter aux favoris"}
+              aria-label={
+                isLiked ? "Retirer des favoris" : "Ajouter aux favoris"
+              }
               onClick={handleLike}
             >
               <span className="material-symbols-outlined" aria-hidden="true">
@@ -140,11 +183,29 @@ export const BlogCard: React.FC<BlogCardProps> = ({ article, user }) => {
               to={`/article/${article.id}#comments`}
               className="transparent-btn"
               onClick={(e) => e.stopPropagation()}
+              aria-label="Voir les commentaires"
             >
               <span className="material-symbols-outlined" aria-hidden="true">
                 sms
               </span>
             </Link>
+
+            {/* 🚩 SIGNALEMENT (NOUVEAU) */}
+            <button
+              type="button"
+              className="transparent-btn"
+              onClick={handleReport}
+              aria-label="Signaler ce contenu"
+              title="Signaler"
+            >
+              <span
+                className="material-symbols-outlined"
+                aria-hidden="true"
+                style={{ fontSize: "1.3rem" }} // Légèrement ajusté si besoin
+              >
+                flag
+              </span>
+            </button>
           </div>
         </footer>
       </div>
