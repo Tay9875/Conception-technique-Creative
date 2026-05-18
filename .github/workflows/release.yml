@@ -184,121 +184,131 @@ jobs:
           APP_COMMIT_SHA: ${{ needs.build-and-push.outputs.commit_sha }}
         run: |
           set -euo pipefail
-          node --input-type=commonjs <<'NODE'
-          const fs = require('fs');
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
 
-          const required = [
-            'DOKPLOY_URL',
-            'DOKPLOY_API_KEY',
-            'DOKPLOY_COMPOSE_ID',
-            'GHCR_IMAGE_NAME',
-            'APP_IMAGE_TAG',
-            'APP_VERSION',
-            'APP_COMMIT_SHA'
-          ];
-
-          for (const key of required) {
-            if (!process.env[key]) {
-              throw new Error(`${key} is required`);
-            }
-          }
-
-          const baseUrl = process.env.DOKPLOY_URL.replace(/\/+$/, '');
-          const composeId = process.env.DOKPLOY_COMPOSE_ID;
-
-          const request = async (path, options = {}) => {
-            const response = await fetch(`${baseUrl}${path}`, {
-              ...options,
-              headers: {
-                'Content-Type': 'application/json',
-                'x-api-key': process.env.DOKPLOY_API_KEY,
-                ...(options.headers || {})
-              }
-            });
-
-            const text = await response.text();
-            let payload = {};
-            if (text) {
-              try {
-                payload = JSON.parse(text);
-              } catch {
-                payload = { raw: text };
-              }
-            }
-
-            if (!response.ok) {
-              throw new Error(`${path} failed with HTTP ${response.status}: ${JSON.stringify(payload)}`);
-            }
-
-            return payload;
-          };
-
-          const findEnv = (payload) => {
-            const candidates = [
-              payload.env,
-              payload.compose?.env,
-              payload.data?.env,
-              payload.data?.compose?.env
+          try {
+            const required = [
+              'DOKPLOY_URL',
+              'DOKPLOY_API_KEY',
+              'DOKPLOY_COMPOSE_ID',
+              'GHCR_IMAGE_NAME',
+              'APP_IMAGE_TAG',
+              'APP_VERSION',
+              'APP_COMMIT_SHA'
             ];
-            return candidates.find((value) => typeof value === 'string');
-          };
 
-          const upsertEnv = (envText, updates) => {
-            const lines = envText.split(/\r?\n/);
-            const seen = new Set();
-            const next = lines.map((line) => {
-              const match = line.match(/^([A-Z0-9_]+)=/);
-              if (!match || !Object.prototype.hasOwnProperty.call(updates, match[1])) {
-                return line;
-              }
-              seen.add(match[1]);
-              return `${match[1]}=${updates[match[1]]}`;
-            });
-
-            for (const [key, value] of Object.entries(updates)) {
-              if (!seen.has(key)) {
-                next.push(`${key}=${value}`);
+            for (const key of required) {
+              if (!process.env[key]) {
+                throw new Error(`${key} is required`);
               }
             }
 
-            return next.join('\n').trim() + '\n';
-          };
+            const baseUrl = process.env.DOKPLOY_URL.replace(/\/+$/, '');
+            const composeId = process.env.DOKPLOY_COMPOSE_ID;
 
-          const current = await request(`/api/compose.one?composeId=${encodeURIComponent(composeId)}`, {
-            method: 'GET'
-          });
-          const currentEnv = findEnv(current);
+            const request = async (path, options = {}) => {
+              const method = options.method || 'GET';
+              console.log(`Calling Dokploy ${method} ${path}`);
 
-          if (typeof currentEnv !== 'string') {
-            throw new Error('Could not read the existing Dokploy compose environment. Configure the compose env once in Dokploy before using release automation.');
+              const response = await fetch(`${baseUrl}${path}`, {
+                ...options,
+                headers: {
+                  'Content-Type': 'application/json',
+                  'x-api-key': process.env.DOKPLOY_API_KEY,
+                  ...(options.headers || {})
+                }
+              });
+
+              const text = await response.text();
+              let payload = {};
+              if (text) {
+                try {
+                  payload = JSON.parse(text);
+                } catch {
+                  payload = { raw: text };
+                }
+              }
+
+              if (!response.ok) {
+                console.error(`Dokploy ${method} ${path} failed with HTTP ${response.status}`);
+                console.error(text || '<empty response body>');
+                throw new Error(`Dokploy request failed: ${method} ${path}`);
+              }
+
+              return payload;
+            };
+
+            const findEnv = (payload) => {
+              const candidates = [
+                payload.env,
+                payload.compose?.env,
+                payload.data?.env,
+                payload.data?.compose?.env
+              ];
+              return candidates.find((value) => typeof value === 'string');
+            };
+
+            const upsertEnv = (envText, updates) => {
+              const lines = envText.split(/\r?\n/);
+              const seen = new Set();
+              const next = lines.map((line) => {
+                const match = line.match(/^([A-Z0-9_]+)=/);
+                if (!match || !Object.prototype.hasOwnProperty.call(updates, match[1])) {
+                  return line;
+                }
+                seen.add(match[1]);
+                return `${match[1]}=${updates[match[1]]}`;
+              });
+
+              for (const [key, value] of Object.entries(updates)) {
+                if (!seen.has(key)) {
+                  next.push(`${key}=${value}`);
+                }
+              }
+
+              return next.join('\n').trim() + '\n';
+            };
+
+            const current = await request(`/api/compose.one?composeId=${encodeURIComponent(composeId)}`, {
+              method: 'GET'
+            });
+            const currentEnv = findEnv(current);
+
+            if (typeof currentEnv !== 'string') {
+              throw new Error('Could not read the existing Dokploy compose environment. Configure the compose env once in Dokploy before using release automation.');
+            }
+
+            const env = upsertEnv(currentEnv, {
+              GHCR_IMAGE_NAME: process.env.GHCR_IMAGE_NAME,
+              APP_IMAGE_TAG: process.env.APP_IMAGE_TAG,
+              APP_VERSION: process.env.APP_VERSION,
+              APP_COMMIT_SHA: process.env.APP_COMMIT_SHA
+            });
+
+            await request('/api/compose.update', {
+              method: 'POST',
+              body: JSON.stringify({
+                composeId,
+                composeFile: fs.readFileSync('docker-compose.prod.yml', 'utf8'),
+                env,
+                sourceType: 'raw',
+                composeType: 'docker-compose'
+              })
+            });
+
+            await request('/api/compose.deploy', {
+              method: 'POST',
+              body: JSON.stringify({
+                composeId,
+                title: `Oncarya ${process.env.APP_IMAGE_TAG}`,
+                description: `GitHub Actions ${process.env.APP_COMMIT_SHA}`
+              })
+            });
+          } catch (error) {
+            console.error(error);
+            process.exit(1);
           }
-
-          const env = upsertEnv(currentEnv, {
-            GHCR_IMAGE_NAME: process.env.GHCR_IMAGE_NAME,
-            APP_IMAGE_TAG: process.env.APP_IMAGE_TAG,
-            APP_VERSION: process.env.APP_VERSION,
-            APP_COMMIT_SHA: process.env.APP_COMMIT_SHA
-          });
-
-          await request('/api/compose.update', {
-            method: 'POST',
-            body: JSON.stringify({
-              composeId,
-              composeFile: fs.readFileSync('docker-compose.prod.yml', 'utf8'),
-              env,
-              sourceType: 'raw',
-              composeType: 'docker-compose'
-            })
-          });
-
-          await request('/api/compose.deploy', {
-            method: 'POST',
-            body: JSON.stringify({
-              composeId,
-              title: `Oncarya ${process.env.APP_IMAGE_TAG}`,
-              description: `GitHub Actions ${process.env.APP_COMMIT_SHA}`
-            })
-          });
           NODE
 
       - name: Smoke test
