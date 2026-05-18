@@ -34,10 +34,11 @@ jobs:
 
           # Conventions:
           # - protected: main, dev
-          # - task branches: <type>/<slug>
+          # - preferred task branches: <type>/<slug>
           #   types: feat|fix|docs|style|refactor|perf|test|chore|build|ci|revert
           #   slug: lowercase alnum + separators (- or _)
-          allowed_regex='^(main|dev|((feat|fix|docs|style|refactor|perf|test|chore|build|ci|revert)\/[a-z0-9]+([._-][a-z0-9]+)*))$'
+          # - accepted legacy/project branches: kebab/snake/dot lowercase
+          allowed_regex='^(main|dev|((feat|fix|docs|style|refactor|perf|test|chore|build|ci|revert)\/[a-z0-9]+([._-][a-z0-9]+)*)|([a-z0-9]+([._-][a-z0-9]+)*))$'
 
           if [[ ! "$BRANCH_NAME" =~ $allowed_regex ]]; then
             echo "❌ Branch name '$BRANCH_NAME' does not match conventions." >&2

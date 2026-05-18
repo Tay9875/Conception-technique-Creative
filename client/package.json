@@ -80,5 +80,6 @@
     "@types/react": "^19.2.10",
     "eslint": "^8.57.1",
     "jest-axe": "^10.0.0"
-  }
+  },
+  "proxy": "http://localhost:3000"
 }

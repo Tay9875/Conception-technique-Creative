@@ -10,6 +10,7 @@ import { SquareButton } from "./components/SquareButton.tsx";
 import { Footer } from "./components/Footer.tsx";
 import { BlogCard } from "./components/BlogCard.tsx";
 import { API_URL } from "./config/api";
+import { apiFetch } from "./lib/apiClient";
 
 function MesArticles({ user }) {
   const navigate = useNavigate();
@@ -49,9 +50,7 @@ function MesArticles({ user }) {
   // --- 4. APPELS API ---
   const fetchTags = async () => {
     try {
-      const response = await fetch(`${API_URL}/tags`);
-      if (!response.ok) throw new Error("Erreur tags");
-      const data = await response.json();
+      const data = await apiFetch(`${API_URL}/tags`);
       setTags(data);
     } catch (error) {
       console.error(error);
@@ -69,10 +68,7 @@ function MesArticles({ user }) {
     try {
       console.log(`📡 [DEBUG] Fetching : ${API_URL}/posts?user_id=${user.id}`);
       
-      const response = await fetch(`${API_URL}/posts?user_id=${user.id}`);
-      if (!response.ok) throw new Error("Erreur articles");
-      
-      const data = await response.json();
+      const data = await apiFetch(`${API_URL}/posts?user_id=${user.id}`);
       console.log("📦 [DEBUG] Données brutes reçues de l'API :", data);
 
       // Le filtrage avec logs détaillés
@@ -96,20 +92,16 @@ function MesArticles({ user }) {
     if (!user || !user.id) return;
 
     try {
-      const response = await fetch(`${API_URL}/posts`, {
+      await apiFetch(`${API_URL}/posts`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...data, user_id: user.id }),
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${localStorage.getItem("token")}` },
+        body: JSON.stringify(data),
       });
 
-      if (response.ok) {
-        setIsModalOpen(false);
-        fetchMyArticles(); // Recharger la liste pour voir le nouveau post
-        setSelectedTag(null); // Réinitialiser les filtres
-        setActiveSort("Récents");
-      } else {
-        console.error("Erreur lors de la création du post");
-      }
+      setIsModalOpen(false);
+      fetchMyArticles();
+      setSelectedTag(null);
+      setActiveSort("Récents");
     } catch (error) {
       console.error(error);
     }
