@@ -1,22 +1,39 @@
-// server/src/index.js
-require('dotenv').config();
+require('dotenv').config({ quiet: true });
 const express = require('express');
 const cors = require('cors');
 
-// --- IMPORTS DES ROUTES ---
-const authRoutes = require('./routes/auth'); // C'est cette ligne qui te manquait !
-const postRoutes = require('./routes/posts'); // Et celle-ci pour les posts
+const pkg = require('../package.json');
+const authRoutes = require('./routes/auth');
+const postRoutes = require('./routes/posts');
 const tagsRoutes = require('./routes/tags');
 const commentsRoutes = require('./routes/comments');
 const usersRoutes = require('./routes/users');
-const db = require('./database/db'); // Import du pool de connexion DB
+const db = require('./database/db');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middlewares
-app.use(cors()); // Autorise le frontend à se connecter
-app.use(express.json()); // Permet de lire le JSON envoyé par le front
+app.disable('x-powered-by');
+
+const configuredOrigins = (process.env.CORS_ORIGIN || '')
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+
+const corsOptions = configuredOrigins.length > 0
+    ? {
+        origin(origin, callback) {
+            if (!origin || configuredOrigins.includes(origin)) {
+                return callback(null, true);
+            }
+
+            return callback(new Error('Origin not allowed by CORS'));
+        }
+    }
+    : undefined;
+
+app.use(cors(corsOptions));
+app.use(express.json({ limit: '1mb' }));
 
 const shouldMigrateOnStart = () => {
     const value = process.env.MIGRATE_ON_START;
@@ -28,84 +45,110 @@ const shouldSeedOnStart = () => {
     return value === 'true' || value === '1' || value === 'yes';
 };
 
+const validateProductionConfig = () => {
+    if (process.env.NODE_ENV === 'production' && !process.env.JWT_SECRET) {
+        throw new Error('JWT_SECRET is required when NODE_ENV=production');
+    }
+};
+
+const healthPayload = () => ({
+    status: 'ok',
+    service: 'oncarya-api',
+    version: process.env.APP_VERSION || pkg.version,
+    commit: process.env.APP_COMMIT_SHA || null
+});
+
+app.get('/health', (req, res) => {
+    res.json(healthPayload());
+});
+
+app.get('/api/health', (req, res) => {
+    res.json(healthPayload());
+});
+
+app.use('/api/auth', authRoutes);
+app.use('/api/posts', postRoutes);
+app.use('/api/tags', tagsRoutes);
+app.use('/api/comments', commentsRoutes);
+app.use('/api/users', usersRoutes);
+
+if (process.env.ENABLE_DB_FIX_ROUTE === 'true') {
+    app.get('/api/fix-db-structure', async (req, res) => {
+        try {
+            await db.query(`
+                CREATE TABLE IF NOT EXISTS tags (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    title VARCHAR(50) NOT NULL UNIQUE
+                )
+            `);
+
+            try {
+                await db.query('ALTER TABLE posts ADD COLUMN tag_id INT NULL');
+                await db.query('ALTER TABLE posts ADD CONSTRAINT fk_posts_tags FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE SET NULL');
+                console.log('Colonne tag_id ajoutee.');
+            } catch (e) {
+                console.log('La colonne tag_id existe probablement deja :', e.message);
+            }
+
+            try {
+                await db.query('ALTER TABLE posts ADD COLUMN is_banned TINYINT(1) DEFAULT 0');
+                console.log('Colonne is_banned ajoutee.');
+            } catch (e) {
+                console.log('La colonne is_banned existe probablement deja :', e.message);
+            }
+
+            await db.query(`
+                CREATE TABLE IF NOT EXISTS likes (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    user_id INT NOT NULL,
+                    post_id INT NOT NULL,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    UNIQUE(user_id, post_id),
+                    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+                    FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE
+                )
+            `);
+
+            res.send('Base de donnees mise a jour avec succes.');
+        } catch (error) {
+            console.error(error);
+            res.status(500).send('Erreur lors de la mise a jour : ' + error.message);
+        }
+    });
+}
+
+app.use((req, res) => {
+    res.status(404).json({ message: 'Not found' });
+});
+
+app.use((err, req, res, next) => {
+    console.error(err);
+    if (res.headersSent) {
+        return next(err);
+    }
+
+    res.status(500).json({ message: 'Internal server error' });
+});
+
 const boot = async () => {
+    validateProductionConfig();
+
     if (shouldMigrateOnStart()) {
         const migrate = require('./database/migrate');
         await migrate();
     }
 
-    if (shouldSeedOnStart() || shouldMigrateOnStart()) {
+    if (shouldSeedOnStart()) {
         const seed = require('./database/seed');
         await seed();
     }
 
-    require('./database/db'); // Test BDD
-
-    // Routes
-    const authRoutes = require('./routes/auth');
-    app.use('/api/auth', authRoutes);
+    app.listen(PORT, () => {
+        console.log(`Serveur lance sur http://localhost:${PORT}`);
+    });
 };
 
 boot().catch((err) => {
-    console.error("❌ Erreur lors du démarrage de l'application :", err);
+    console.error("Erreur lors du demarrage de l'application :", err);
     process.exit(1);
-});
-
-// --- DÉCLARATION DES ROUTES ---
-app.use('/api/auth', authRoutes); // Utilise l'import authRoutes
-app.use('/api/posts', postRoutes); // Utilise l'import postRoutes
-app.use('/api/tags', tagsRoutes);
-app.use('/api/comments', commentsRoutes);
-app.use('/api/users', usersRoutes);
-
-// --- ROUTE TEMPORAIRE POUR METTRE À JOUR LA BDD SUR RENDER ---
-app.get('/api/fix-db-structure', async (req, res) => {
-    try {
-        // 1. Créer la table tags si elle n'existe pas
-        await db.query(`
-            CREATE TABLE IF NOT EXISTS tags (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                title VARCHAR(50) NOT NULL UNIQUE
-            )
-        `);
-
-        // 2. Ajouter la colonne tag_id à posts (si elle manque, ça plantera pas grâce au try/catch ou on peut ignorer l'erreur)
-        try {
-            await db.query(`ALTER TABLE posts ADD COLUMN tag_id INT NULL`);
-            await db.query(`ALTER TABLE posts ADD CONSTRAINT fk_posts_tags FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE SET NULL`);
-            console.log("Colonne tag_id ajoutée !");
-        } catch (e) {
-            console.log("La colonne tag_id existe probablement déjà :", e.message);
-        }
-
-        // 3. Ajouter la colonne is_banned
-        try {
-            await db.query(`ALTER TABLE posts ADD COLUMN is_banned TINYINT(1) DEFAULT 0`);
-            console.log("Colonne is_banned ajoutée !");
-        } catch (e) {
-            console.log("La colonne is_banned existe probablement déjà :", e.message);
-        }
-
-        // 4. Créer la table Likes
-        await db.query(`
-            CREATE TABLE IF NOT EXISTS likes (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                user_id INT NOT NULL,
-                post_id INT NOT NULL,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                UNIQUE(user_id, post_id),
-                FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-                FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE
-            )
-        `);
-
-        res.send("Base de données mise à jour avec succès !");
-    } catch (error) {
-        console.error(error);
-        res.status(500).send("Erreur lors de la mise à jour : " + error.message);
-    }
-});
-
-app.listen(PORT, () => {
-    console.log(`🚀 Serveur lancé sur http://localhost:${PORT}`);
 });

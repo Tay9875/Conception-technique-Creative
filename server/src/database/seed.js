@@ -1,5 +1,5 @@
 // server/src/database/seed.js
-require('dotenv').config(); // Charge les variables d'environnement
+require('dotenv').config({ quiet: true }); // Charge les variables d'environnement
 const db = require('./db'); // Récupère ta connexion existante
 
 async function seed() {

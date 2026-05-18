@@ -1,5 +1,6 @@
 // client/src/PostCard.jsx
 import React, { useState, useEffect } from 'react';
+import { API_URL } from './config/api';
 
 export default function PostCard({ post, user }) {
     const [comments, setComments] = useState([]);
@@ -8,9 +9,6 @@ export default function PostCard({ post, user }) {
     const [isLiked, setIsLiked] = useState(post.is_liked === 1);
     const [likeCount, setLikeCount] = useState(post.like_count);
     
-    // URL API (Change selon Prod/Local)
-    const API_URL = 'https://conception-technique-creative-backend.onrender.com/api';
-
     // Charger les commentaires quand on clique sur "Voir commentaires"
     const fetchComments = async () => {
         try {

@@ -6,6 +6,7 @@ import { BlogCard } from "./components/BlogCard.tsx";
 import { Empty } from "./components/Empty.tsx";
 import { Footer } from "./components/Footer.tsx";
 import BottomNav from "./components/BottomNav.tsx";
+import { API_URL } from "./config/api";
 
 function Accueil({ user }) {
   const [theme, setTheme] = useState(
@@ -17,10 +18,6 @@ function Accueil({ user }) {
   
   const [selectedTag, setSelectedTag] = useState(null);
   const [activeSort, setActiveSort] = useState("Récents");
-
-  // URL API (Change en localhost:3000 si tu es en local)
-  const API_URL = "https://conception-technique-creative-backend.onrender.com/api";
-  // const API_URL = "http://localhost:3000/api";
 
   // Gestion du Thème
   useEffect(() => {

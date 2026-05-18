@@ -6,7 +6,10 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint src",
-    "start": "node src/index.js"
+    "start": "node src/index.js",
+    "dev": "node src/index.js",
+    "db:migrate": "node src/database/migrate.js",
+    "db:seed": "node src/database/seed.js"
   },
   "author": "",
   "license": "ISC",

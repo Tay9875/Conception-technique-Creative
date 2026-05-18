@@ -1,0 +1,77 @@
+services:
+  mysql:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE:?MYSQL_DATABASE is required}
+      MYSQL_USER: ${MYSQL_USER:?MYSQL_USER is required}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?MYSQL_PASSWORD is required}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?MYSQL_ROOT_PASSWORD is required}
+    volumes:
+      - oncarya_mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u$${MYSQL_USER} -p$${MYSQL_PASSWORD} --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+    networks:
+      - oncarya_internal
+
+  api:
+    image: ${GHCR_IMAGE_NAME:?GHCR_IMAGE_NAME is required}-api:${APP_IMAGE_TAG:?APP_IMAGE_TAG is required}
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_USER: ${MYSQL_USER:?MYSQL_USER is required}
+      DB_PASSWORD: ${MYSQL_PASSWORD:?MYSQL_PASSWORD is required}
+      DB_NAME: ${MYSQL_DATABASE:?MYSQL_DATABASE is required}
+      DB_SSL: "false"
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required}
+      CORS_ORIGIN: ${CORS_ORIGIN:-}
+      MIGRATE_ON_START: ${MIGRATE_ON_START:-false}
+      SEED_ON_START: ${SEED_ON_START:-false}
+      ENABLE_DB_FIX_ROUTE: "false"
+      APP_VERSION: ${APP_VERSION:-unknown}
+      APP_COMMIT_SHA: ${APP_COMMIT_SHA:-unknown}
+    healthcheck:
+      test: ["CMD-SHELL", "node -e \"fetch('http://127.0.0.1:3000/health').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))\""]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+    expose:
+      - "3000"
+    networks:
+      - oncarya_internal
+
+  web:
+    image: ${GHCR_IMAGE_NAME:?GHCR_IMAGE_NAME is required}-web:${APP_IMAGE_TAG:?APP_IMAGE_TAG is required}
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
+    expose:
+      - "8080"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:8080/ >/dev/null || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+    networks:
+      - dokploy-network
+      - oncarya_internal
+
+volumes:
+  oncarya_mysql_data:
+
+networks:
+  dokploy-network:
+    external: true
+  oncarya_internal:
+    driver: bridge
+    internal: true
