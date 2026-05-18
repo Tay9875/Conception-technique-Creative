@@ -1,13 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import { installResizeObserverErrorFilter } from './config/resizeObserverErrorFilter';
 import App from './App.tsx';
 import { BrowserRouter } from 'react-router-dom';
 import reportWebVitals from './reportWebVitals';
 import { PreferencesProvider } from './contexts/PreferencesContext';
-
-installResizeObserverErrorFilter();
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
