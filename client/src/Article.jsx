@@ -8,6 +8,7 @@ import { Tag } from "./components/Tags.tsx";
 import ReportForm from "./components/ReportForm.tsx";
 import { CommentSection } from "./components/CommentSection.tsx";
 import { API_URL } from "./config/api";
+import { apiFetch } from "./lib/apiClient";
 
 // 1. AJOUT de la prop 'user' pour l'authentification
 function Article({ user }) {
@@ -43,10 +44,7 @@ function Article({ user }) {
       try {
         // Idéalement, faire un call /posts/:id si l'API le permet
         // Ici je garde ta logique de liste complète pour être sûr
-        const response = await fetch(`${API_URL}/posts`);
-        if (!response.ok) throw new Error("Erreur chargement articles");
-
-        const posts = await response.json();
+        const posts = await apiFetch(`${API_URL}/posts`);
         // Comparaison souple (String/Number)
         const foundArticle = posts.find((post) => String(post.id) === String(id));
 
@@ -77,10 +75,9 @@ function Article({ user }) {
     setLikesCount(prev => newLikedState ? prev + 1 : prev - 1);
 
     try {
-      await fetch(`${API_URL}/posts/${id}/like`, {
+      await apiFetch(`${API_URL}/posts/${id}/like`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user_id: user.id }),
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
     } catch (error) {
       console.error("Erreur like:", error);
@@ -93,25 +90,17 @@ function Article({ user }) {
     if (!user || !user.id) return alert("Veuillez vous connecter pour signaler.");
 
     try {
-        const response = await fetch(`${API_URL}/posts/${id}/report`, {
+        const data = await apiFetch(`${API_URL}/posts/${id}/report`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ user_id: user.id })
+            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${localStorage.getItem("token")}` },
+            body: JSON.stringify({})
         });
-        
-        const data = await response.json();
-        
-        if (response.ok) {
-            alert(data.message || "Signalement pris en compte.");
-            setIsModalOpen(false);
-            
-            // Si l'article est banni suite au signalement, on redirige
-            if (data.banned) {
-                alert("Cet article a été supprimé par la communauté suite aux signalements.");
-                navigate('/');
-            }
-        } else {
-            alert("Erreur : " + data.message);
+
+        alert(data.message || "Signalement pris en compte.");
+        setIsModalOpen(false);
+        if (data.banned) {
+            alert("Cet article a été supprimé par la communauté suite aux signalements.");
+            navigate('/');
         }
     } catch (error) {
         console.error(error);

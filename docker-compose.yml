@@ -1,5 +1,5 @@
 services:
-  mysql:
+  db:
     image: mysql:8.4
     restart: unless-stopped
     environment:
@@ -10,9 +10,23 @@ services:
     ports:
       - "127.0.0.1:${MYSQL_PORT:-3306}:3306"
     volumes:
-      - oncarya_mysql_data:/var/lib/mysql
+      - mysql-data:/var/lib/mysql
     healthcheck:
       test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u$${MYSQL_USER} -p$${MYSQL_PASSWORD} --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  redis:
+    image: redis:7-alpine
+    container_name: oncarya-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
       interval: 5s
       timeout: 5s
       retries: 20
@@ -23,23 +37,25 @@ services:
       dockerfile: infra/docker/server.Dockerfile
     restart: unless-stopped
     depends_on:
-      mysql:
+      db:
         condition: service_healthy
     environment:
       NODE_ENV: ${NODE_ENV:-development}
       PORT: 3000
-      DB_HOST: mysql
+      DB_HOST: db
       DB_PORT: 3306
       DB_USER: ${MYSQL_USER:-oncarya}
       DB_PASSWORD: ${MYSQL_PASSWORD:-oncarya}
       DB_NAME: ${MYSQL_DATABASE:-oncarya}
       DB_SSL: "false"
       JWT_SECRET: ${JWT_SECRET:-local-dev-only-change-me}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-local-dev-only-change-me-too}
       CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:8080,http://127.0.0.1:8080,http://localhost:3001}
       MIGRATE_ON_START: ${MIGRATE_ON_START:-true}
       SEED_ON_START: ${SEED_ON_START:-true}
       APP_VERSION: ${APP_VERSION:-local}
       APP_COMMIT_SHA: ${APP_COMMIT_SHA:-local}
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379}
     ports:
       - "127.0.0.1:${API_PORT:-3000}:3000"
     healthcheck:
@@ -67,4 +83,5 @@ services:
       retries: 12
 
 volumes:
-  oncarya_mysql_data:
+  mysql-data:
+  redis-data:

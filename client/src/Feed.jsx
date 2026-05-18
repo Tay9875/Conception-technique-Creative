@@ -4,6 +4,7 @@ import { Header } from "./components/Header.tsx";
 import FeedForm from "./components/FeedForm.tsx";
 import "./Feed.css";
 import { API_URL } from "./config/api";
+import { apiFetch } from "./lib/apiClient";
 
 export default function Feed({ user }) {
   const navigate = useNavigate();
@@ -24,10 +25,7 @@ export default function Feed({ user }) {
 
   /* 🔹 Récupération des tags */
   useEffect(() => {
-    fetch(`${API_URL}/tags`)
-      .then((res) => res.json())
-      .then(setTags)
-      .catch(console.error);
+    apiFetch(`${API_URL}/tags`).then(setTags).catch(console.error);
   }, []);
 
   /* 🔹 Focus lecteur d’écran sur message */
@@ -42,20 +40,11 @@ export default function Feed({ user }) {
     setStatusMessage("");
 
     try {
-      const response = await fetch(`${API_URL}/posts`, {
+      await apiFetch(`${API_URL}/posts`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          title,
-          description,
-          tag_id,
-          user_id: user.id,
-        }),
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${localStorage.getItem("token") || ""}` },
+        body: JSON.stringify({ title, description, tag_id }),
       });
-
-      if (!response.ok) {
-        throw new Error("Erreur création article");
-      }
 
       setStatusMessage("Article publié avec succès 🎉");
       setTimeout(() => navigate("/"), 1200);

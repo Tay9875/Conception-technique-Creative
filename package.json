@@ -19,7 +19,12 @@
     "db:migrate": "pnpm --filter server db:migrate",
     "db:seed": "pnpm --filter server db:seed",
     "db:prepare": "pnpm db:migrate && pnpm db:seed",
-    "setup:local": "pnpm install && pnpm db:up && pnpm db:prepare"
+    "setup:local": "pnpm install && pnpm infra:up && pnpm db:prepare",
+    "redis:up": "docker compose up -d --wait redis",
+    "redis:down": "docker compose stop redis",
+    "redis:logs": "docker compose logs -f redis",
+    "infra:up": "docker compose up -d --wait db redis",
+    "infra:down": "docker compose down"
   },
   "devDependencies": {
     "concurrently": "^9.2.1"

@@ -7,6 +7,7 @@ import { Empty } from "./components/Empty.tsx";
 import { Footer } from "./components/Footer.tsx";
 import BottomNav from "./components/BottomNav.tsx";
 import { API_URL } from "./config/api";
+import { apiFetch } from "./lib/apiClient";
 
 function Accueil({ user }) {
   const [theme, setTheme] = useState(
@@ -32,9 +33,7 @@ function Accueil({ user }) {
 
   const fetchArticles = async () => {
     try {
-      const response = await fetch(`${API_URL}/posts`);
-      if (!response.ok) throw new Error("Erreur chargement articles");
-      const data = await response.json();
+      const data = await apiFetch(`${API_URL}/posts`);
       setArticles(data);
     } catch (error) {
       console.error(error);
@@ -43,9 +42,7 @@ function Accueil({ user }) {
 
   const fetchTags = async () => {
     try {
-      const response = await fetch(`${API_URL}/tags`);
-      if (!response.ok) throw new Error("Erreur chargement tags");
-      const data = await response.json();
+      const data = await apiFetch(`${API_URL}/tags`);
       setTags(data);
     } catch (error) {
       console.error(error);

@@ -1,0 +1,56 @@
+name: Backend CI
+# ci-retrigger
+
+on:
+  push:
+    paths:
+      - 'server/**'
+      - '.github/workflows/backend-ci.yml'
+  pull_request:
+    paths:
+      - 'server/**'
+      - '.github/workflows/backend-ci.yml'
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: app_test
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -proot"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+    env:
+      NODE_ENV: test
+      PORT: 3000
+      CORS_ORIGIN: http://localhost:3001
+      JWT_SECRET: 12345678901234567890123456789012
+      JWT_REFRESH_SECRET: 12345678901234567890123456789012
+      DB_HOST: 127.0.0.1
+      DB_PORT: 3306
+      DB_USER: root
+      DB_PASSWORD: root
+      DB_NAME: app_test
+      RUN_INTEGRATION_TESTS: 1
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.1.2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter server db:migrate
+      - run: pnpm --filter server db:seed
+      - run: pnpm --filter server build
+      - run: pnpm --filter server test
+      - run: pnpm --filter server test:integration:all
