@@ -147,47 +147,44 @@ git push origin v1.0.0
 
 #### Prérequis
 - Node.js 18+
-- npm
+- pnpm 10+
+- Docker Desktop (pour la base MySQL locale)
 
 #### Structure du projet
 
 ```
 .
-├── client/          # Frontend React (port 3000)
-├── server/          # Backend Express (port 8080)
+├── client/          # Frontend React (port 3001)
+├── server/          # Backend Express (port 3000)
 ├── .github/         # Workflows GitHub Actions
 └── .commitlintrc.js # Configuration commitlint
 ```
 
-#### Installation
+#### Lancement rapide
 
 ```bash
-# À la racine (pour commitlint)
-npm install
-
-# Client React
-cd client
-npm install
-npm start  # Démarre sur http://localhost:3000
-
-# Server Express
-cd server
-npm install
-node src/index.js  # Démarre sur http://localhost:8080
+# A la racine
+pnpm install
+pnpm db:up
+pnpm db:prepare
+pnpm dev
 ```
 
-#### Scripts disponibles
+Le backend est disponible sur http://localhost:3000.
+Le front React est disponible sur http://localhost:3001.
 
-**Client** :
-```bash
-npm start   # Mode développement
-npm build   # Build production
-npm test    # Tests React
-```
+Les fichiers locaux `client/.env` et `server/.env` sont ignores par Git. Les modeles sont dans `client/.env.example` et `server/.env.example`.
 
-**Server** :
+#### Scripts utiles
+
 ```bash
-node src/index.js  # Démarre le serveur Express
+pnpm dev         # Lance le backend et le frontend
+pnpm db:up       # Lance MySQL avec Docker
+pnpm db:down     # Stoppe MySQL
+pnpm db:prepare  # Applique le schema puis les donnees de base
+pnpm lint        # Lint client + server
+pnpm test        # Tests client
+pnpm build       # Build client
 ```
 
 
@@ -199,11 +196,10 @@ Des tests automatisés sont présents pour le front-end React dans le dossier `c
 
 ### Lancer les tests
 
-Placez-vous dans le dossier `client` puis exécutez :
+Depuis la racine, executez :
 
 ```bash
-cd client
-npm test
+pnpm test
 ```
 
 Les tests couvrent :

@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import "../styles/BlogCard.css";
+import { API_URL } from "../config/api";
 
 // Composant Tag simple
 const Tag = ({ children }: { children: React.ReactNode }) => (
@@ -36,8 +37,6 @@ export const BlogCard: React.FC<BlogCardProps> = ({ article, user }) => {
   const [isVisible, setIsVisible] = useState(true);
 
   const titleId = `blog-title-${article.id}`;
-  const API_URL = "https://conception-technique-creative-backend.onrender.com/api";
-  // const API_URL = "http://localhost:3000/api";
 
   // --- GESTION DU LIKE ---
   const handleLike = async (e: React.MouseEvent<HTMLButtonElement>) => {

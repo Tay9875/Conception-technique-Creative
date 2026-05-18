@@ -5,9 +5,9 @@ import { Header } from "./components/Header.tsx";
 import { SquareButton } from "./components/SquareButton.tsx";
 import ProfileForm from "./components/ProfileForm.tsx";
 import { useNavigate } from "react-router-dom";
+import { API_URL } from "./config/api";
 
 export default function Profile({ onLogout }) {
-  const API_URL = 'https://conception-technique-creative-backend.onrender.com/api';
   const navigate = useNavigate();
 
   const [theme, setTheme] = useState(

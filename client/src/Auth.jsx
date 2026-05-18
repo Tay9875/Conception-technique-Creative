@@ -2,11 +2,11 @@ import React, { useState, useRef, useEffect } from "react";
 import "./Auth.css";
 import { SquareButton } from "./components/SquareButton.tsx";
 import { useNavigate, useLocation } from "react-router-dom";
+import { API_URL } from "./config/api";
 
 export default function Auth({ onLoginSuccess }) {
   const navigate = useNavigate();
   const location = useLocation();
-  const API_URL = process.env.REACT_APP_API_URL;
 
   const [isLogin, setIsLogin] = useState(true);
   const [formData, setFormData] = useState({

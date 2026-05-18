@@ -7,6 +7,7 @@ import { SquareButton } from "./components/SquareButton.tsx";
 import { Tag } from "./components/Tags.tsx";
 import ReportForm from "./components/ReportForm.tsx";
 import { CommentSection } from "./components/CommentSection.tsx";
+import { API_URL } from "./config/api";
 
 // 1. AJOUT de la prop 'user' pour l'authentification
 function Article({ user }) {
@@ -27,9 +28,6 @@ function Article({ user }) {
   // 2. ÉTATS pour le Like
   const [isLiked, setIsLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(0);
-
-  const API_URL = "https://conception-technique-creative-backend.onrender.com/api";
-  // const API_URL = "http://localhost:3000/api";
 
   /* 🎨 Thème */
   useEffect(() => {

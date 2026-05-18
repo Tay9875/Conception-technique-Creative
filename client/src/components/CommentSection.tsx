@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import "../styles/CommentSection.css";
 import { CommentCard } from "./CommentCard.tsx";
 import CommentForm from "./CommentForm.tsx";
+import { API_URL } from "../config/api";
 
 interface CommentSectionProps {
   id?: string;
@@ -17,8 +18,6 @@ export const CommentSection: React.FC<CommentSectionProps> = ({
   user,
 }) => {
   const [comments, setComments] = useState<any[]>([]);
-  const API_URL = "https://conception-technique-creative-backend.onrender.com/api";
-  // const API_URL = "http://localhost:3000/api";
 
   // 1. CHARGEMENT DES COMMENTAIRES (GET)
   useEffect(() => {

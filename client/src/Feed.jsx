@@ -3,10 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { Header } from "./components/Header.tsx";
 import FeedForm from "./components/FeedForm.tsx";
 import "./Feed.css";
+import { API_URL } from "./config/api";
 
 export default function Feed({ user }) {
   const navigate = useNavigate();
-  const API_URL = "https://conception-technique-creative-backend.onrender.com/api";
 
   const [tags, setTags] = useState([]);
   const [statusMessage, setStatusMessage] = useState("");

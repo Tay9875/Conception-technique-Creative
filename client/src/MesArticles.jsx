@@ -9,6 +9,7 @@ import { Empty } from "./components/Empty.tsx";
 import { SquareButton } from "./components/SquareButton.tsx";
 import { Footer } from "./components/Footer.tsx";
 import { BlogCard } from "./components/BlogCard.tsx";
+import { API_URL } from "./config/api";
 
 function MesArticles({ user }) {
   const navigate = useNavigate();
@@ -27,9 +28,6 @@ function MesArticles({ user }) {
   const [activeSort, setActiveSort] = useState("Récents");
 
   // URL API (Render par défaut, décommente la ligne localhost pour tester en local)
-  const API_URL = "https://conception-technique-creative-backend.onrender.com/api";
-  // const API_URL = "http://localhost:3000/api";
-
   // --- 3. EFFETS ---
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
