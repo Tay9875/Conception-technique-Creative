@@ -1,4 +1,7 @@
-export default [
+module.exports = [
+  {
+    ignores: ['dist/**', 'node_modules/**'],
+  },
   {
     languageOptions: {
       ecmaVersion: 'latest',

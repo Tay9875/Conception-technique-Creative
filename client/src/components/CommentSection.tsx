@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import "../styles/CommentSection.css";
 import { CommentCard } from "./CommentCard.tsx";
 import CommentForm from "./CommentForm.tsx";
@@ -16,18 +16,18 @@ interface CommentSectionProps {
 export const CommentSection: React.FC<CommentSectionProps> = ({ isOpen, articleId, user }) => {
   const [comments, setComments] = useState<any[]>([]);
 
-  useEffect(() => {
-    if (isOpen && articleId) fetchComments();
-  }, [isOpen, articleId]);
-
-  const fetchComments = async () => {
+  const fetchComments = useCallback(async () => {
     try {
       const data = await apiFetch(`${API_URL}/comments/${articleId}`);
       setComments(data || []);
     } catch (error) {
       console.error("Erreur chargement commentaires", error);
     }
-  };
+  }, [articleId]);
+
+  useEffect(() => {
+    if (isOpen && articleId) fetchComments();
+  }, [isOpen, articleId, fetchComments]);
 
   const handleAddComment = async (formData: any) => {
     const textContent = formData.contenu || formData.description || formData;
