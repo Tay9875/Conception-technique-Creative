@@ -37,12 +37,14 @@ function Article({ user }: ArticleProps) {
 
     const fetchArticle = async () => {
       try {
-        const posts = await apiFetch<PostWithDetails[]>(`${API_URL}/posts`);
+        const query = user?.id ? `?user_id=${user.id}` : '';
+        const posts = await apiFetch<PostWithDetails[]>(`${API_URL}/posts${query}`);
         const found = posts.find((post) => String(post.id) === String(id));
         if (!found) throw new Error('Article introuvable');
 
         setArticle(found);
         setIsLiked(found.is_liked === 1);
+        setCommentsOpen(true);
         setLikesCount(found.like_count || 0);
       } catch (err) {
         console.error(err);
@@ -59,22 +61,24 @@ function Article({ user }: ArticleProps) {
       return;
     }
 
-    const newLikedState = !isLiked;
-    setIsLiked(newLikedState);
-    setLikesCount((prev) => (newLikedState ? prev + 1 : prev - 1));
-
     try {
-      await apiFetch<LikeResponse>(`${API_URL}/posts/${id}/like`, {
+      const data = await apiFetch<LikeResponse>(`${API_URL}/posts/${id}/like`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${localStorage.getItem('token') ?? ''}`,
         },
       });
+
+      if (data.liked) {
+        setIsLiked(true);
+        setLikesCount((prev) => prev + 1);
+      } else {
+        setIsLiked(false);
+        setLikesCount((prev) => Math.max(0, prev - 1));
+      }
     } catch (err) {
       console.error('Erreur like:', err);
-      setIsLiked(!newLikedState);
-      setLikesCount((prev) => (newLikedState ? prev - 1 : prev + 1));
     }
   };
 

@@ -33,7 +33,8 @@ function Accueil({ user }: AccueilProps) {
   useEffect(() => {
     const fetchArticles = async () => {
       try {
-        const data = await apiFetch<PostWithDetails[]>(`${API_URL}/posts`);
+        const query = user?.id ? `?user_id=${user.id}` : '';
+        const data = await apiFetch<PostWithDetails[]>(`${API_URL}/posts${query}`);
         setArticles(data);
       } catch (error) {
         console.error(error);
