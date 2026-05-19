@@ -37,7 +37,6 @@ export const Header: React.FC<HeaderProps> = ({ theme, setTheme }: HeaderProps) 
     if (protectedPaths.includes(path) && !isAuthenticated) {
       navigate("/login", {
         state: { from: path },
-        replace: true,
       });
       return;
     }
@@ -95,7 +94,7 @@ export const Header: React.FC<HeaderProps> = ({ theme, setTheme }: HeaderProps) 
               aria-current={isActive("/mes_articles") ? "page" : undefined}
               onClick={() => {
               if (!user) {
-                navigate("/login", { state: { from: "/mes_articles" }, replace: true });
+                navigate("/login", { state: { from: "/mes_articles" } });
               } else {
                 handleClick("/mes_articles");
               }

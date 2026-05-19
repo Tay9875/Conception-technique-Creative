@@ -60,7 +60,6 @@ A creer dans GitHub > repository > Settings > Secrets and variables > Actions > 
 | Nom | Obligatoire | Exemple | Notes |
 | --- | --- | --- | --- |
 | `GHCR_IMAGE_NAME` | Oui | `ghcr.io/mon-org/oncarya/oncarya` | Doit etre en minuscules. Le workflow publie `-web` et `-api`. |
-| `SMOKE_BASE_URL` | Oui | `https://oncarya.example.com` | URL publique testee apres deploiement. |
 | `NODE_VERSION` | Non | `20` | Defaut workflow : `20`. |
 | `PNPM_VERSION` | Non | `10` | Defaut workflow : `10`. |
 | `REACT_APP_API_URL` | Non | `/api` | Defaut workflow : `/api`; variable publique incluse dans le bundle frontend. |
@@ -80,7 +79,8 @@ A ajouter dans l'environnement du projet Compose Dokploy.
 | `MYSQL_PASSWORD` | mysql/api | Oui | `valeur-generee` | Generer une valeur forte. |
 | `MYSQL_ROOT_PASSWORD` | mysql | Oui | `valeur-generee` | Generer une valeur forte. |
 | `JWT_SECRET` | api | Oui | `valeur-generee` | Requis si `NODE_ENV=production`. |
-| `CORS_ORIGIN` | api | Non | `https://oncarya.example.com` | Utile si l'API est appelee directement depuis une autre origine. |
+| `JWT_REFRESH_SECRET` | api | Oui | `valeur-generee` | Secret dedie aux refresh tokens. |
+| `CORS_ORIGIN` | api | Oui | `https://oncarya.example.com` | Domaine public autorise par l'API. |
 | `MIGRATE_ON_START` | api | Non | `false` | Garder `false` en routine; mettre `true` seulement si vous acceptez la migration au demarrage. |
 | `SEED_ON_START` | api | Non | `false` | Garder `false` en production. |
 
@@ -108,6 +108,7 @@ openssl rand -base64 32
 A utiliser pour :
 
 - `JWT_SECRET`
+- `JWT_REFRESH_SECRET`
 - `MYSQL_PASSWORD`
 - `MYSQL_ROOT_PASSWORD`
 
@@ -138,29 +139,16 @@ git push origin v1.0.0
    - soit ouvrir un shell dans le conteneur `api` et lancer :
 
 ```bash
-node src/database/migrate.js
+node -e "process.env.MIGRATE_ON_START='true'; import('./dist/database/startup.js').then(m => m.runDatabaseStartupTasks())"
 ```
 
 5. Pour inserer les donnees de reference uniquement si souhaite :
 
 ```bash
-node src/database/seed.js
+node dist/database/seed.js
 ```
 
 Le seed utilise `INSERT IGNORE`, mais il reste volontairement desactive par defaut en production.
-
-## Smoke test
-
-Le workflow lance :
-
-```bash
-node scripts/smoke-prod.mjs "$SMOKE_BASE_URL"
-```
-
-Le script verifie :
-
-- la reponse HTML du frontend ;
-- `GET /api/health` avec `status=ok` et `service=oncarya-api`.
 
 ## Rollback
 
@@ -185,7 +173,6 @@ Le workflow refusera un tag dont le commit n'est pas present dans `main`.
 - `JWT_SECRET is required when NODE_ENV=production` : ajouter `JWT_SECRET` dans les variables Dokploy.
 - `api unhealthy` : verifier `DB_HOST=mysql`, les mots de passe MySQL et les logs du service `api`.
 - `web fonctionne mais /api/health echoue` : verifier que les services `web` et `api` sont dans le meme Compose et que le service s'appelle bien `api`.
-- `Smoke test failed` : verifier `SMOKE_BASE_URL`, le domaine Dokploy et le certificat HTTPS.
 - `compose environment could not be read` dans GitHub Actions : configurer une premiere fois l'environnement Compose dans Dokploy avant de laisser le workflow le modifier.
 
 ## Checklist de validation

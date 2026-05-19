@@ -1,6 +1,6 @@
 import { pool } from './db';
 
-async function seed() {
+export async function seedDatabase() {
   await pool.query(`
     INSERT IGNORE INTO roles (id, name) VALUES
     (1, 'Patient'),
@@ -36,13 +36,15 @@ async function seed() {
   console.log('Seed termine avec succes.');
 }
 
-seed()
-  .then(async () => {
-    await pool.end();
-    process.exit(0);
-  })
-  .catch(async (err) => {
-    console.error('Erreur seed:', err);
-    await pool.end();
-    process.exit(1);
-  });
+if (require.main === module) {
+  seedDatabase()
+    .then(async () => {
+      await pool.end();
+      process.exit(0);
+    })
+    .catch(async (err) => {
+      console.error('Erreur seed:', err);
+      await pool.end();
+      process.exit(1);
+    });
+}

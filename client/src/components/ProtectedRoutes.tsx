@@ -5,7 +5,7 @@ function ProtectedRoute({ user, children }) {
 
   if (!user) {
     // Redirige vers /login et conserve le chemin qu'on voulait
-    return <Navigate to="/login" state={{ from: location }} replace />;
+    return <Navigate to="/login" state={{ from: location }} />;
   }
 
   return children;

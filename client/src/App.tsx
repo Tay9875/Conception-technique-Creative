@@ -1,5 +1,5 @@
 import { Routes, Route } from "react-router-dom";
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import './App.css';
 import Auth from './Auth';
 import ProtectedRoute from "./components/ProtectedRoutes.tsx";
@@ -14,16 +14,11 @@ import BottomNav from "./components/BottomNav.tsx";
 import AccessibilityButton from './components/AccessibilityButton';
 
 function App() {
-  const [user, setUser] = useState(null);
-
-  // Vérifier si l'utilisateur est déjà connecté (si on rafraîchit la page)
-  useEffect(() => {
+  const [user, setUser] = useState(() => {
     const savedUser = localStorage.getItem('user');
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
-    }
-  }, []);
-  
+    return savedUser ? JSON.parse(savedUser) : null;
+  });
+
   return (
     <div className="App">
       <Routes>
