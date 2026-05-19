@@ -91,6 +91,25 @@ describe('POST /api/posts', () => {
     expect(res.body.data).toEqual({ id: 123 });
   });
 
+  it('creates and shadow-bans high-risk posts without changing the public response', async () => {
+    const token = signAccessToken({ id: 5, email: 'a@b.com', role: 1 });
+    connQuery
+      .mockResolvedValueOnce([{ insertId: 456 }])
+      .mockResolvedValueOnce([{}]);
+
+    const res = await request(app)
+      .post('/api/posts')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ title: 'Conseil dangereux', description: 'Arrete la chimio et remplace ton traitement par ce produit.', tag_id: 1 });
+
+    expect(res.status).toBe(201);
+    expect(res.body.data).toEqual({ id: 456 });
+    expect(connQuery.mock.calls[0][0]).toContain('is_banned');
+    expect(connQuery.mock.calls[0][1][4]).toBe(1);
+    expect(connQuery.mock.calls[1][0]).toContain('moderation_reviews');
+    expect(conn.commit).toHaveBeenCalled();
+  });
+
   it('returns 400 for invalid body', async () => {
     const token = signAccessToken({ id: 5, email: 'a@b.com', role: 1 });
     const res = await request(app)

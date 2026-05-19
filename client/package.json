@@ -60,7 +60,7 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint src"
+    "lint": "pnpm typecheck"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.9.1",

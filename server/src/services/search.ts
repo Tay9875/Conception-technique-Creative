@@ -148,7 +148,7 @@ const fetchSearchDocuments = async (): Promise<SearchDocument[]> => {
     JOIN users ON posts.user_id = users.id
     LEFT JOIN tags ON posts.tag_id = tags.id
     LEFT JOIN likes ON likes.post_id = posts.id
-    LEFT JOIN comments ON comments.post_id = posts.id
+    LEFT JOIN comments ON comments.post_id = posts.id AND comments.is_banned = 0
     WHERE posts.is_banned = 0
     GROUP BY posts.id, users.firstname, users.lastname, tags.title
     ORDER BY posts.created_at DESC
@@ -181,7 +181,7 @@ const fetchSearchDocuments = async (): Promise<SearchDocument[]> => {
     JOIN posts ON comments.post_id = posts.id
     JOIN users ON comments.user_id = users.id
     LEFT JOIN tags ON posts.tag_id = tags.id
-    WHERE posts.is_banned = 0
+    WHERE posts.is_banned = 0 AND comments.is_banned = 0
     ORDER BY comments.created_at DESC
     LIMIT 500`
   );
