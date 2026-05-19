@@ -1,6 +1,6 @@
-import React, { FormEvent, useState } from "react";
-import { SquareButton } from "./SquareButton.tsx";
-import "../styles/ProfileForm.css";
+import { FormEvent, useState } from 'react';
+import { SquareButton } from './SquareButton';
+import '../styles/ProfileForm.css';
 
 interface ProfileFormProps {
   initialData: {
@@ -25,14 +25,14 @@ export default function ProfileForm({
   const [email, setEmail] = useState(initialData.email);
   const [password, setPassword] = useState("");
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = (e: FormEvent): void => {
     e.preventDefault();
 
     onSubmit({
       firstname,
       lastname,
       email,
-      ...(password && { password }),
+      ...(password ? { password } : {}),
     });
   };
 

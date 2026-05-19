@@ -12,15 +12,18 @@
     font-size: var(--small-font);
     cursor: pointer;
     transition: background-color 0.3s;
-    outline: none;
     gap: 8px;
 }
 
-/* Focus visible pour keyboard users */
-.btn:focus {
-    background-color:var(--main-color);
-    color: var(--switched-text-color);
+.btn:focus:not(:focus-visible) {
+    outline: none;
+}
+
+.btn:focus-visible {
+    outline: 3px solid var(--main-color);
     outline-offset: 2px;
+    background-color: var(--main-color);
+    color: var(--switched-text-color);
 }
 
 .btn:hover {

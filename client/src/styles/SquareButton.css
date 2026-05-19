@@ -11,14 +11,26 @@ button {
     font-size: var(--small-font);
     cursor: pointer;
     transition: background-color 0.3s;
-    outline: none;
     gap: 8px;
+    /* Ne jamais supprimer outline globalement — c'est critique pour l'accessibilité */
 }
 
-/* Focus visible pour keyboard users */
-.sqr-button:focus {
-    background-color:var(--main-color);
-    color: var(--main-text-color);
+/* Masquer l'outline uniquement pour la souris/tactile, pas pour le clavier */
+button:focus:not(:focus-visible) {
+    outline: none;
+}
+
+/* Focus visible clavier — tous les boutons */
+button:focus-visible,
+.sqr-button:focus-visible {
+    outline: 3px solid var(--main-color);
+    outline-offset: 2px;
+    border-radius: 10px;
+}
+
+/* Variante foncée : outline contrasté */
+.sqr-button-dark-background:focus-visible {
+    outline: 3px solid var(--main-text-color);
     outline-offset: 2px;
 }
 

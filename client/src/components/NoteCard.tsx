@@ -1,7 +1,14 @@
-import "../styles/NotesCard.css";
-import { SquareButton } from "./SquareButton.tsx";
+import '../styles/NotesCard.css';
+import { SquareButton } from './SquareButton';
 
-export const NoteCard: React.FC<{ id: string; title: string; content: string; date: string }> = ({ id, title, content, date }) => {
+interface NoteCardProps {
+  id: string;
+  title: string;
+  content: string;
+  date: string;
+}
+
+export const NoteCard = ({ id, title, content, date }: NoteCardProps) => {
   const titleId = `note-${id}-title`;
 
   return (

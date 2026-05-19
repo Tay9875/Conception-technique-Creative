@@ -1,34 +1,37 @@
-import React from "react";
-import "../styles/SquareButton.css";
+import { ButtonHTMLAttributes, ReactNode } from 'react';
+import '../styles/SquareButton.css';
 
-type SquareButtonProps = {
-  children: React.ReactNode;
-  onClick?: React.MouseEventHandler<HTMLButtonElement>;
-  type?: "button" | "submit" | "reset";
-  className?: string;
-  disabled?: boolean;
+type SquareButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
+  children: ReactNode;
   ariaLabel?: string;
+  role?: ButtonHTMLAttributes<HTMLButtonElement>['role'];
+  'aria-checked'?: boolean;
+  'aria-current'?: ButtonHTMLAttributes<HTMLButtonElement>['aria-current'];
+  'aria-pressed'?: boolean;
+  'aria-expanded'?: boolean;
+  'aria-controls'?: string;
+  'aria-haspopup'?: ButtonHTMLAttributes<HTMLButtonElement>['aria-haspopup'];
+  'aria-label'?: string;
 };
 
-const SquareButton: React.FC<SquareButtonProps> = ({
+const SquareButton = ({
   children,
-  onClick,
-  type = "button",
-  className = "",
+  type = 'button',
+  className = '',
   disabled = false,
   ariaLabel,
-}) => {
+  'aria-label': ariaLabelHtml,
+  ...rest
+}: SquareButtonProps) => {
+  const resolvedAriaLabel = ariaLabelHtml ?? (ariaLabel && typeof children !== 'string' ? ariaLabel : undefined);
+
   return (
     <button
       type={type}
-      onClick={onClick}
       className={`sqr-button ${className}`}
       disabled={disabled}
-      aria-label={
-        ariaLabel && typeof children !== "string"
-          ? ariaLabel
-          : undefined
-      }
+      aria-label={resolvedAriaLabel}
+      {...rest}
     >
       {children}
     </button>

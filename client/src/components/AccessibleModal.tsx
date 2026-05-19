@@ -1,7 +1,7 @@
-import React, { ReactNode, useEffect, useRef } from "react";
-import { createPortal } from "react-dom";
-import "../styles/AccessibleModal.css"
-import { SquareButton } from "./SquareButton.tsx"
+import { ReactNode, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
+import '../styles/AccessibleModal.css';
+import { SquareButton } from './SquareButton';
 
 interface AccessibleModalProps {
   isOpen: boolean;
@@ -29,15 +29,13 @@ export default function AccessibleModal({
   const modalRef = useRef<HTMLDivElement>(null);
   const previouslyFocused = useRef<HTMLElement | null>(null);
 
-  // Générer un id unique pour aria-labelledby
-  const titleIdRef = useRef(`modal-title-${Math.random().toString(36).substr(2, 9)}`);
+  const titleIdRef = useRef<string>(`modal-title-${Math.random().toString(36).slice(2, 11)}`);
 
   useEffect(() => {
     if (!isOpen) return;
 
     previouslyFocused.current = document.activeElement as HTMLElement;
 
-    // Bloquer scroll arrière
     document.body.style.overflow = "hidden";
 
     const focusableElements = modalRef.current?.querySelectorAll<HTMLElement>(
@@ -85,14 +83,15 @@ export default function AccessibleModal({
       role="dialog"
       aria-modal="true"
       aria-labelledby={titleIdRef.current}
+      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
       <div ref={modalRef} className="modal-content">
         <div className="modal-heading">
-          <h3 id={titleIdRef.current}>{title}</h3>
+          <h2 id={titleIdRef.current}>{title}</h2>
           <SquareButton
             className="sqr-button-dark-background"
             onClick={onClose}
-            aria-label="Fermer la fenêtre"
+            aria-label={`Fermer - ${title}`}
           >
             <span className="material-symbols-outlined" aria-hidden="true">
               close

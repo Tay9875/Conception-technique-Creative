@@ -80,6 +80,13 @@
     flex-direction: row;
     gap: 12px;
     color: var(--main-text-color);
+    align-items: center;
+}
+
+.sort-group {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
 }
 
 .material-symbols-outlined {

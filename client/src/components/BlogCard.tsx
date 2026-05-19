@@ -1,221 +1,121 @@
-import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
-import "../styles/BlogCard.css";
+import { useState, MouseEvent } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import '../styles/BlogCard.css';
+import { API_URL } from '../config/api';
+import { apiFetch, ApiError } from '../lib/apiClient';
+import type { LikeResponse, PostWithDetails, ReportResponse, SessionUser } from '../types';
 
-// Composant Tag simple
-const Tag = ({ children }: { children: React.ReactNode }) => (
+const TagBadge = ({ children }: { children: React.ReactNode }) => (
   <span className="tag-badge">{children}</span>
 );
 
-interface Article {
-  id: number;
-  title: string;
-  description: string;
-  created_at: string;
-  firstname?: string;
-  lastname?: string;
-  tag_title?: string;
-  like_count?: number;
-  is_liked?: number;
-  tag?: { title: string };
-}
-
 interface BlogCardProps {
-  article: Article;
-  user?: any;
+  article: PostWithDetails & { role_id?: number; tag?: { title: string } };
+  user?: SessionUser | null;
 }
 
-export const BlogCard: React.FC<BlogCardProps> = ({ article, user }) => {
+export const BlogCard = ({ article, user }: BlogCardProps) => {
   const navigate = useNavigate();
+  const [isLiked, setIsLiked] = useState<boolean>(article.is_liked === 1);
+  const [likesCount, setLikesCount] = useState<number>(article.like_count || 0);
+  const [isVisible, setIsVisible] = useState<boolean>(true);
 
-  // --- ÉTATS ---
-  const [isLiked, setIsLiked] = useState(article.is_liked === 1);
-  const [likesCount, setLikesCount] = useState(article.like_count || 0);
-  
-  // État pour cacher le post s'il vient d'être banni
-  const [isVisible, setIsVisible] = useState(true);
-
-  const titleId = `blog-title-${article.id}`;
-  const API_URL = "https://conception-technique-creative-backend.onrender.com/api";
-  // const API_URL = "http://localhost:3000/api";
-
-  // --- GESTION DU LIKE ---
-  const handleLike = async (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleLike = async (e: MouseEvent<HTMLButtonElement>): Promise<void> => {
     e.stopPropagation();
-
-    if (!user || !user.id) return alert("Veuillez vous connecter pour aimer un article.");
-
-    const newLikedState = !isLiked;
-    setIsLiked(newLikedState);
-    setLikesCount((prev) => (newLikedState ? prev + 1 : prev - 1));
-
+    if (!user?.id) {
+      alert('Veuillez vous connecter pour aimer un article.');
+      return;
+    }
+    const optimistic = !isLiked;
+    setIsLiked(optimistic);
+    setLikesCount((prev) => (optimistic ? prev + 1 : prev - 1));
     try {
-      await fetch(`${API_URL}/posts/${article.id}/like`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user_id: user.id }),
+      const data = await apiFetch<LikeResponse>(`${API_URL}/posts/${article.id}/like`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${localStorage.getItem('token') ?? ''}` },
       });
+      setIsLiked(data.liked);
     } catch (error) {
       console.error(error);
+      setIsLiked(!optimistic);
+      setLikesCount((prev) => (optimistic ? prev - 1 : prev + 1));
     }
   };
 
-  // --- GESTION DU SIGNALEMENT (NOUVEAU) ---
-  const handleReport = async (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation(); // Empêche d'ouvrir l'article
-
-    if (!user || !user.id) return alert("Veuillez vous connecter pour signaler un contenu.");
-
-    if (!window.confirm("Voulez-vous vraiment signaler ce contenu comme inapproprié ?")) return;
-
+  const handleReport = async (e: MouseEvent<HTMLButtonElement>): Promise<void> => {
+    e.stopPropagation();
+    if (!user?.id) {
+      alert('Veuillez vous connecter pour signaler un contenu.');
+      return;
+    }
+    if (!window.confirm('Voulez-vous vraiment signaler ce contenu comme inapproprié ?')) return;
     try {
-      const response = await fetch(`${API_URL}/posts/${article.id}/report`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user_id: user.id }),
+      const data = await apiFetch<ReportResponse>(`${API_URL}/posts/${article.id}/report`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token') ?? ''}`,
+        },
+        body: JSON.stringify({}),
       });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        alert(data.message);
-        // Si le post est banni (3ème signalement), on le cache visuellement
-        if (data.banned) {
-          setIsVisible(false);
-        }
-      } else {
-        alert("Erreur : " + data.message);
-      }
+      alert(data.message);
+      if (data.banned) setIsVisible(false);
     } catch (error) {
-      console.error("Erreur report:", error);
+      const apiErr = error as ApiError;
+      alert(`Erreur : ${apiErr.message}`);
     }
   };
 
-  const handleCardClick = () => {
-    navigate(`/article/${article.id}`);
-  };
-
-  // Gestion des noms et tags
+  if (!isVisible) return null;
   const authorName =
     article.firstname && article.lastname
       ? `${article.firstname} ${article.lastname}`
-      : "Anonyme";
-
-  // Détermination du statut/role
-  let statusLabel = "Inconnu";
-  if (article.role_id === 1) statusLabel = "Patient";
-  else if (article.role_id === 2) statusLabel = "Ancien Patient";
-  else if (article.role_id === 3) statusLabel = "Proche";
-
-  const displayTag =
-    article.tag_title || (article.tag ? article.tag.title : null);
-
-  // Si le post est banni/caché, on ne rend rien
-  if (!isVisible) return null;
+      : 'Anonyme';
+  const displayTag = article.tag_title ?? article.tag?.title ?? null;
+  const roleLabel =
+    article.role_id === 1
+      ? 'Patient'
+      : article.role_id === 2
+      ? 'Ancien Patient'
+      : article.role_id === 3
+      ? 'Proche'
+      : 'Inconnu';
 
   return (
-    <article
-      className="blogcard"
-      aria-labelledby={titleId}
-      tabIndex={0}
-      onClick={handleCardClick}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          handleCardClick();
-        }
-      }}
-    >
+    <article className="blogcard" tabIndex={0} onClick={() => navigate(`/article/${article.id}`)}>
       <div className="text">
-        {/* TAG */}
-        <div className="blogcard-tags">
-          {displayTag && <Tag>{displayTag}</Tag>}
-        </div>
-
-        {/* CONTENU */}
+        <div className="blogcard-tags">{displayTag && <TagBadge>{displayTag}</TagBadge>}</div>
         <div className="blogcard-container">
           <header className="heading">
-            <h3 id={titleId} className="blogcard-title">
-              {article.title}
-            </h3>
+            <h3 className="blogcard-title">{article.title}</h3>
           </header>
-
           <p className="blogcard-paragraph">{article.description}</p>
         </div>
-
-        {/* FOOTER */}
         <footer className="blogcard-tools">
           <div className="blogcard-infos">
             <p className="blogcard-author">
-              <span className="material-symbols-outlined" aria-hidden="true">
-                person
-              </span>
-              <span
-                className="author-name"
-                style={{ marginLeft: "6px", fontWeight: "500" }}
-              >
-                {authorName}
-              </span>
-              {article.role_id && (
-                <span style={{marginLeft:8, fontStyle:'italic', color:'#666'}}>
-                  [ {statusLabel} ]
-                </span>
-              )}
+              {authorName} {article.role_id && <span>[ {roleLabel} ]</span>}
             </p>
-
-            <time className="date" dateTime={article.created_at}>
-              {new Date(article.created_at).toLocaleDateString("fr-FR", {
-                day: "numeric",
-                month: "short",
-                year: "numeric",
-              })}
+            <time className="date">
+              {new Date(article.created_at).toLocaleDateString('fr-FR')}
             </time>
           </div>
-
           <div className="blogcard-action">
-            {/* ❤️ FAVORI */}
-            <button
-              type="button"
-              className="transparent-btn"
-              aria-pressed={isLiked}
-              aria-label={
-                isLiked ? "Retirer des favoris" : "Ajouter aux favoris"
-              }
-              onClick={handleLike}
-            >
-              <span className="material-symbols-outlined" aria-hidden="true">
-                {isLiked ? "favorite" : "favorite_border"}
+            <button type="button" className="transparent-btn" onClick={handleLike}>
+              <span className="material-symbols-outlined">
+                {isLiked ? 'favorite' : 'favorite_border'}
               </span>
-              <span aria-live="polite">{likesCount}</span>
+              <span>{likesCount}</span>
             </button>
-
-            {/* 💬 COMMENTAIRES */}
             <Link
               to={`/article/${article.id}#comments`}
               className="transparent-btn"
               onClick={(e) => e.stopPropagation()}
-              aria-label="Voir les commentaires"
             >
-              <span className="material-symbols-outlined" aria-hidden="true">
-                sms
-              </span>
+              <span className="material-symbols-outlined">sms</span>
             </Link>
-
-            {/* 🚩 SIGNALEMENT (NOUVEAU) */}
-            <button
-              type="button"
-              className="transparent-btn"
-              onClick={handleReport}
-              aria-label="Signaler ce contenu"
-              title="Signaler"
-            >
-              <span
-                className="material-symbols-outlined"
-                aria-hidden="true"
-                style={{ fontSize: "1.3rem" }} // Légèrement ajusté si besoin
-              >
-                flag
-              </span>
+            <button type="button" className="transparent-btn" onClick={handleReport}>
+              <span className="material-symbols-outlined">flag</span>
             </button>
           </div>
         </footer>
