@@ -164,3 +164,16 @@ describe('POST /api/auth/logout', () => {
     expect(res.status).toBe(204);
   });
 });
+
+describe('GET /api/auth/me', () => {
+  it('returns the current user without password data', async () => {
+    const token = (await import('../../src/middleware/auth')).signAccessToken({ id: 7, email: 'a@b.com', role: 1 });
+    query.mockResolvedValueOnce([[{ id: 7, firstname: 'A', lastname: 'B', email: 'a@b.com', role_id: 1, avatar_url: null, email_verified: 1 }]]);
+
+    const res = await request(app).get('/api/auth/me').set('Authorization', `Bearer ${token}`);
+
+    expect(res.status).toBe(200);
+    expect(res.body.data).toMatchObject({ id: 7, firstname: 'A', lastname: 'B', email: 'a@b.com', role_id: 1, email_verified: true });
+    expect(res.body.data.password).toBeUndefined();
+  });
+});

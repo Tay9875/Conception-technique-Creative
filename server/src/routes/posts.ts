@@ -7,6 +7,7 @@ import { getCache, setCache } from '../lib/cache';
 import { asyncHandler, HttpError, ok } from '../lib/http';
 import { analyzeContentForModeration } from '../moderation/moderationEngine';
 import { saveModerationReview } from '../moderation/moderationRepository';
+import { createModerationReviewNotification, createReactionNotification } from '../notifications/notificationService';
 
 const createSchema = z.object({ title: z.string().min(1).max(255), description: z.string().min(1).max(5000), tag_id: z.coerce.number().int().positive() });
 const reportSchema = z.object({ reason: z.string().max(255).optional() });
@@ -58,6 +59,9 @@ postsRouter.post('/', requireAuth, asyncHandler(async (req, res) => {
       const id = (r as any).insertId;
       await saveModerationReview(conn, { targetId: id, analysis });
       await conn.commit();
+      if (analysis.status === 'needs_review') {
+        await createModerationReviewNotification({ authorId: req.user.id, targetType: 'post', targetId: id });
+      }
       return ok(res, { id }, 201);
     } catch (error) {
       await conn.rollback();
@@ -88,6 +92,11 @@ postsRouter.post('/:id/like', requireAuth, asyncHandler(async (req, res) => {
   }
 
   await pool.query('INSERT INTO likes (user_id, post_id) VALUES (?, ?)', [req.user.id, p.data]);
+  const [postRows] = await pool.query('SELECT user_id FROM posts WHERE id = ? LIMIT 1', [p.data]);
+  const post = (postRows as any[])[0];
+  if (post) {
+    await createReactionNotification({ postAuthorId: post.user_id, actorUserId: req.user.id, postId: p.data });
+  }
   return ok(res, { liked: true });
 }));
 

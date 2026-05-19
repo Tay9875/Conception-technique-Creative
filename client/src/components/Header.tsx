@@ -4,6 +4,7 @@ import '../styles/Header.css';
 import { SquareButton } from './SquareButton';
 import type { SessionUser } from '../types';
 import { GlobalSearch } from "./GlobalSearch";
+import { NotificationBell } from './NotificationBell';
 
 export type Theme = 'light' | 'dark';
 
@@ -37,6 +38,8 @@ export const Header = ({ theme, setTheme }: HeaderProps) => {
   const handleLogout = (): void => {
     setUser(null);
     localStorage.removeItem('user');
+    localStorage.removeItem('token');
+    localStorage.removeItem('refreshToken');
     navigate('/');
   };
 
@@ -107,6 +110,7 @@ export const Header = ({ theme, setTheme }: HeaderProps) => {
 
       <div className="header-right">
         <GlobalSearch />
+        <NotificationBell user={user} />
 
         <div className="button-gaps">
           <SquareButton

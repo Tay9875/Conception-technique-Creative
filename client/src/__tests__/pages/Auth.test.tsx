@@ -32,6 +32,7 @@ describe('Auth page', () => {
     globalThis.fetch = originalFetch;
     vi.restoreAllMocks();
     localStorage.clear();
+    window.history.pushState(null, '', '/');
   });
 
   it('renders the login form by default', () => {
@@ -42,6 +43,7 @@ describe('Auth page', () => {
     ).toBeInTheDocument();
     expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/mot de passe/i)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /continuer avec google/i })).toBeInTheDocument();
   });
 
   it('toggles to the register form', () => {
@@ -109,6 +111,29 @@ describe('Auth page', () => {
     await waitFor(() => {
       expect(screen.getByRole('alert')).toHaveTextContent(/mauvais email/i);
     });
+  });
+
+  it('finalizes a Google OAuth callback from the URL fragment', async () => {
+    const encodedUser = btoa(JSON.stringify(mockLoginResponse.user))
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=+$/, '');
+    window.history.pushState(
+      null,
+      '',
+      `/login#oauth=success&token=google.access&refreshToken=google.refresh&user=${encodedUser}&returnTo=/feed`
+    );
+
+    const onLoginSuccess = vi.fn();
+    renderWithProviders(<Auth onLoginSuccess={onLoginSuccess} />, {
+      initialEntries: ['/login'],
+    });
+
+    await waitFor(() => {
+      expect(onLoginSuccess).toHaveBeenCalledWith(mockLoginResponse.user);
+    });
+    expect(localStorage.getItem('token')).toBe('google.access');
+    expect(localStorage.getItem('refreshToken')).toBe('google.refresh');
   });
 
   it('has no axe accessibility violations', async () => {

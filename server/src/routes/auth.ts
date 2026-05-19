@@ -3,11 +3,14 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { pool } from '../database/db';
 import { loginSchema, refreshSchema, registerSchema } from '../schemas/auth';
-import { signAccessToken, signRefreshToken } from '../middleware/auth';
+import { requireAuth, signAccessToken, signRefreshToken } from '../middleware/auth';
 import { env } from '../config/env';
 import { buildRateLimit } from '../middleware/security';
 import { zodToFieldErrors } from '../lib/validation';
 import { asyncHandler, HttpError, ok } from '../lib/http';
+import { createOAuthState, sanitizeReturnTo, verifyOAuthState } from '../auth/oauthState';
+import { buildGoogleAuthorizationUrl, fetchGoogleProfile } from '../auth/googleOAuth';
+import { findOrCreateGoogleUser, issueAppTokens, toPublicUser } from '../auth/authService';
 
 export const authRouter = Router();
 authRouter.use(buildRateLimit(15 * 60 * 1000, 40, 'auth'));
@@ -30,17 +33,62 @@ authRouter.post('/login', asyncHandler(async (req, res) => {
   if (!p.success) throw new HttpError(400, 'INVALID_PAYLOAD', 'Payload invalide', zodToFieldErrors(p.error));
   const { email, password } = p.data;
 
-  const [rows] = await pool.query('SELECT id, firstname, lastname, email, password, role_id FROM users WHERE email = ? LIMIT 1', [email.toLowerCase()]);
+  const [rows] = await pool.query('SELECT id, firstname, lastname, email, password, role_id, avatar_url, email_verified FROM users WHERE email = ? LIMIT 1', [email.toLowerCase()]);
   const user = (rows as any[])[0];
-  if (!user || !(await bcrypt.compare(password, user.password))) {
+  if (!user || !user.password || !(await bcrypt.compare(password, user.password))) {
     throw new HttpError(401, 'INVALID_CREDENTIALS', 'Email ou mot de passe incorrect.');
   }
 
-  const token = signAccessToken({ id: user.id, email: user.email, role: user.role_id });
-  const refreshToken = signRefreshToken({ id: user.id });
-  await pool.query('INSERT INTO refresh_tokens (user_id, token, expires_at, revoked_at) VALUES (?, ?, DATE_ADD(NOW(), INTERVAL 30 DAY), NULL)', [user.id, refreshToken]);
+  const publicUser = toPublicUser(user);
+  const { token, refreshToken } = await issueAppTokens(pool, publicUser);
 
-  return ok(res, { token, refreshToken, user: { id: user.id, firstname: user.firstname, lastname: user.lastname, role_id: user.role_id } });
+  return ok(res, { token, refreshToken, user: publicUser });
+}));
+
+authRouter.get('/me', requireAuth, asyncHandler(async (req, res) => {
+  if (!req.user) throw new HttpError(401, 'UNAUTHORIZED', 'Authentification requise.');
+  const [rows] = await pool.query('SELECT id, firstname, lastname, email, role_id, avatar_url, email_verified FROM users WHERE id = ? LIMIT 1', [req.user.id]);
+  const user = (rows as any[])[0];
+  if (!user) throw new HttpError(404, 'USER_NOT_FOUND', 'Utilisateur non trouve.');
+  return ok(res, toPublicUser(user));
+}));
+
+authRouter.get('/google', asyncHandler(async (req, res) => {
+  const state = createOAuthState(req.query.returnTo);
+  return res.redirect(302, buildGoogleAuthorizationUrl(state));
+}));
+
+authRouter.get('/google/callback', asyncHandler(async (req, res) => {
+  const redirectToLogin = (status: 'success' | 'error', params: Record<string, string> = {}) => {
+    const url = new URL('/login', env.clientUrl);
+    if (status === 'error') {
+      url.searchParams.set('oauth', 'error');
+      url.searchParams.set('reason', params.reason || 'google');
+      return res.redirect(302, url.toString());
+    }
+
+    const hash = new URLSearchParams({ oauth: 'success', ...params });
+    url.hash = hash.toString();
+    return res.redirect(302, url.toString());
+  };
+
+  if (req.query.error) return redirectToLogin('error', { reason: 'denied' });
+
+  const state = verifyOAuthState(req.query.state);
+  if (!state || typeof req.query.code !== 'string') {
+    return redirectToLogin('error', { reason: 'state' });
+  }
+
+  const profile = await fetchGoogleProfile(req.query.code);
+  const user = await findOrCreateGoogleUser(profile);
+  const { token, refreshToken } = await issueAppTokens(pool, user);
+
+  return redirectToLogin('success', {
+    token,
+    refreshToken,
+    user: Buffer.from(JSON.stringify(user), 'utf8').toString('base64url'),
+    returnTo: sanitizeReturnTo(state.returnTo)
+  });
 }));
 
 authRouter.post('/refresh', asyncHandler(async (req, res) => {

@@ -70,3 +70,25 @@ moderationRouter.get('/logs', asyncHandler(async (req, res) => {
 
   return ok(res, rows);
 }));
+
+moderationRouter.get('/queue', asyncHandler(async (req, res) => {
+  const q = listSchema.safeParse(req.query);
+  if (!q.success) throw new HttpError(400, 'INVALID_PAGINATION', 'Pagination invalide');
+
+  const { page, limit } = q.data;
+  const offset = (page - 1) * limit;
+
+  const [rows] = await pool.query(
+    `SELECT id, target_type, target_id, author_id, status, category, categories, risk_score,
+            priority, severity, reasons, matched_rules, created_at, updated_at
+     FROM moderation_reviews
+     WHERE status IN ('needs_review', 'shadow_banned')
+     ORDER BY
+       CASE priority WHEN 'urgent' THEN 1 WHEN 'high' THEN 2 WHEN 'medium' THEN 3 ELSE 4 END,
+       created_at ASC
+     LIMIT ? OFFSET ?`,
+    [limit, offset]
+  );
+
+  return ok(res, rows);
+}));

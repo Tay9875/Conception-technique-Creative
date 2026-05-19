@@ -21,7 +21,10 @@ export interface SessionUser {
   id: number;
   firstname: string;
   lastname: string;
+  email?: string;
   role_id: number;
+  avatar_url?: string | null;
+  email_verified?: boolean;
 }
 
 export interface Tag {

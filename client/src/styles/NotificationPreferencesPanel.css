@@ -1,0 +1,113 @@
+.notification-preferences {
+  width: min(100%, 620px);
+  margin: 24px auto 0;
+  padding: 22px;
+  border-radius: 14px;
+  border: 1px solid var(--border-color);
+  background: var(--block-background-color);
+  color: var(--main-text-color);
+  text-align: left;
+}
+
+.notification-preferences-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.notification-preferences h2 {
+  margin: 0;
+  font-size: 1.15rem;
+  line-height: 1.3;
+}
+
+.notification-preferences p {
+  margin: 4px 0 0;
+  color: var(--main-light-text-color);
+  font-size: var(--smaller-font);
+  line-height: 1.45;
+}
+
+.notification-saving {
+  flex: 0 0 auto;
+  color: var(--main-color);
+  font-size: var(--smallest-font);
+  font-weight: 700;
+}
+
+.notification-fieldset {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 0 0 16px;
+  padding: 0;
+  border: 0;
+}
+
+.notification-fieldset.compact {
+  grid-template-columns: 1fr;
+  margin-bottom: 0;
+}
+
+.notification-fieldset legend {
+  margin-bottom: 10px;
+  color: var(--main-text-color);
+  font-weight: 800;
+  font-size: var(--smaller-font);
+}
+
+.notification-fieldset label {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--block-background-color) 92%, var(--main-color) 8%);
+  font-size: var(--smaller-font);
+  line-height: 1.25;
+}
+
+.notification-fieldset input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--main-color);
+}
+
+.notification-preferences-error {
+  color: #b91c1c !important;
+  margin-bottom: 12px !important;
+}
+
+.notification-preferences-status {
+  color: #166534 !important;
+  margin-bottom: 12px !important;
+}
+
+.notification-preferences-muted {
+  color: var(--main-light-text-color);
+}
+
+.notification-preferences-retry {
+  margin-top: 12px;
+  color: var(--main-color);
+  background: transparent;
+  font-weight: 700;
+}
+
+@media (max-width: 640px) {
+  .notification-preferences {
+    padding: 18px;
+  }
+
+  .notification-preferences-heading {
+    display: grid;
+  }
+
+  .notification-fieldset {
+    grid-template-columns: 1fr;
+  }
+}

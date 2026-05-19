@@ -69,7 +69,9 @@ describe('GET /api/comments/:postId', () => {
 describe('POST /api/comments', () => {
   it('creates a comment when authenticated with valid body', async () => {
     const token = signAccessToken({ id: 1, email: 'a@b.com', role: 1 });
-    query.mockResolvedValueOnce([{ insertId: 42 }]);
+    query
+      .mockResolvedValueOnce([{ insertId: 42 }])
+      .mockResolvedValueOnce([[{ user_id: 1 }]]);
 
     const res = await request(app)
       .post('/api/comments')

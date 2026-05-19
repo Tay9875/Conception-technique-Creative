@@ -62,7 +62,7 @@ A creer dans GitHub > repository > Settings > Secrets and variables > Actions > 
 | `GHCR_IMAGE_NAME` | Oui | `ghcr.io/mon-org/oncarya/oncarya` | Doit etre en minuscules. Le workflow publie `-web` et `-api`. |
 | `NODE_VERSION` | Non | `20` | Defaut workflow : `20`. |
 | `PNPM_VERSION` | Non | `10` | Defaut workflow : `10`. |
-| `REACT_APP_API_URL` | Non | `/api` | Defaut workflow : `/api`; variable publique incluse dans le bundle frontend. |
+| `VITE_API_URL` | Non | `/api` | Defaut workflow : `/api`; variable publique incluse dans le bundle frontend. |
 
 ## Variables Dokploy
 
@@ -80,7 +80,17 @@ A ajouter dans l'environnement du projet Compose Dokploy.
 | `MYSQL_ROOT_PASSWORD` | mysql | Oui | `valeur-generee` | Generer une valeur forte. |
 | `JWT_SECRET` | api | Oui | `valeur-generee` | Requis si `NODE_ENV=production`. |
 | `JWT_REFRESH_SECRET` | api | Oui | `valeur-generee` | Secret dedie aux refresh tokens. |
+| `OAUTH_STATE_SECRET` | api | Oui | `valeur-generee` | Signature du `state` Google OAuth. |
 | `CORS_ORIGIN` | api | Oui | `https://oncarya.example.com` | Domaine public autorise par l'API. |
+| `CLIENT_URL` | api | Oui | `https://oncarya.example.com` | URL publique du frontend pour OAuth. |
+| `APP_BASE_URL` | api | Oui | `https://oncarya.example.com` | URL publique utilisee dans les emails. |
+| `GOOGLE_CLIENT_ID` | api | Si Google actif | `...apps.googleusercontent.com` | Identifiant OAuth Google. |
+| `GOOGLE_CLIENT_SECRET` | api | Si Google actif | `valeur-google` | Secret OAuth Google, backend uniquement. |
+| `GOOGLE_CALLBACK_URL` | api | Si Google actif | `https://api.example.com/api/auth/google/callback` | Doit correspondre a Google Cloud. |
+| `EMAIL_MODE` | api | Non | `console` ou `resend` | `console`, `resend` ou `disabled`. |
+| `RESEND_API_KEY` | api | Si email prod | `re_...` | Requis avec `EMAIL_MODE=resend`. |
+| `EMAIL_FROM` | api | Si email prod | `Oncarya <notifications@example.com>` | Expediteur verifie. |
+| `EMAIL_REPLY_TO` | api | Non | `support@example.com` | Adresse de reponse. |
 | `MIGRATE_ON_START` | api | Non | `false` | Garder `false` en routine; mettre `true` seulement si vous acceptez la migration au demarrage. |
 | `SEED_ON_START` | api | Non | `false` | Garder `false` en production. |
 
@@ -109,6 +119,7 @@ A utiliser pour :
 
 - `JWT_SECRET`
 - `JWT_REFRESH_SECRET`
+- `OAUTH_STATE_SECRET`
 - `MYSQL_PASSWORD`
 - `MYSQL_ROOT_PASSWORD`
 

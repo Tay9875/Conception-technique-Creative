@@ -36,12 +36,12 @@ beforeEach(() => {
 describe('GET /api/users/me', () => {
   it('returns the current user (no password field)', async () => {
     const token = signAccessToken({ id: 7, email: 'a@b.com', role: 1 });
-    query.mockResolvedValueOnce([[{ id: 7, firstname: 'A', lastname: 'B', email: 'a@b.com', role_id: 1 }]]);
+    query.mockResolvedValueOnce([[{ id: 7, firstname: 'A', lastname: 'B', email: 'a@b.com', role_id: 1, avatar_url: null, email_verified: 0 }]]);
 
     const res = await request(app).get('/api/users/me').set('Authorization', `Bearer ${token}`);
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
-    expect(res.body.data).toEqual({ id: 7, firstname: 'A', lastname: 'B', email: 'a@b.com', role_id: 1 });
+    expect(res.body.data).toMatchObject({ id: 7, firstname: 'A', lastname: 'B', email: 'a@b.com', role_id: 1 });
     expect(res.body.data.password).toBeUndefined();
   });
 

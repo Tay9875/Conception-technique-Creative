@@ -18,21 +18,26 @@ exports.up = async function up(knex) {
       t.enu('status', ['needs_review', 'shadow_banned']).notNullable();
       t.enu('category', [
         'self_harm_suicide',
+        'drug_or_substance',
         'dangerous_medical_advice',
         'disguised_promotion',
+        'sexual_content',
+        'personal_sensitive_data',
         'spam_or_low_quality',
         'harassment_or_abuse'
       ]).notNullable();
+      t.json('categories').nullable();
       t.integer('risk_score').unsigned().notNullable();
       t.enu('priority', ['low', 'medium', 'high', 'urgent']).notNullable().defaultTo('medium');
+      t.enu('severity', ['low', 'medium', 'high', 'critical']).notNullable().defaultTo('medium');
       t.json('reasons').notNullable();
+      t.json('matched_rules').nullable();
       t.timestamp('created_at').defaultTo(knex.fn.now());
       t.timestamp('updated_at').defaultTo(knex.raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
       t.unique(['target_type', 'target_id'], 'uq_moderation_reviews_target');
       t.index(['status', 'priority', 'created_at'], 'idx_moderation_reviews_queue');
       t.index(['category', 'created_at'], 'idx_moderation_reviews_category');
       t.index(['author_id', 'created_at'], 'idx_moderation_reviews_author');
-      t.foreign('author_id').references('users.id').onDelete('SET NULL');
     });
   }
 };
@@ -49,4 +54,3 @@ exports.down = async function down(knex) {
     });
   }
 };
-

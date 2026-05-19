@@ -4,6 +4,7 @@ import './Profile.css';
 import { Header } from './components/Header';
 import { SquareButton } from './components/SquareButton';
 import ProfileForm from './components/ProfileForm';
+import { NotificationPreferencesPanel } from './components/NotificationPreferencesPanel';
 import { API_URL } from './config/api';
 import type { SessionUser, User } from './types';
 
@@ -116,6 +117,7 @@ export default function Profile(_props: ProfileProps) {
             }}
           />
         </section>
+        <NotificationPreferencesPanel />
       </main>
     </>
   );
