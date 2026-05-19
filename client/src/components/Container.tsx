@@ -1,14 +1,10 @@
-import { ReactNode, useCallback, useRef } from "react";
-import "../styles/Container.css";
-import { SquareButton } from "./SquareButton.tsx";
-import { Button } from "./Button.tsx";
+import React, { ReactNode, useCallback, useRef } from 'react';
+import '../styles/Container.css';
+import { SquareButton } from './SquareButton';
+import { Button } from './Button';
+import type { Tag } from '../types';
 
-export interface Tag {
-  id: number;
-  title: string;
-}
-
-export type SortType = "Récents" | "Populaires";
+export type SortType = 'Récents' | 'Populaires';
 
 interface ContainerProps {
   children: ReactNode;
@@ -19,14 +15,14 @@ interface ContainerProps {
   onSortChange?: (sort: SortType) => void;
 }
 
-export const Container: React.FC<ContainerProps> = ({
+export const Container = ({
   children,
   tags = [],
   selectedTag = null,
   onTagChange,
-  activeSort = "Récents",
+  activeSort = 'Récents',
   onSortChange,
-}) => {
+}: ContainerProps) => {
   const tagGroupRef = useRef<HTMLDivElement>(null);
   const sortGroupRef = useRef<HTMLDivElement>(null);
 
@@ -41,17 +37,17 @@ export const Container: React.FC<ContainerProps> = ({
       const idx = items.indexOf(current);
       let nextIdx = idx;
 
-      if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
         e.preventDefault();
         nextIdx = (idx + 1) % items.length;
-      } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
         e.preventDefault();
         nextIdx = (idx - 1 + items.length) % items.length;
       } else {
         return;
       }
 
-      (onChange as (v: any) => void)(items[nextIdx]);
+      (onChange as (v: unknown) => void)(items[nextIdx]);
 
       const buttons = groupRef.current?.querySelectorAll<HTMLButtonElement>("button[role='radio']");
       buttons?.[nextIdx]?.focus();
@@ -60,7 +56,7 @@ export const Container: React.FC<ContainerProps> = ({
   );
 
   const tagItems: (number | null)[] = [null, ...tags.map((t) => t.id)];
-  const sortItems: SortType[] = ["Récents", "Populaires"];
+  const sortItems: SortType[] = ['Récents', 'Populaires'];
   const showFilters = !!onTagChange && !!onSortChange;
 
   return (
@@ -81,7 +77,7 @@ export const Container: React.FC<ContainerProps> = ({
                   role="radio"
                   aria-checked={selectedTag === null}
                   tabIndex={0}
-                  className={selectedTag === null ? "active" : ""}
+                  className={selectedTag === null ? 'active' : ''}
                   onClick={() => onTagChange(null)}
                   onKeyDown={(e) => handleRadioKeyDown(e, tagItems, selectedTag, onTagChange, tagGroupRef)}
                 >
@@ -96,7 +92,7 @@ export const Container: React.FC<ContainerProps> = ({
                     role="radio"
                     aria-checked={selectedTag === tag.id}
                     tabIndex={0}
-                    className={selectedTag === tag.id ? "active" : ""}
+                    className={selectedTag === tag.id ? 'active' : ''}
                     onClick={() => onTagChange(tag.id)}
                     onKeyDown={(e) => handleRadioKeyDown(e, tagItems, selectedTag, onTagChange, tagGroupRef)}
                   >
@@ -122,12 +118,12 @@ export const Container: React.FC<ContainerProps> = ({
                   role="radio"
                   aria-checked={activeSort === sort}
                   tabIndex={0}
-                  className={`sqr-button-background ${activeSort === sort ? "active" : ""}`}
+                  className={`sqr-button-background ${activeSort === sort ? 'active' : ''}`}
                   onClick={() => onSortChange(sort)}
                   onKeyDown={(e) => handleRadioKeyDown(e, sortItems, activeSort, onSortChange, sortGroupRef)}
                 >
                   <span className="material-symbols-outlined" aria-hidden="true">
-                    {sort === "Récents" ? "stars_2" : "chart_data"}
+                    {sort === 'Récents' ? 'stars_2' : 'chart_data'}
                   </span>
                   <span>{sort}</span>
                 </SquareButton>
@@ -140,9 +136,10 @@ export const Container: React.FC<ContainerProps> = ({
       <section className="mainContent">
         {showFilters && (
           <p className="sr-only" aria-live="polite">
-            {`Filtre actif : ${selectedTag === null ? "Tous" : tags?.find(t => t.id === selectedTag)?.title ?? selectedTag}, tri : ${activeSort}`}
+            {`Filtre actif : ${selectedTag === null ? 'Tous' : tags?.find(t => t.id === selectedTag)?.title ?? selectedTag}, tri : ${activeSort}`}
           </p>
         )}
+
         <div className="posts-content">{children}</div>
       </section>
     </main>

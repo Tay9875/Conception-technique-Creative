@@ -1,6 +1,5 @@
-import React from "react";
-import "../styles/ReportForm.css";
-import { SquareButton } from "./SquareButton.tsx";
+import '../styles/ReportForm.css';
+import { SquareButton } from './SquareButton';
 
 interface ReportFormProps {
   onCancel: () => void;

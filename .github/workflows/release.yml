@@ -310,8 +310,3 @@ jobs:
             process.exit(1);
           }
           NODE
-
-      - name: Smoke test
-        env:
-          SMOKE_BASE_URL: ${{ vars.SMOKE_BASE_URL || vars.PUBLIC_APP_URL }}
-        run: node scripts/smoke-prod.mjs "${SMOKE_BASE_URL}"

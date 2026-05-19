@@ -1,5 +1,5 @@
-import React, { useRef } from "react";
-import "../styles/CommentCard.css";
+import { useRef } from 'react';
+import '../styles/CommentCard.css';
 
 interface CommentCardProps {
   author: string;
@@ -7,12 +7,8 @@ interface CommentCardProps {
   content: string;
 }
 
-export const CommentCard: React.FC<CommentCardProps> = ({
-  author,
-  date,
-  content,
-}) => {
-  const titleId = useRef(`comment-author-${Math.random().toString(36).substr(2, 9)}`).current;
+export const CommentCard = ({ author, date, content }: CommentCardProps) => {
+  const titleId = useRef(`comment-author-${Math.random().toString(36).slice(2, 11)}`).current;
 
   return (
     <article className="comment-card" aria-labelledby={titleId}>

@@ -1,21 +1,29 @@
-import React from "react";
-import "../styles/SquareButton.css";
+import { ButtonHTMLAttributes, ReactNode } from 'react';
+import '../styles/SquareButton.css';
 
-type SquareButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
-  children: React.ReactNode;
+type SquareButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
+  children: ReactNode;
   ariaLabel?: string;
+  role?: ButtonHTMLAttributes<HTMLButtonElement>['role'];
+  'aria-checked'?: boolean;
+  'aria-current'?: ButtonHTMLAttributes<HTMLButtonElement>['aria-current'];
+  'aria-pressed'?: boolean;
+  'aria-expanded'?: boolean;
+  'aria-controls'?: string;
+  'aria-haspopup'?: ButtonHTMLAttributes<HTMLButtonElement>['aria-haspopup'];
+  'aria-label'?: string;
 };
 
-const SquareButton: React.FC<SquareButtonProps> = ({
+const SquareButton = ({
   children,
-  type = "button",
-  className = "",
+  type = 'button',
+  className = '',
   disabled = false,
   ariaLabel,
-  "aria-label": ariaLabelHtml,
+  'aria-label': ariaLabelHtml,
   ...rest
-}) => {
-  const resolvedAriaLabel = ariaLabelHtml ?? (ariaLabel && typeof children !== "string" ? ariaLabel : undefined);
+}: SquareButtonProps) => {
+  const resolvedAriaLabel = ariaLabelHtml ?? (ariaLabel && typeof children !== 'string' ? ariaLabel : undefined);
 
   return (
     <button

@@ -1,18 +1,28 @@
-import React, { FormEvent, useState } from "react";
-import { SquareButton } from "./SquareButton.tsx";
-import "../styles/NoteForm.css"
+import { FormEvent, useState } from 'react';
+import { SquareButton } from './SquareButton';
+import '../styles/NoteForm.css';
+import type { Tag } from '../types';
+
+export interface NoteFormData {
+  titre: string;
+  contenu: string;
+}
 
 interface NoteFormProps {
-  onSubmit: (data: { titre: string; contenu: string }) => void;
+  onSubmit: (data: NoteFormData) => void;
+  tags?: Tag[];
 }
 
 export default function NoteForm({ onSubmit }: NoteFormProps) {
-  const [titre, setTitre] = useState("");
-  const [contenu, setContenu] = useState("");
+  const [titre, setTitre] = useState<string>('');
+  const [contenu, setContenu] = useState<string>('');
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = (e: FormEvent): void => {
     e.preventDefault();
+    if (!titre || !contenu) return;
     onSubmit({ titre, contenu });
+    setTitre('');
+    setContenu('');
   };
 
   return (

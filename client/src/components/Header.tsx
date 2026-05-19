@@ -1,42 +1,50 @@
-import React, { useState, useEffect } from "react";
-import "../styles/Header.css";
-import { SquareButton } from "./SquareButton.tsx";
-import { useNavigate, useLocation, Link } from "react-router-dom";
+import { useEffect, useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import '../styles/Header.css';
+import { SquareButton } from './SquareButton';
+import type { SessionUser } from '../types';
 
-type HeaderProps = {
-  theme: "light" | "dark";
-  setTheme: (theme: "light" | "dark") => void;
-};
+export type Theme = 'light' | 'dark';
 
-export const Header: React.FC<HeaderProps> = ({ theme, setTheme }: HeaderProps) => {
+interface HeaderProps {
+  theme: Theme | string;
+  setTheme: (theme: Theme) => void;
+}
+
+function readStoredUser(): SessionUser | null {
+  const saved = localStorage.getItem('user');
+  if (!saved) return null;
+  try {
+    return JSON.parse(saved) as SessionUser;
+  } catch {
+    return null;
+  }
+}
+
+export const Header = ({ theme, setTheme }: HeaderProps) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const isActive = (path: string) => location.pathname === path;
+  const isActive = (path: string): boolean => location.pathname === path;
+  const isDark = theme === 'dark';
 
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<SessionUser | null>(null);
 
   useEffect(() => {
-    const savedUser = localStorage.getItem("user");
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
-    }
+    setUser(readStoredUser());
   }, []);
 
-  const handleLogout = () => {
+  const handleLogout = (): void => {
     setUser(null);
-    localStorage.removeItem("user");
-    navigate("/");
+    localStorage.removeItem('user');
+    navigate('/');
   };
 
-  const handleClick = (path: string) => {
-    const protectedPaths = ["/favoris", "/notes", "/feed", "/profile"];
+  const handleClick = (path: string): void => {
+    const protectedPaths = ['/favoris', '/notes', '/feed', '/profile'];
     const isAuthenticated = Boolean(user);
 
     if (protectedPaths.includes(path) && !isAuthenticated) {
-      navigate("/login", {
-        state: { from: path },
-        replace: true,
-      });
+      navigate('/login', { state: { from: path }, replace: true });
       return;
     }
 
@@ -51,13 +59,7 @@ export const Header: React.FC<HeaderProps> = ({ theme, setTheme }: HeaderProps) 
 
       <div className="header-left">
         <Link to="/" className="logo-link" aria-label="Accueil">
-          <img
-            src="/logo.svg"
-            alt=""
-            className="logo-image"
-            width={40}
-            height={40}
-          />
+          <img src="/logo.svg" alt="" className="logo-image" width={40} height={40} />
           <span className="logo-title">Oncarya</span>
         </Link>
       </div>
@@ -66,9 +68,9 @@ export const Header: React.FC<HeaderProps> = ({ theme, setTheme }: HeaderProps) 
         <ul className="nav-list">
           <li>
             <SquareButton
-              className={isActive("/") ? "is-active" : undefined}
-              aria-current={isActive("/") ? "page" : undefined}
-              onClick={() => handleClick("/")}
+              className={isActive('/') ? 'is-active' : undefined}
+              aria-current={isActive('/') ? 'page' : undefined}
+              onClick={() => handleClick('/')}
             >
               Accueil
             </SquareButton>
@@ -76,47 +78,41 @@ export const Header: React.FC<HeaderProps> = ({ theme, setTheme }: HeaderProps) 
 
           <li>
             <SquareButton
-              className={isActive("/notes") ? "is-active" : undefined}
-              aria-current={isActive("/notes") ? "page" : undefined}
-              onClick={() => handleClick("/notes")}
+              className={isActive('/notes') ? 'is-active' : undefined}
+              aria-current={isActive('/notes') ? 'page' : undefined}
+              onClick={() => handleClick('/notes')}
             >
               Mes notes
             </SquareButton>
           </li>
 
-            <li>
+          <li>
             <SquareButton
-              className={isActive("/mes_articles") ? "is-active" : undefined}
-              aria-current={isActive("/mes_articles") ? "page" : undefined}
+              className={isActive('/mes_articles') ? 'is-active' : undefined}
+              aria-current={isActive('/mes_articles') ? 'page' : undefined}
               onClick={() => {
-              if (!user) {
-                navigate("/login", { state: { from: "/mes_articles" }, replace: true });
-              } else {
-                handleClick("/mes_articles");
-              }
+                if (!user) {
+                  navigate('/login', { state: { from: '/mes_articles' }, replace: true });
+                } else {
+                  handleClick('/mes_articles');
+                }
               }}
             >
               Mes articles
             </SquareButton>
-            </li>
+          </li>
         </ul>
       </nav>
 
       <div className="header-right">
         <div className="button-gaps">
           <SquareButton
-          className="theme-btn"
-            ariaLabel={
-              theme === "light"
-                ? "Activer le mode sombre"
-                : "Activer le mode clair"
-            }
-            onClick={() =>
-              setTheme(theme === "light" ? "dark" : "light")
-            }
+            className="theme-btn"
+            ariaLabel={isDark ? 'Activer le mode clair' : 'Activer le mode sombre'}
+            onClick={() => setTheme(isDark ? 'light' : 'dark')}
           >
             <span className="material-symbols-outlined" aria-hidden="true">
-              {theme === "light" ? "dark_mode" : "light_mode"}
+              {isDark ? 'light_mode' : 'dark_mode'}
             </span>
           </SquareButton>
         </div>
@@ -125,7 +121,7 @@ export const Header: React.FC<HeaderProps> = ({ theme, setTheme }: HeaderProps) 
           <SquareButton
             ariaLabel="Ajouter un article"
             className="sqr-button-dark-background"
-            onClick={() => handleClick("/feed")}
+            onClick={() => handleClick('/feed')}
           >
             <span className="material-symbols-outlined" aria-hidden="true">
               add_circle
@@ -135,7 +131,7 @@ export const Header: React.FC<HeaderProps> = ({ theme, setTheme }: HeaderProps) 
           {!user && (
             <SquareButton
               className="sqr-button-dark-background"
-              onClick={() => handleClick("/login")}
+              onClick={() => handleClick('/login')}
             >
               Connexion
             </SquareButton>
@@ -145,13 +141,13 @@ export const Header: React.FC<HeaderProps> = ({ theme, setTheme }: HeaderProps) 
             <>
               <SquareButton
                 className={
-                  isActive("/profile")
-                    ? "sqr-button-dark-background is-active"
-                    : "sqr-button-dark-background"
+                  isActive('/profile')
+                    ? 'sqr-button-dark-background is-active'
+                    : 'sqr-button-dark-background'
                 }
-                aria-current={isActive("/profile") ? "page" : undefined}
+                aria-current={isActive('/profile') ? 'page' : undefined}
                 aria-label="Mon profil"
-                onClick={() => handleClick("/profile")}
+                onClick={() => handleClick('/profile')}
               >
                 <span
                   className="material-symbols-outlined profile-header"
@@ -161,10 +157,7 @@ export const Header: React.FC<HeaderProps> = ({ theme, setTheme }: HeaderProps) 
                 </span>
               </SquareButton>
 
-              <SquareButton
-                className="sqr-button-dark-background"
-                onClick={handleLogout}
-              >
+              <SquareButton className="sqr-button-dark-background" onClick={handleLogout}>
                 Déconnexion
               </SquareButton>
             </>

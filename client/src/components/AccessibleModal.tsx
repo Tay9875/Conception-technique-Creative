@@ -1,8 +1,7 @@
-import React, { ReactNode, useEffect, useRef } from "react";
-import { createPortal } from "react-dom";
-// @ts-ignore: allow importing CSS without type declarations
-import "../styles/AccessibleModal.css";
-import { SquareButton } from "./SquareButton.tsx";
+import { ReactNode, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
+import '../styles/AccessibleModal.css';
+import { SquareButton } from './SquareButton';
 
 interface AccessibleModalProps {
   isOpen: boolean;
@@ -30,7 +29,7 @@ export default function AccessibleModal({
   const modalRef = useRef<HTMLDivElement>(null);
   const previouslyFocused = useRef<HTMLElement | null>(null);
 
-  const titleIdRef = useRef(`modal-title-${Math.random().toString(36).substr(2, 9)}`);
+  const titleIdRef = useRef<string>(`modal-title-${Math.random().toString(36).slice(2, 11)}`);
 
   useEffect(() => {
     if (!isOpen) return;
