@@ -57,10 +57,13 @@ describe('Article page', () => {
   });
 
   it('lets an authenticated user like the article', async () => {
-    const fetchMock = vi
-      .fn()
-      .mockResolvedValueOnce(successResponse(mockPostsList))
-      .mockResolvedValueOnce(successResponse({ liked: true }));
+    const fetchMock = vi.fn((input: RequestInfo | URL) => {
+      const url = String(input);
+      if (url.endsWith('/posts/10/like')) return Promise.resolve(successResponse({ liked: true }));
+      if (url.includes('/comments/10')) return Promise.resolve(successResponse([]));
+      if (url.includes('/posts')) return Promise.resolve(successResponse(mockPostsList));
+      return Promise.reject(new Error(`Unhandled fetch in test: ${url}`));
+    });
     globalThis.fetch = fetchMock as unknown as typeof fetch;
 
     renderArticle(mockSessionUser);
@@ -77,9 +80,9 @@ describe('Article page', () => {
       ).toBeInTheDocument();
     });
 
-    // The second fetch call is the like POST
-    expect(fetchMock).toHaveBeenCalledTimes(2);
-    const likeCall = fetchMock.mock.calls[1];
+    const likeCall = fetchMock.mock.calls.find(([url]) => String(url).match(/\/posts\/10\/like$/));
+    expect(likeCall).toBeTruthy();
+    if (!likeCall) throw new Error('Like call was not made');
     expect(String(likeCall[0])).toMatch(/\/posts\/10\/like$/);
     expect(likeCall[1]?.method).toBe('POST');
   });
