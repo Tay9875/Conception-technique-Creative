@@ -70,6 +70,7 @@ services:
       - "3000"
     networks:
       - oncarya_internal
+      - oncarya_egress
 
   web:
     image: ${GHCR_IMAGE_NAME:?GHCR_IMAGE_NAME is required}-web:${APP_IMAGE_TAG:?APP_IMAGE_TAG is required}
@@ -98,3 +99,5 @@ networks:
   oncarya_internal:
     driver: bridge
     internal: true
+  oncarya_egress:
+    driver: bridge

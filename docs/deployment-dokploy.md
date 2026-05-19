@@ -22,7 +22,7 @@ web (Nginx, image GHCR, port interne 8080)
               mysql (MySQL 8.4, volume oncarya_mysql_data, non expose publiquement)
 ```
 
-Le fichier de production est `docker-compose.prod.yml`. Il ne declare aucun mapping `ports:`. Dokploy/Traefik route uniquement le service `web` via son port interne `8080`; `api` et `mysql` restent sur le reseau Docker interne `oncarya_internal`.
+Le fichier de production est `docker-compose.prod.yml`. Il ne declare aucun mapping `ports:`. Dokploy/Traefik route uniquement le service `web` via son port interne `8080`. `mysql` reste uniquement sur le reseau Docker interne `oncarya_internal`; `api` reste non exposee publiquement et utilise aussi un reseau bridge dedie `oncarya_egress` pour ses appels sortants Google OAuth et Resend.
 
 ## Configuration Dokploy
 
@@ -103,10 +103,11 @@ Cette configuration est prevue pour cohabiter avec d'autres projets Dokploy, y c
 - Aucun `container_name` n'est defini : Docker Compose/Dokploy prefixe les conteneurs automatiquement.
 - Aucun `ports:` n'est declare dans `docker-compose.prod.yml`.
 - MySQL n'est pas expose publiquement et reste seulement sur `oncarya_internal`.
-- L'API n'est pas exposee publiquement et reste seulement sur `oncarya_internal`.
+- L'API n'est pas exposee publiquement : elle partage `oncarya_internal` avec `web` et `mysql`, et utilise `oncarya_egress` uniquement pour l'acces sortant Internet.
 - Seul `web` est routable par Dokploy/Traefik via `dokploy-network`.
 - Le volume MySQL est namespaced : `oncarya_mysql_data`.
 - Le reseau applicatif interne est dedie : `oncarya_internal`.
+- Le reseau sortant de l'API est dedie : `oncarya_egress`.
 - Le reseau externe Dokploy attendu est `dokploy-network`, attache uniquement au service `web`.
 
 ## Secrets a generer
@@ -187,36 +188,78 @@ Le workflow refusera un tag dont le commit n'est pas present dans `main`.
 - `web fonctionne mais /api/health echoue` : verifier que les services `web` et `api` sont dans le meme Compose et que le service s'appelle bien `api`.
 - `compose environment could not be read` dans GitHub Actions : configurer une premiere fois l'environnement Compose dans Dokploy avant de laisser le workflow le modifier.
 
-### DNS externe casse dans le container API / EAI_AGAIN oauth2.googleapis.com
+### API sans acces Internet depuis un reseau Docker internal
 
-Si Google OAuth arrive au callback puis echoue avec `EAI_AGAIN`, `ESERVFAIL` ou `fetch failed`, verifier la resolution DNS externe depuis le conteneur `api` :
+Un reseau Docker declare avec `internal: true` isole volontairement les conteneurs du routage Internet sortant. C'est utile pour `mysql`, mais insuffisant pour `api` car elle doit appeler Google OAuth et Resend.
+
+Symptomes typiques depuis le conteneur `api` :
+
+- `EAI_AGAIN`, `ESERVFAIL` ou `ECONNREFUSED` indiquent souvent un probleme DNS ou d'acces au resolver.
+- `ENETUNREACH` vers `1.1.1.1` ou `8.8.8.8` indique plutot une absence de route Internet sortante.
+
+Tester d'abord la route Internet brute :
+
+```bash
+docker exec -it <api-container> node -e "fetch('https://1.1.1.1').then(r=>console.log('status', r.status)).catch(e=>console.error(e))"
+```
+
+Tester ensuite la resolution DNS externe :
 
 ```bash
 docker exec -it <api-container> node -e "require('dns').lookup('oauth2.googleapis.com', (e,a,f)=>console.log(e || { address:a, family:f }))"
 ```
 
-Verifier aussi l'appel HTTPS. Un `status 400` sur `/token` peut etre normal sans payload OAuth ; ce qu'on ne veut plus voir est une erreur DNS ou reseau comme `EAI_AGAIN` ou `ESERVFAIL`.
+Verifier enfin l'appel HTTPS Google. Un `status 400` sur `/token` peut etre normal sans payload OAuth ; ce qui est bloquant est `EAI_AGAIN`, `ESERVFAIL`, `ECONNREFUSED` ou `ENETUNREACH`.
 
 ```bash
 docker exec -it <api-container> node -e "fetch('https://oauth2.googleapis.com/token').then(r=>console.log('status', r.status)).catch(e=>console.error(e))"
 ```
 
-Inspecter enfin la configuration DNS injectee dans le conteneur :
+La solution Compose est de garder `oncarya_internal` pour la communication `web -> api -> mysql`, et d'attacher seulement `api` a un second reseau bridge non-internal pour l'egress :
+
+```yaml
+services:
+  mysql:
+    networks:
+      - oncarya_internal
+
+  api:
+    networks:
+      - oncarya_internal
+      - oncarya_egress
+
+  web:
+    networks:
+      - dokploy-network
+      - oncarya_internal
+
+networks:
+  dokploy-network:
+    external: true
+  oncarya_internal:
+    driver: bridge
+    internal: true
+  oncarya_egress:
+    driver: bridge
+```
+
+Ne jamais attacher `mysql` a `oncarya_egress`. Ne jamais ajouter de `ports:` a `api` ou `mysql`.
+
+Inspecter la configuration DNS injectee dans le conteneur si la route Internet fonctionne mais la resolution echoue encore :
 
 ```bash
 docker exec -it <api-container> cat /etc/resolv.conf
 ```
 
-Le service `api` declare des DNS explicites dans `docker-compose.prod.yml` pour contourner les resolvers host instables :
+Le service `api` declare aussi des DNS IPv4 Hetzner explicites dans `docker-compose.prod.yml` :
 
 ```yaml
 dns:
-  - 1.1.1.1
-  - 1.0.0.1
-  - 8.8.8.8
+  - 185.12.64.1
+  - 185.12.64.2
 ```
 
-Si ce correctif Compose ne suffit pas, envisager une configuration DNS globale Docker sur le VPS via `/etc/docker/daemon.json`, puis redemarrer Docker et redeployer. Ne pas automatiser cette modification systeme dans le repository.
+Si le reseau egress fonctionne mais que le DNS reste instable, envisager une configuration DNS globale Docker sur le VPS via `/etc/docker/daemon.json`, puis redemarrer Docker et redeployer. Ne pas automatiser cette modification systeme dans le repository.
 
 ## Checklist de validation
 
