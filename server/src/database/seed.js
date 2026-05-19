@@ -1,5 +1,6 @@
 // server/src/database/seed.js
 require('dotenv').config(); // Charge les variables d'environnement
+const bcrypt = require('bcrypt');
 const db = require('./db'); // Récupère ta connexion existante
 
 async function seed() {
@@ -10,9 +11,30 @@ async function seed() {
             INSERT IGNORE INTO roles (id, name) VALUES 
             (1, 'Patient'), 
             (2, 'Ancien Patient'), 
-            (3, 'Proche');
+            (3, 'Proche'),
+            (4, 'Admin');
         `);
         console.log("✅ Rôles insérés avec succès.");
+
+        const adminEmail = process.env.ADMIN_EMAIL;
+        const adminPassword = process.env.ADMIN_PASSWORD;
+
+        if (adminEmail && adminPassword) {
+            const [existingAdmin] = await db.query('SELECT id FROM users WHERE email = ?', [adminEmail]);
+
+            if (existingAdmin.length === 0) {
+                const hashedPassword = await bcrypt.hash(adminPassword, 10);
+                await db.query(
+                    'INSERT INTO users (firstname, lastname, email, password, role_id) VALUES (?, ?, ?, ?, ?)',
+                    ['Super', 'Admin', adminEmail, hashedPassword, 4]
+                );
+                console.log(`✅ Compte administrateur créé : ${adminEmail}`);
+            } else {
+                console.log(`ℹ️ Compte administrateur déjà présent : ${adminEmail}`);
+            }
+        } else {
+            console.log("🔒 ADMIN_EMAIL ou ADMIN_PASSWORD non défini(s) : aucun compte admin n'a été créé automatiquement.");
+        }
 
         await db.query(`
             INSERT IGNORE INTO pathologies (id, name) VALUES 

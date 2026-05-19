@@ -1,11 +1,34 @@
 // server/src/routes/posts.js
 const express = require('express');
 const router = express.Router();
+const jwt = require('jsonwebtoken');
 const db = require('../database/db');
 
+const JWT_SECRET = process.env.JWT_SECRET || 'SECRET_KEY_A_METTRE_DANS_ENV';
+
+function authenticateToken(req, res, next) {
+    const authHeader = req.headers.authorization || req.headers.Authorization;
+    const token = authHeader && authHeader.startsWith('Bearer ') ? authHeader.split(' ')[1] : null;
+    if (!token) return next();
+
+    jwt.verify(token, JWT_SECRET, (err, user) => {
+        if (err) return next();
+        req.user = user;
+        next();
+    });
+}
+
+function adminOnly(req, res, next) {
+    if (!req.user || req.user.role !== 4) {
+        return res.status(403).json({ message: 'Accès réservé aux administrateurs.' });
+    }
+    next();
+}
+
 // 1. RÉCUPÉRER TOUS LES POSTS (GET)
-router.get('/', async (req, res) => {
-    const currentUserId = parseInt(req.query.user_id) || 0; 
+router.get('/', authenticateToken, async (req, res) => {
+    const currentUserId = parseInt(req.query.user_id) || 0;
+    const showBanned = req.query.show_banned === '1' && req.user?.role === 4;
 
     const sql = `
         SELECT 
@@ -19,6 +42,7 @@ router.get('/', async (req, res) => {
         FROM posts
         JOIN users ON posts.user_id = users.id
         LEFT JOIN tags ON posts.tag_id = tags.id
+        ${showBanned ? '' : 'WHERE posts.is_banned = 0'}
         ORDER BY posts.created_at DESC
     `;
 
@@ -56,6 +80,30 @@ router.post('/', async (req, res) => {
     } catch (error) {
         console.error("Erreur insertion post:", error);
         res.status(500).json({ message: "Erreur lors de la publication." });
+    }
+});
+
+router.patch('/:id/ban', authenticateToken, adminOnly, async (req, res) => {
+    const postId = req.params.id;
+
+    try {
+        await db.query('UPDATE posts SET is_banned = 1 WHERE id = ?', [postId]);
+        res.json({ message: 'Post banni avec succès.' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Erreur lors du bannissement du post.' });
+    }
+});
+
+router.patch('/:id/unban', authenticateToken, adminOnly, async (req, res) => {
+    const postId = req.params.id;
+
+    try {
+        await db.query('UPDATE posts SET is_banned = 0 WHERE id = ?', [postId]);
+        res.json({ message: 'Post débanni avec succès.' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Erreur lors du débanissement du post." });
     }
 });
 

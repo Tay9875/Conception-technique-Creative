@@ -4,6 +4,7 @@ import './App.css';
 import Auth from './Auth';
 import ProtectedRoute from "./components/ProtectedRoutes.tsx";
 import Feed from './Feed';
+import AdminPanel from './AdminPanel.jsx';
 import Accueil from "./Accueil.jsx";
 import Favoris from "./Favoris.jsx";
 import Notes from "./Notes.jsx";
@@ -15,12 +16,17 @@ import AccessibilityButton from './components/AccessibilityButton';
 
 function App() {
   const [user, setUser] = useState(null);
+  const [token, setToken] = useState(null);
 
-  // Vérifier si l'utilisateur est déjà connecté (si on rafraîchit la page)
+  // Vérifier si l'utilisateur et le token sont déjà chargés (si on rafraîchit la page)
   useEffect(() => {
     const savedUser = localStorage.getItem('user');
+    const savedToken = localStorage.getItem('token');
     if (savedUser) {
       setUser(JSON.parse(savedUser));
+    }
+    if (savedToken) {
+      setToken(savedToken);
     }
   }, []);
   
@@ -49,6 +55,11 @@ function App() {
           <ProtectedRoute user={user}>
               <Feed user={user} onLogout={undefined} />
             </ProtectedRoute>} />
+        <Route path="/admin" element={
+          <ProtectedRoute user={user} requiredRole={4}>
+              <AdminPanel user={user} token={token} />
+            </ProtectedRoute>
+          } />
         <Route path="/profile" element={
           <ProtectedRoute user={user}>
               <Profile />

@@ -43,6 +43,7 @@ export default function Profile({ onLogout }) {
   const handleLogout = () => {
     setUser(null);
     localStorage.removeItem("user");
+    localStorage.removeItem("token");
     navigate("/login");
   };
 

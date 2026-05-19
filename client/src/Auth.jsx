@@ -51,6 +51,7 @@ export default function Auth({ onLoginSuccess }) {
       }
 
       if (isLogin) {
+        localStorage.setItem("token", data.token);
         localStorage.setItem("user", JSON.stringify(data.user));
         onLoginSuccess?.(data.user);
 

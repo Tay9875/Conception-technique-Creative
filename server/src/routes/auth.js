@@ -5,6 +5,8 @@ const bcrypt = require('bcrypt'); // Pour crypter les mots de passe
 const jwt = require('jsonwebtoken'); // Pour créer le token de connexion
 const db = require('../database/db'); // Ta connexion BDD
 
+const JWT_SECRET = process.env.JWT_SECRET || 'SECRET_KEY_A_METTRE_DANS_ENV';
+
 // INSCRIPTION
 router.post('/register', async (req, res) => {
     const { firstname, lastname, email, password, role_id } = req.body;
@@ -19,8 +21,9 @@ router.post('/register', async (req, res) => {
         // 2. Hacher le mot de passe (Sécurité)
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // 3. Insérer l'utilisateur (Par défaut role_id = 1 Patient si non précisé, pour l'exemple)
-        const role = role_id || 1; 
+        // 3. Insérer l'utilisateur (Par défaut role_id = 1 Patient si non précisé)
+        const allowedRoles = [1, 2, 3];
+        const role = allowedRoles.includes(Number(role_id)) ? Number(role_id) : 1;
         
         await db.query(
             'INSERT INTO users (firstname, lastname, email, password, role_id) VALUES (?, ?, ?, ?, ?)',
@@ -58,11 +61,20 @@ router.post('/login', async (req, res) => {
         // 3. Créer un token (Badge d'accès)
         const token = jwt.sign(
             { id: user.id, email: user.email, role: user.role_id },
-            'SECRET_KEY_A_METTRE_DANS_ENV', // Idéalement, mets ça dans ton .env
+            JWT_SECRET,
             { expiresIn: '24h' }
         );
 
-        res.json({ token, user: { id: user.id, firstname: user.firstname, lastname: user.lastname } });
+        res.json({
+            token,
+            user: {
+                id: user.id,
+                firstname: user.firstname,
+                lastname: user.lastname,
+                email: user.email,
+                role_id: user.role_id,
+            },
+        });
 
     } catch (error) {
         console.error(error);

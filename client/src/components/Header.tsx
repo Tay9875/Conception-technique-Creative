@@ -27,6 +27,7 @@ export const Header: React.FC<HeaderProps> = ({ theme, setTheme }: HeaderProps) 
   const handleLogout = () => {
     setUser(null);
     localStorage.removeItem("user");
+    localStorage.removeItem("token");
     navigate("/");
   };
 
@@ -167,6 +168,20 @@ export const Header: React.FC<HeaderProps> = ({ theme, setTheme }: HeaderProps) 
                   account_circle
                 </span>
               </SquareButton>
+
+              {user.role_id === 4 && (
+                <SquareButton
+                  className={
+                    isActive("/admin")
+                      ? "sqr-button-dark-background is-active"
+                      : "sqr-button-dark-background"
+                  }
+                  aria-current={isActive("/admin") ? "page" : undefined}
+                  onClick={() => handleClick("/admin")}
+                >
+                  Admin
+                </SquareButton>
+              )}
 
               <SquareButton
                 className="sqr-button-dark-background"
