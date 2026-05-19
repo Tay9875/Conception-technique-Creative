@@ -1,5 +1,4 @@
 import MiniSearch from 'minisearch';
-import { pool } from '../database/db';
 
 export type SearchResultType = 'post' | 'comment' | 'user' | 'tag';
 
@@ -139,6 +138,8 @@ export const createSearchIndex = (documents: SearchDocument[]) => {
 };
 
 const fetchSearchDocuments = async (): Promise<SearchDocument[]> => {
+  const { pool } = await import('../database/db.js');
+
   const [postRows] = await pool.query(
     `SELECT posts.id, posts.title, posts.description, posts.created_at,
       users.firstname, users.lastname, tags.title AS tag_title,
