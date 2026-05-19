@@ -1,8 +1,9 @@
 packages:
   - client
   - server
-allowBuilds:
-  bcrypt: true
-  core-js: true
-  core-js-pure: true
-  esbuild: true
+onlyBuiltDependencies:
+  - bcrypt
+  - core-js
+  - core-js-pure
+  - esbuild
+  - msw
