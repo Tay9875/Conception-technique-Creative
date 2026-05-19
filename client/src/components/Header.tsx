@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import '../styles/Header.css';
 import { SquareButton } from './SquareButton';
 import type { SessionUser } from '../types';
+import { GlobalSearch } from "./GlobalSearch";
 
 export type Theme = 'light' | 'dark';
 
@@ -105,6 +106,8 @@ export const Header = ({ theme, setTheme }: HeaderProps) => {
       </nav>
 
       <div className="header-right">
+        <GlobalSearch />
+
         <div className="button-gaps">
           <SquareButton
             className="theme-btn"

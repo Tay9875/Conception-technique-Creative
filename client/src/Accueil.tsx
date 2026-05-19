@@ -1,5 +1,6 @@
 import './Accueil.css';
 import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Header } from './components/Header';
 import { Container } from './components/Container';
 import { BlogCard } from './components/BlogCard';
@@ -17,6 +18,7 @@ interface AccueilProps {
 type SortLabel = 'Récents' | 'Populaires';
 
 function Accueil({ user }: AccueilProps) {
+  const [searchParams] = useSearchParams();
   const [theme, setTheme] = useState<string>(() => localStorage.getItem('theme') || 'light');
   const [articles, setArticles] = useState<PostWithDetails[]>([]);
   const [tags, setTags] = useState<Tag[]>([]);
@@ -49,9 +51,22 @@ function Accueil({ user }: AccueilProps) {
     fetchTags();
   }, []);
 
-  const filtered = selectedTag
+  useEffect(() => {
+    const tag = Number(searchParams.get('tag'));
+    setSelectedTag(Number.isFinite(tag) && tag > 0 ? tag : null);
+  }, [searchParams]);
+
+  const authorFilter = searchParams.get('author')?.trim().toLowerCase();
+
+  const filteredByTag = selectedTag
     ? articles.filter((article) => article.tag_id === selectedTag)
     : articles;
+
+  const filtered = authorFilter
+    ? filteredByTag.filter((article) =>
+        `${article.firstname || ''} ${article.lastname || ''}`.trim().toLowerCase() === authorFilter
+      )
+    : filteredByTag;
 
   const displayedArticles = [...filtered].sort((a, b) => {
     if (activeSort === 'Populaires') {
