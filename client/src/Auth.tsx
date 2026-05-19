@@ -19,7 +19,7 @@ interface AuthFormState {
 }
 
 interface LocationState {
-  from?: string;
+  from?: unknown;
 }
 
 const initialForm: AuthFormState = {
@@ -28,6 +28,21 @@ const initialForm: AuthFormState = {
   email: '',
   password: '',
   role_id: '1',
+};
+
+const getInternalReturnTo = (from: unknown): string => {
+  if (typeof from === 'string' && from.startsWith('/')) {
+    return from;
+  }
+
+  if (from && typeof from === 'object') {
+    const candidate = from as { pathname?: unknown; search?: unknown };
+    if (typeof candidate.pathname === 'string' && candidate.pathname.startsWith('/')) {
+      return `${candidate.pathname}${typeof candidate.search === 'string' ? candidate.search : ''}`;
+    }
+  }
+
+  return '/';
 };
 
 export default function Auth({ onLoginSuccess }: AuthProps) {
@@ -111,7 +126,7 @@ export default function Auth({ onLoginSuccess }: AuthProps) {
         if (data.token) localStorage.setItem('token', data.token);
         if (data.refreshToken) localStorage.setItem('refreshToken', data.refreshToken);
         onLoginSuccess?.(data.user);
-        const from = (location.state as LocationState | null)?.from ?? '/';
+        const from = getInternalReturnTo((location.state as LocationState | null)?.from);
         navigate(from, { replace: true });
       } else {
         await apiFetch<RegisterResponse>(`${API_URL}/auth/${endpoint}`, {
@@ -134,7 +149,7 @@ export default function Auth({ onLoginSuccess }: AuthProps) {
   const handleGoogleLogin = (): void => {
     setGoogleLoading(true);
     setError('');
-    const from = (location.state as LocationState | null)?.from ?? '/';
+    const from = getInternalReturnTo((location.state as LocationState | null)?.from);
     window.location.assign(`${API_URL}/auth/google?returnTo=${encodeURIComponent(from)}`);
   };
 

@@ -187,6 +187,37 @@ Le workflow refusera un tag dont le commit n'est pas present dans `main`.
 - `web fonctionne mais /api/health echoue` : verifier que les services `web` et `api` sont dans le meme Compose et que le service s'appelle bien `api`.
 - `compose environment could not be read` dans GitHub Actions : configurer une premiere fois l'environnement Compose dans Dokploy avant de laisser le workflow le modifier.
 
+### DNS externe casse dans le container API / EAI_AGAIN oauth2.googleapis.com
+
+Si Google OAuth arrive au callback puis echoue avec `EAI_AGAIN`, `ESERVFAIL` ou `fetch failed`, verifier la resolution DNS externe depuis le conteneur `api` :
+
+```bash
+docker exec -it <api-container> node -e "require('dns').lookup('oauth2.googleapis.com', (e,a,f)=>console.log(e || { address:a, family:f }))"
+```
+
+Verifier aussi l'appel HTTPS. Un `status 400` sur `/token` peut etre normal sans payload OAuth ; ce qu'on ne veut plus voir est une erreur DNS ou reseau comme `EAI_AGAIN` ou `ESERVFAIL`.
+
+```bash
+docker exec -it <api-container> node -e "fetch('https://oauth2.googleapis.com/token').then(r=>console.log('status', r.status)).catch(e=>console.error(e))"
+```
+
+Inspecter enfin la configuration DNS injectee dans le conteneur :
+
+```bash
+docker exec -it <api-container> cat /etc/resolv.conf
+```
+
+Le service `api` declare des DNS explicites dans `docker-compose.prod.yml` pour contourner les resolvers host instables :
+
+```yaml
+dns:
+  - 1.1.1.1
+  - 1.0.0.1
+  - 8.8.8.8
+```
+
+Si ce correctif Compose ne suffit pas, envisager une configuration DNS globale Docker sur le VPS via `/etc/docker/daemon.json`, puis redemarrer Docker et redeployer. Ne pas automatiser cette modification systeme dans le repository.
+
 ## Checklist de validation
 
 - Le domaine pointe vers Dokploy.

@@ -20,6 +20,10 @@ services:
   api:
     image: ${GHCR_IMAGE_NAME:?GHCR_IMAGE_NAME is required}-api:${APP_IMAGE_TAG:?APP_IMAGE_TAG is required}
     restart: unless-stopped
+    dns:
+      - 1.1.1.1
+      - 1.0.0.1
+      - 8.8.8.8
     depends_on:
       mysql:
         condition: service_healthy

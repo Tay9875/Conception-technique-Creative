@@ -1,5 +1,6 @@
 import { env } from '../config/env';
 import { HttpError } from '../lib/http';
+import { logger } from '../lib/logger';
 
 export type GoogleProfile = {
   providerAccountId: string;
@@ -63,6 +64,15 @@ const parseGoogleName = (profile: GoogleUserInfoResponse) => {
   };
 };
 
+const googleNetworkError = (stage: 'token' | 'userinfo', err: unknown) => {
+  logger.warn({ err, stage }, 'Google OAuth provider network error');
+  throw new HttpError(
+    503,
+    'OAUTH_PROVIDER_UNAVAILABLE',
+    'Connexion Google temporairement indisponible. Reessayez dans quelques instants.'
+  );
+};
+
 export const fetchGoogleProfile = async (code: string): Promise<GoogleProfile> => {
   if (!isGoogleOAuthConfigured()) {
     throw new HttpError(503, 'GOOGLE_OAUTH_NOT_CONFIGURED', 'Google OAuth n est pas configure.');
@@ -78,7 +88,7 @@ export const fetchGoogleProfile = async (code: string): Promise<GoogleProfile> =
       redirect_uri: env.google.callbackUrl,
       grant_type: 'authorization_code'
     })
-  });
+  }).catch((err) => googleNetworkError('token', err));
 
   const tokens = (await tokenResponse.json().catch(() => ({}))) as GoogleTokenResponse;
   if (!tokenResponse.ok || !tokens.access_token) {
@@ -87,7 +97,7 @@ export const fetchGoogleProfile = async (code: string): Promise<GoogleProfile> =
 
   const userInfoResponse = await fetch('https://openidconnect.googleapis.com/v1/userinfo', {
     headers: { Authorization: `Bearer ${tokens.access_token}` }
-  });
+  }).catch((err) => googleNetworkError('userinfo', err));
   const userInfo = (await userInfoResponse.json().catch(() => ({}))) as GoogleUserInfoResponse;
 
   if (!userInfoResponse.ok || !userInfo.sub || !userInfo.email || userInfo.email_verified !== true) {

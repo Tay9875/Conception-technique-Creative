@@ -136,6 +136,22 @@ describe('Auth page', () => {
     expect(localStorage.getItem('refreshToken')).toBe('google.refresh');
   });
 
+  it('starts Google OAuth with an internal string returnTo', () => {
+    const assign = vi.fn();
+    Object.defineProperty(window, 'location', {
+      configurable: true,
+      value: { ...window.location, assign },
+    });
+
+    renderWithProviders(<Auth />, {
+      initialEntries: [{ pathname: '/login', state: { from: { pathname: '/feed', search: '?q=test' } } }],
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: /continuer avec google/i }));
+
+    expect(assign).toHaveBeenCalledWith('/api/auth/google?returnTo=%2Ffeed%3Fq%3Dtest');
+  });
+
   it('has no axe accessibility violations', async () => {
     const { container } = renderWithProviders(<Auth />, {
       initialEntries: ['/login'],
