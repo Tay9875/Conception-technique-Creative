@@ -85,10 +85,10 @@ describe('CommentSection', () => {
     // Wait for initial empty state.
     await screen.findByText(/Soyez le premier/i);
 
-    fireEvent.change(screen.getByLabelText(/Commentaires/i), {
+    fireEvent.change(screen.getByLabelText(/Votre commentaire/i), {
       target: { value: 'Mon commentaire' },
     });
-    fireEvent.click(screen.getByRole('button', { name: /Enregistrer/i }));
+    fireEvent.click(screen.getByRole('button', { name: /Publier le commentaire/i }));
 
     await waitFor(() => {
       // Initial GET + POST + re-fetch = 3 calls.
