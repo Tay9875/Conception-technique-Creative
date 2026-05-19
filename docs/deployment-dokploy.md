@@ -182,6 +182,7 @@ Le workflow refusera un tag dont le commit n'est pas present dans `main`.
 
 - `pull access denied` sur GHCR : rendre les packages publics ou configurer un registry credential GHCR dans Dokploy.
 - `JWT_SECRET is required when NODE_ENV=production` : ajouter `JWT_SECRET` dans les variables Dokploy.
+- `GOOGLE_OAUTH_NOT_CONFIGURED` sur `/api/auth/google` : verifier que `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` et `GOOGLE_CALLBACK_URL` sont renseignes dans l'environnement Dokploy, puis redeployer pour que le service `api` les recoive.
 - `api unhealthy` : verifier `DB_HOST=mysql`, les mots de passe MySQL et les logs du service `api`.
 - `web fonctionne mais /api/health echoue` : verifier que les services `web` et `api` sont dans le meme Compose et que le service s'appelle bien `api`.
 - `compose environment could not be read` dans GitHub Actions : configurer une premiere fois l'environnement Compose dans Dokploy avant de laisser le workflow le modifier.
