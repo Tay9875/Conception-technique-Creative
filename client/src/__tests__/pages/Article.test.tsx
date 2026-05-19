@@ -57,11 +57,12 @@ describe('Article page', () => {
   });
 
   it('lets an authenticated user like the article', async () => {
-    const fetchMock = vi.fn((input: RequestInfo | URL) => {
+    const fetchMock = vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
       const url = String(input);
       if (url.endsWith('/posts/10/like')) return Promise.resolve(successResponse({ liked: true }));
       if (url.includes('/comments/10')) return Promise.resolve(successResponse([]));
       if (url.includes('/posts')) return Promise.resolve(successResponse(mockPostsList));
+      void init;
       return Promise.reject(new Error(`Unhandled fetch in test: ${url}`));
     });
     globalThis.fetch = fetchMock as unknown as typeof fetch;
