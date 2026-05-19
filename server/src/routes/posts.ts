@@ -27,7 +27,7 @@ postsRouter.get('/', asyncHandler(async (req, res) => {
   if (cached) return ok(res.setHeader('X-Cache', 'HIT'), cached);
 
   const [rows] = await pool.query(
-    `SELECT posts.id,posts.title,posts.description,posts.created_at,posts.user_id,posts.tag_id,users.firstname,users.lastname,tags.title AS tag_title,COUNT(DISTINCT likes.id) AS like_count,MAX(CASE WHEN likes.user_id = ? THEN 1 ELSE 0 END) AS is_liked FROM posts JOIN users ON posts.user_id=users.id LEFT JOIN tags ON posts.tag_id=tags.id LEFT JOIN likes ON likes.post_id=posts.id WHERE posts.is_banned=0 GROUP BY posts.id,users.firstname,users.lastname,tags.title ORDER BY posts.created_at DESC LIMIT ? OFFSET ?`,
+    `SELECT posts.id,posts.title,posts.description,posts.created_at,posts.user_id,posts.tag_id,users.firstname,users.lastname,users.profile_status,tags.title AS tag_title,COUNT(DISTINCT likes.id) AS like_count,MAX(CASE WHEN likes.user_id = ? THEN 1 ELSE 0 END) AS is_liked FROM posts JOIN users ON posts.user_id=users.id LEFT JOIN tags ON posts.tag_id=tags.id LEFT JOIN likes ON likes.post_id=posts.id WHERE posts.is_banned=0 GROUP BY posts.id,users.firstname,users.lastname,users.profile_status,tags.title ORDER BY posts.created_at DESC LIMIT ? OFFSET ?`,
     [uid, limit, offset]
   );
 

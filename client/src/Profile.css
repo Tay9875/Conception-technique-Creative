@@ -11,10 +11,20 @@
 .profile-card {
   background-color: var(--block-background-color);
   border-radius: 14px;
-  max-width: 400px;
+  max-width: 560px;
   width: 100%;
   padding: 24px;
   color: var(--main-text-color);
+}
+
+.profile-header {
+    text-align: center;
+}
+
+.profile-header h1 {
+    margin: 4px 0 6px;
+    color: var(--main-color);
+    font-size: 1.7rem;
 }
 
 .profile-icon {
@@ -22,10 +32,21 @@
     color: var(--main-color);
 }
 
+.profile-subtitle,
+.profile-status {
+    margin: 0;
+}
+
+.profile-status {
+    margin-top: 8px;
+    font-weight: 600;
+}
+
 .sign-out{
     width: 100%;
     display: flex;
     justify-content: center;
+    margin-top: 16px;
 }
 
 .sign-out-btn{
@@ -37,4 +58,68 @@
 .sign-out-btn:focus{
 	background-color: var(--occasional-background);
 	border: solid 3px var(--main-color);
+}
+
+.profile-section {
+    margin-top: 22px;
+    padding: 16px 0 4px;
+    border-top: 1px solid var(--border-color);
+}
+
+.profile-section h2 {
+    margin: 0 0 10px;
+    color: var(--main-text-color);
+    font-size: 1rem;
+}
+
+.profile-section p {
+    margin: 10px 0 0;
+    color: var(--main-light-text-color);
+    line-height: 1.5;
+}
+
+.profile-provider-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.profile-provider-list span {
+    display: inline-flex;
+    align-items: center;
+    min-height: 30px;
+    border-radius: 999px;
+    border: 1px solid var(--border-color);
+    padding: 4px 10px;
+    background: var(--main-background-color);
+    color: var(--main-text-color);
+    font-size: var(--smallest-font);
+    font-weight: 700;
+}
+
+.profile-feedback {
+    margin: 16px 0 0;
+    padding: 12px 14px;
+    border-radius: 10px;
+    line-height: 1.45;
+}
+
+.profile-feedback.success {
+    background: rgba(16, 185, 129, 0.12);
+    color: #047857;
+}
+
+.profile-feedback.error {
+    background: rgba(220, 38, 38, 0.12);
+    color: #b91c1c;
+}
+
+@media (max-width: 640px) {
+    .profile-container {
+        padding: 24px 16px;
+    }
+
+    .profile-card {
+        padding: 20px 16px;
+    }
 }

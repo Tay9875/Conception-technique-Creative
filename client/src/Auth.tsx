@@ -65,7 +65,16 @@ export default function Auth({ onLoginSuccess }: AuthProps) {
     if (params.get('oauth') !== 'success') {
       const search = new URLSearchParams(location.search);
       if (search.get('oauth') === 'error') {
-        setError('Connexion Google interrompue. Vous pouvez reessayer ou utiliser votre email.');
+        const reason = search.get('reason');
+        if (reason === 'unverified') {
+          setError('Google n’a pas confirmé cette adresse email. Connectez-vous avec votre mot de passe Oncarya, ou utilisez un compte Google vérifié.');
+        } else if (reason === 'state') {
+          setError('La session Google a expiré. Vous pouvez relancer la connexion.');
+        } else if (reason === 'denied') {
+          setError('Connexion Google interrompue. Vous pouvez réessayer ou utiliser votre email.');
+        } else {
+          setError('Connexion Google indisponible. Vous pouvez réessayer ou utiliser votre email.');
+        }
       }
       return;
     }

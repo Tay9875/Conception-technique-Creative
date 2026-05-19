@@ -79,7 +79,7 @@ describe('POST /api/auth/register', () => {
 describe('POST /api/auth/login', () => {
   it('logs in successfully and returns token shape', async () => {
     query
-      .mockResolvedValueOnce([[{ id: 1, firstname: 'John', lastname: 'Doe', email: 'john@example.com', password: 'hashed:Password1234', role_id: 1 }]])
+      .mockResolvedValueOnce([[{ id: 1, firstname: 'John', lastname: 'Doe', email: 'john@example.com', password: 'hashed:Password1234', role_id: 1, has_google: 0 }]])
       .mockResolvedValueOnce([{}]); // INSERT refresh_tokens
 
     const res = await request(app).post('/api/auth/login').send({
@@ -90,10 +90,13 @@ describe('POST /api/auth/login', () => {
     expect(res.body.data.token).toBeTypeOf('string');
     expect(res.body.data.refreshToken).toBeTypeOf('string');
     expect(res.body.data.user).toMatchObject({ id: 1, firstname: 'John', lastname: 'Doe', role_id: 1 });
+    expect(res.body.data.user.authProviders).toEqual(['password']);
+    expect(res.body.data.user.hasPassword).toBe(true);
+    expect(res.body.data.user.canChangePassword).toBe(true);
   });
 
   it('returns 401 for bad password', async () => {
-    query.mockResolvedValueOnce([[{ id: 1, firstname: 'John', lastname: 'Doe', email: 'john@example.com', password: 'hashed:Password1234', role_id: 1 }]]);
+    query.mockResolvedValueOnce([[{ id: 1, firstname: 'John', lastname: 'Doe', email: 'john@example.com', password: 'hashed:Password1234', role_id: 1, has_google: 0 }]]);
 
     const res = await request(app).post('/api/auth/login').send({
       email: 'john@example.com', password: 'WrongPassword'
@@ -168,12 +171,23 @@ describe('POST /api/auth/logout', () => {
 describe('GET /api/auth/me', () => {
   it('returns the current user without password data', async () => {
     const token = (await import('../../src/middleware/auth')).signAccessToken({ id: 7, email: 'a@b.com', role: 1 });
-    query.mockResolvedValueOnce([[{ id: 7, firstname: 'A', lastname: 'B', email: 'a@b.com', role_id: 1, avatar_url: null, email_verified: 1 }]]);
+    query.mockResolvedValueOnce([[{ id: 7, firstname: 'A', lastname: 'B', email: 'a@b.com', password: null, role_id: 1, avatar_url: null, email_verified: 1, profile_status: 'prefer_not_to_say', has_google: 1 }]]);
 
     const res = await request(app).get('/api/auth/me').set('Authorization', `Bearer ${token}`);
 
     expect(res.status).toBe(200);
-    expect(res.body.data).toMatchObject({ id: 7, firstname: 'A', lastname: 'B', email: 'a@b.com', role_id: 1, email_verified: true });
+    expect(res.body.data).toMatchObject({
+      id: 7,
+      firstname: 'A',
+      lastname: 'B',
+      email: 'a@b.com',
+      role_id: 1,
+      email_verified: true,
+      authProviders: ['google'],
+      hasPassword: false,
+      canChangePassword: false,
+      profileStatus: 'prefer_not_to_say'
+    });
     expect(res.body.data.password).toBeUndefined();
   });
 });

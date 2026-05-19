@@ -4,6 +4,7 @@ import {
   mockComments,
   mockLoginResponse,
   mockPostsList,
+  mockSessionUser,
   mockTags,
   mockUser,
 } from '../helpers/fixtures';
@@ -39,11 +40,23 @@ export const handlers = [
   http.get(`${API_URL}/tags`, () =>
     HttpResponse.json({ success: true, data: mockTags })
   ),
+  http.get(`${API_URL}/users/me`, () =>
+    HttpResponse.json({ success: true, data: mockSessionUser })
+  ),
+  http.patch(`${API_URL}/users/me`, async ({ request }) =>
+    HttpResponse.json({
+      success: true,
+      data: {
+        ...mockSessionUser,
+        ...((await request.json()) as Record<string, unknown>),
+      },
+    })
+  ),
   http.get(`${API_URL}/users/:id`, () =>
     HttpResponse.json({ success: true, data: mockUser })
   ),
   http.get(`${API_URL}/auth/me`, () =>
-    HttpResponse.json({ success: true, data: mockUser })
+    HttpResponse.json({ success: true, data: mockSessionUser })
   ),
   http.get(`${API_URL}/notifications/unread-count`, () =>
     HttpResponse.json({ success: true, data: { count: 2 } })

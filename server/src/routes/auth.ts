@@ -10,7 +10,7 @@ import { zodToFieldErrors } from '../lib/validation';
 import { asyncHandler, HttpError, ok } from '../lib/http';
 import { createOAuthState, sanitizeReturnTo, verifyOAuthState } from '../auth/oauthState';
 import { buildGoogleAuthorizationUrl, fetchGoogleProfile } from '../auth/googleOAuth';
-import { findOrCreateGoogleUser, issueAppTokens, toPublicUser } from '../auth/authService';
+import { findOrCreateGoogleUser, getPublicUserById, issueAppTokens, toPublicUser } from '../auth/authService';
 
 export const authRouter = Router();
 authRouter.use(buildRateLimit(15 * 60 * 1000, 40, 'auth'));
@@ -33,7 +33,14 @@ authRouter.post('/login', asyncHandler(async (req, res) => {
   if (!p.success) throw new HttpError(400, 'INVALID_PAYLOAD', 'Payload invalide', zodToFieldErrors(p.error));
   const { email, password } = p.data;
 
-  const [rows] = await pool.query('SELECT id, firstname, lastname, email, password, role_id, avatar_url, email_verified FROM users WHERE email = ? LIMIT 1', [email.toLowerCase()]);
+  const [rows] = await pool.query(
+    `SELECT u.id, u.firstname, u.lastname, u.email, u.password, u.role_id, u.avatar_url, u.email_verified, u.profile_status,
+            EXISTS(SELECT 1 FROM oauth_accounts oa WHERE oa.user_id = u.id AND oa.provider = 'google') AS has_google
+     FROM users u
+     WHERE u.email = ?
+     LIMIT 1`,
+    [email.toLowerCase()]
+  );
   const user = (rows as any[])[0];
   if (!user || !user.password || !(await bcrypt.compare(password, user.password))) {
     throw new HttpError(401, 'INVALID_CREDENTIALS', 'Email ou mot de passe incorrect.');
@@ -47,10 +54,9 @@ authRouter.post('/login', asyncHandler(async (req, res) => {
 
 authRouter.get('/me', requireAuth, asyncHandler(async (req, res) => {
   if (!req.user) throw new HttpError(401, 'UNAUTHORIZED', 'Authentification requise.');
-  const [rows] = await pool.query('SELECT id, firstname, lastname, email, role_id, avatar_url, email_verified FROM users WHERE id = ? LIMIT 1', [req.user.id]);
-  const user = (rows as any[])[0];
+  const user = await getPublicUserById(pool, req.user.id);
   if (!user) throw new HttpError(404, 'USER_NOT_FOUND', 'Utilisateur non trouve.');
-  return ok(res, toPublicUser(user));
+  return ok(res, user);
 }));
 
 authRouter.get('/google', asyncHandler(async (req, res) => {
@@ -79,8 +85,20 @@ authRouter.get('/google/callback', asyncHandler(async (req, res) => {
     return redirectToLogin('error', { reason: 'state' });
   }
 
-  const profile = await fetchGoogleProfile(req.query.code);
-  const user = await findOrCreateGoogleUser(profile);
+  let user;
+  try {
+    const profile = await fetchGoogleProfile(req.query.code);
+    user = await findOrCreateGoogleUser(profile);
+  } catch (error) {
+    if (error instanceof HttpError) {
+      const reason = ['GOOGLE_PROFILE_UNVERIFIED', 'GOOGLE_EMAIL_UNVERIFIED'].includes(error.code)
+        ? 'unverified'
+        : 'provider';
+      return redirectToLogin('error', { reason });
+    }
+    throw error;
+  }
+
   const { token, refreshToken } = await issueAppTokens(pool, user);
 
   return redirectToLogin('success', {
