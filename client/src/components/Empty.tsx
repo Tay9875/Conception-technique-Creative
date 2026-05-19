@@ -1,7 +1,5 @@
 import { ReactNode } from "react";
-import { Square } from "lucide-react";
 import "../styles/Empty.css";
-import { SquareButton } from "./SquareButton.tsx";
 
 
 interface ContainerProps {

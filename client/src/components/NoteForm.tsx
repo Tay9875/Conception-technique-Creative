@@ -1,4 +1,3 @@
-import { Square } from "lucide-react";
 import React, { FormEvent, useState } from "react";
 import { SquareButton } from "./SquareButton.tsx";
 import "../styles/NoteForm.css"

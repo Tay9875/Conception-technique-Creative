@@ -22,7 +22,7 @@ export default function Profile({ onLogout }) {
   // Récupère le profil complet si role_id absent
   useEffect(() => {
     if (user && user.id && user.role_id === undefined) {
-      fetch(`${API_URL}/users/${user.id}`)
+      fetch(`${API_URL}/users/me`, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } })
         .then(res => res.json())
         .then(data => {
           if (data && data.role_id) {

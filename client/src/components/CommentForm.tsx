@@ -1,4 +1,3 @@
-import { Square } from "lucide-react";
 import React, { FormEvent, useState } from "react";
 import { SquareButton } from "./SquareButton.tsx";
 import "../styles/CommentForm.css"
@@ -8,7 +7,7 @@ interface CommentFormProps {
 }
 
 export default function CommentForm({ onSubmit }: CommentFormProps) {
-  const [titre, setTitre] = useState("");
+  const [titre] = useState("");
   const [contenu, setContenu] = useState("");
 
   const handleSubmit = (e: FormEvent) => {

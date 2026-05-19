@@ -1,140 +1,98 @@
-# 📱 Oncarya
+# Oncarya
 
-## 📌 Présentation du projet
-Ce projet est une application web d’entraide destinée aux patients atteints de cancer.  
-Elle vise à proposer un espace non médicalisé, accessible et bienveillant, permettant le partage d’expériences et de conseils du quotidien entre patients.
+Oncarya est une application web d'entraide non medicalisee pour patients atteints de cancer. Le projet est un monorepo simple :
 
-L’application est librement accessible sur le web, sans obligation de création de compte pour consulter les contenus.
+- `client/` : frontend React, build CRA
+- `server/` : API Node.js / Express
+- MySQL : base relationnelle
+- `pnpm` : gestion du workspace
 
----
+## Architecture
 
-## 🏗️ Architecture générale
-Le projet repose sur une architecture **Web App + API REST**, permettant de séparer l’interface utilisateur de la logique métier.
+En local comme en production Docker :
 
-- Front-end : Application web React  
-- Back-end : API REST Node.js / Express  
-- Base de données : MySQL  
-
-Cette architecture favorise la maintenabilité, l’évolutivité et la clarté du code.
-
----
-
-## 🎨 Front-end
-- **React** pour la création d’interfaces utilisateur dynamiques et modulaires  
-- Composants réutilisables pour une meilleure maintenabilité  
-- Utilisation de balises HTML sémantiques et bonnes pratiques ARIA pour l’accessibilité  
-
----
-
-## ⚙️ Back-end
-- **Node.js / Express** pour la création de l’API REST  
-- Gestion des requêtes, des données et des règles métier  
-- Communication avec la base de données MySQL  
-
----
-
-## 🗄️ Base de données
-- **MySQL** (bdd relationnelle)
-- Stockage des données liées aux contenus, interactions et utilisateurs 
-- Structure adaptée à un projet simple et évolutif  
-
----
-
-## 🧩 Organisation du projet
-- **Mono-repo GitHub** regroupant le front-end et le back-end  
-- Gestion du versioning via Git  
-- Collaboration facilitée et cohérence du projet  
-
----
-
-## ☁️ Hébergement
-- **Render** pour l’hébergement du front-end et du back-end
-- Déploiement simple et rapide
-
----
-
-## ♿ Accessibilité
-Une attention particulière est portée à l’accessibilité :
-- Utilisation de balises HTML sémantiques
-- Interface simple et lisible
-- Navigation claire et intuitive
-
----
-
-## 🎯 Objectifs techniques
-Les choix techniques ont été réalisés afin de :
-- garantir une application simple et maintenable
-- assurer une bonne expérience utilisateur
-- faciliter les évolutions futures
-
-
-## 🚀 CI/CD Pipeline
-
-Ce projet utilise GitHub Actions pour l'intégration continue et le déploiement automatique.
-
-### 📋 Workflows
-
-#### CI (Pull Requests & Pushes sur main/dev)
-- **`ci.yml`** - Lint du code client et server
-- **`lint.yml`** - Vérifie les messages de commit (Conventional Commits)
-- **`deploy-render.yml`** - Déploie sur Render lors d'un tag `vX.X.X`
-
-### 🌿 Conventions de branches
-
-| Type | Format | Exemple |
-|------|--------|---------|
-| Production | `main` | `main` |
-| Développement | `dev` | `dev` |
-| Fonctionnalité | `feat/<slug>` | `feat/user-auth` |
-| Correction | `fix/<slug>` | `fix/api-timeout` |
-| Documentation | `docs/<slug>` | `docs/readme-update` |
-| Autre | `<type>/<slug>` | `chore/deps-upgrade` |
-
-**Types autorisés** : `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `chore`, `build`, `ci`, `revert`
-
-### 📝 Conventions de commits (Conventional Commits)
-
-Configuration dans `.commitlintrc.js`.
-
-**Format** : `<type>(<scope>): <subject>`
-
-**Exemples** :
-```bash
-feat(auth): add OAuth callback
-fix: handle null payload in API
-docs: update deployment guide
-ci: configure deploy workflow
+```text
+Navigateur
+  |
+  v
+web (Nginx + build React, port 8080)
+  |-- sert le SPA
+  `-- /api/* -> api:3000/api/*
+                  |
+                  v
+              api (Express)
+                  |
+                  v
+              mysql (MySQL, volume persistant, non expose en production)
 ```
 
-**Types obligatoires** : `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, `revert`
+Les routes backend sont prefixees en `/api`. Le frontend utilise `REACT_APP_API_URL`, avec `/api` pour l'image de production.
 
-**Important** : Le sujet ne doit pas commencer par une majuscule (sauf noms propres).
+## Prerequis
 
-### 🏷️ Tags de version
+- Node.js 20 recommande, 18 minimum
+- pnpm 10
+- Docker et Docker Compose
 
-Format recommandé : **`v*.*.*`** (semantic versioning)
+## Lancement local sans Docker complet
 
-**Exemples** :
 ```bash
-v1.0.0
-v1.2.3
+pnpm install
+pnpm db:up
+pnpm db:prepare
+pnpm dev
 ```
 
-## Déploiement (Render)
+Services :
 
-Le déploiement est déclenché automatiquement **uniquement** quand un tag de version est poussé (format `vX.Y.Z`, ex: `v1.2.3`) et que le commit taggé est bien présent sur la branche `main`.
+- Frontend CRA : http://localhost:3001
+- API Express : http://localhost:3000
+- MySQL local Docker : `127.0.0.1:3306`
 
-### Secrets GitHub Actions requis
+## Lancement local avec Docker
 
-À configurer dans GitHub → Settings → Secrets and variables → Actions :
+```bash
+docker compose up --build
+```
 
-- `RENDER_API_KEY` : clé API Render
-- `RENDER_BACKEND_SERVICE_ID` : Service ID Render du back
-- `RENDER_FRONTEND_SERVICE_ID` : Service ID Render du front
+Services :
 
-Le workflow est dans `.github/workflows/deploy-render.yml`.
+- Web Docker : http://localhost:8080
+- API Docker : http://localhost:3000
+- Health public API via Nginx : http://localhost:8080/api/health
 
-### Créer et pousser un tag
+Le volume `oncarya_mysql_data` conserve les donnees MySQL. En local, `MIGRATE_ON_START=true` et `SEED_ON_START=true` par defaut dans `docker-compose.yml`.
+
+## Scripts utiles
+
+```bash
+pnpm dev           # Lance server + client hors Docker complet
+pnpm db:up         # Lance uniquement MySQL
+pnpm db:down       # Stoppe le compose local
+pnpm db:prepare    # Migration + seed local
+pnpm lint          # Lint client + server
+pnpm test          # Tests frontend
+pnpm build         # Build frontend
+pnpm smoke:prod    # Smoke test, requiert SMOKE_BASE_URL ou une URL en argument
+```
+
+## CI/CD
+
+Strategie retenue :
+
+- PR / push sur `main` ou `dev` : CI seulement (`ci.yml`)
+- tag `vX.Y.Z` : build images Docker, push GHCR, deploy Dokploy (`release.yml`)
+- plus de workflow Render
+- pas de tag `latest` en production
+
+Images publiees :
+
+- `${GHCR_IMAGE_NAME}-web:vX.Y.Z`
+- `${GHCR_IMAGE_NAME}-web:sha-<commit>`
+- `${GHCR_IMAGE_NAME}-api:vX.Y.Z`
+- `${GHCR_IMAGE_NAME}-api:sha-<commit>`
+
+## Creer une release
 
 ```bash
 git checkout main
@@ -143,80 +101,68 @@ git tag v1.0.0
 git push origin v1.0.0
 ```
 
-### 🛠️ Installation locale
-
-#### Prérequis
-- Node.js 18+
-- pnpm 10+
-- Docker Desktop (pour la base MySQL locale)
-
-#### Structure du projet
-
-```
-.
-├── client/          # Frontend React (port 3001)
-├── server/          # Backend Express (port 3000)
-├── .github/         # Workflows GitHub Actions
-└── .commitlintrc.js # Configuration commitlint
-```
-
-#### Lancement rapide
+Rollback :
 
 ```bash
-# A la racine
-pnpm install
-pnpm db:up
-pnpm db:prepare
-pnpm dev
+# Option 1: dans Dokploy, remettre APP_IMAGE_TAG a un ancien tag puis redeployer.
+
+# Option 2: relancer le workflow Release Dokploy en workflow_dispatch
+# avec release_tag=vX.Y.Z sur un tag existant.
 ```
 
-Le backend est disponible sur http://localhost:3000.
-Le front React est disponible sur http://localhost:3001.
+## Deploiement Dokploy
 
-Les fichiers locaux `client/.env` et `server/.env` sont ignores par Git. Les modeles sont dans `client/.env.example` et `server/.env.example`.
+La documentation complete est dans [docs/deployment-dokploy.md](docs/deployment-dokploy.md).
 
-#### Scripts utiles
+Elle contient :
+
+- configuration Dokploy pas a pas
+- variables Dokploy
+- GitHub Secrets et Variables
+- configuration GHCR public/prive
+- smoke tests
+- rollback
+- troubleshooting
+
+## Variables principales
+
+Voir les modeles :
+
+- `.env.example` : Compose local et valeurs attendues
+- `client/.env.example` : variables CRA locales
+- `server/.env.example` : API locale
+
+En production, les secrets ne doivent pas etre commites. Generez au minimum :
 
 ```bash
-pnpm dev         # Lance le backend et le frontend
-pnpm db:up       # Lance MySQL avec Docker
-pnpm db:down     # Stoppe MySQL
-pnpm db:prepare  # Applique le schema puis les donnees de base
-pnpm lint        # Lint client + server
-pnpm test        # Tests client
-pnpm build       # Build client
+openssl rand -base64 32
 ```
 
+pour `JWT_SECRET`, `MYSQL_PASSWORD` et `MYSQL_ROOT_PASSWORD`.
 
----
+## Healthcheck
 
-## 🧪 Tests front-end (React)
+L'API expose :
 
-Des tests automatisés sont présents pour le front-end React dans le dossier `client/src/App.test.js`.
+- `GET /health`
+- `GET /api/health`
 
-### Lancer les tests
+Le web expose publiquement `GET /api/health` via Nginx.
 
-Depuis la racine, executez :
+## Conventions de branches
+
+Branches autorisees par la CI :
+
+- `main`
+- `dev`
+- `<type>/<slug>`
+
+Types : `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `chore`, `build`, `ci`, `revert`.
+
+## Tests frontend
 
 ```bash
 pnpm test
 ```
 
-Les tests couvrent :
-- L'affichage du composant principal et du formulaire de connexion
-- L'accessibilité de l'application (audit via jest-axe)
-- Le comportement selon la connexion/déconnexion d'un utilisateur (localStorage)
-
-**Outils utilisés :**
-- @testing-library/react
-- @testing-library/jest-dom
-- jest-axe (accessibilité)
-
----
-
-### 📚 Ressources
-
-- [Conventional Commits](https://www.conventionalcommits.org/)
-- [GitHub Actions](https://docs.github.com/en/actions)
-- [Render Deployment](https://render.com/docs/deploy-hooks)
-- [Vitest Documentation](https://vitest.dev/)
+Les tests React se trouvent notamment dans `client/src/App.test.js`.
