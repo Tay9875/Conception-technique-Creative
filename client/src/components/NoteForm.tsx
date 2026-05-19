@@ -16,37 +16,47 @@ export default function NoteForm({ onSubmit }: NoteFormProps) {
   };
 
   return (
-    <form className="note-form" onSubmit={handleSubmit}>
+    <form
+      className="note-form"
+      onSubmit={handleSubmit}
+      aria-labelledby="note-form-title"
+    >
+      <h3 id="note-form-title" className="sr-only">Créer une nouvelle note</h3>
+
       <div className="note-titre">
-        <label htmlFor="titre">Titre</label>
+        <label htmlFor="note-titre-input">Titre</label>
         <input
-          id="titre"
+          id="note-titre-input"
           type="text"
           value={titre}
           onChange={(e) => setTitre(e.target.value)}
           required
           aria-required="true"
-          aria-label="Titre de la note"
           placeholder="Mieux Dormir"
           className="textInput"
         />
       </div>
 
       <div className="note-contenu">
-        <label htmlFor="contenu">Contenu</label>
+        <label htmlFor="note-contenu-input">Contenu</label>
         <textarea
-          id="contenu"
+          id="note-contenu-input"
           value={contenu}
           onChange={(e) => setContenu(e.target.value)}
           required
           aria-required="true"
-          aria-label="Contenu de la note"
-          placeholder="Écrivez vos notes ici..."
+          placeholder="Écrivez vos notes ici…"
           className="textArea"
         />
       </div>
 
-      <SquareButton className="sqr-button-dark-background btn-option" type="submit" aria-label="Enregistrer la note">Enregistrer</SquareButton>
+      <SquareButton
+        className="sqr-button-dark-background btn-option"
+        type="submit"
+        aria-label="Enregistrer la note"
+      >
+        Enregistrer
+      </SquareButton>
     </form>
   );
 }

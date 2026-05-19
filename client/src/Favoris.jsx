@@ -15,19 +15,23 @@ function Favoris() {
   );
 
   useEffect(() => {
+    document.title = "Mes favoris — Oncarya";
+  }, []);
+
+  useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
     localStorage.setItem("theme", theme);
   }, [theme]);
   
   const handleClick = () => {
-    navigate("/"); // Redirige vers l'accueil
+    navigate("/");
   };
 
   return (
     <>
       <Header theme={theme} setTheme={setTheme} />
 
-      <main>
+      <main id="main-content">
         <section className="section">
           <div className="section-container">
             <div className="section-heading">

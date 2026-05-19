@@ -17,6 +17,10 @@ function Notes() {
   );
 
   useEffect(() => {
+    document.title = "Mes notes — Oncarya";
+  }, []);
+
+  useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
     localStorage.setItem("theme", theme);
   }, [theme]);
@@ -24,7 +28,6 @@ function Notes() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleNoteSubmit = (data) => {
-    console.log("Nouvelle note :", data);
     setIsModalOpen(false);
   };
 

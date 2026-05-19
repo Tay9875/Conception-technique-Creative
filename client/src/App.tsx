@@ -1,5 +1,5 @@
 import { Routes, Route } from "react-router-dom";
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import './App.css';
 import Auth from './Auth';
 import ProtectedRoute from "./components/ProtectedRoutes.tsx";
@@ -14,16 +14,11 @@ import BottomNav from "./components/BottomNav.tsx";
 import AccessibilityButton from './components/AccessibilityButton';
 
 function App() {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(() => {
+    const saved = localStorage.getItem('user');
+    return saved ? JSON.parse(saved) : null;
+  });
 
-  // Vérifier si l'utilisateur est déjà connecté (si on rafraîchit la page)
-  useEffect(() => {
-    const savedUser = localStorage.getItem('user');
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
-    }
-  }, []);
-  
   return (
     <div className="App">
       <Routes>
@@ -33,29 +28,29 @@ function App() {
         <Route path="/logout" element={<Auth onLoginSuccess={undefined} />} />
         <Route path="/favoris" element={
           <ProtectedRoute user={user}>
-              <Favoris />
-            </ProtectedRoute>
-          } />
+            <Favoris />
+          </ProtectedRoute>
+        } />
         <Route path="/notes" element={
           <ProtectedRoute user={user}>
-              <Notes />
-            </ProtectedRoute>} />
+            <Notes />
+          </ProtectedRoute>} />
         <Route path="/mes_articles" element={
           <ProtectedRoute user={user}>
-              <MesArticles user={user} />
-            </ProtectedRoute>
-          } />
+            <MesArticles user={user} />
+          </ProtectedRoute>
+        } />
         <Route path="/feed" element={
           <ProtectedRoute user={user}>
-              <Feed user={user} onLogout={undefined} />
-            </ProtectedRoute>} />
+            <Feed user={user} onLogout={undefined} />
+          </ProtectedRoute>} />
         <Route path="/profile" element={
           <ProtectedRoute user={user}>
-              <Profile />
-            </ProtectedRoute>
-          } />
+            <Profile />
+          </ProtectedRoute>
+        } />
       </Routes>
-      <BottomNav/>
+      <BottomNav />
       <AccessibilityButton />
     </div>
   );

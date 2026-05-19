@@ -8,8 +8,8 @@ interface ContainerProps {
 
 export const Empty: React.FC<ContainerProps> = ({ children }) => {
   return (
-    <main className="empty-state" aria-label="Aucun article disponible" id="main-content">
-        {children}
-    </main>
+    <div className="empty-state" role="status" aria-live="polite">
+      {children}
+    </div>
   );
 };

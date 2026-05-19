@@ -13,10 +13,8 @@ export const Header: React.FC<HeaderProps> = ({ theme, setTheme }: HeaderProps) 
   const location = useLocation();
   const isActive = (path: string) => location.pathname === path;
 
-  // Source de vérité utilisateur
   const [user, setUser] = useState<any>(null);
 
-  // Synchronisation au refresh
   useEffect(() => {
     const savedUser = localStorage.getItem("user");
     if (savedUser) {
@@ -47,12 +45,10 @@ export const Header: React.FC<HeaderProps> = ({ theme, setTheme }: HeaderProps) 
 
   return (
     <header role="banner" className="header">
-      {/* Lien "Aller au contenu principal" */}
       <a href="#main-content" className="skip-link">
         Aller au contenu principal
       </a>
 
-      {/* Logo / Accueil */}
       <div className="header-left">
         <Link to="/" className="logo-link" aria-label="Accueil">
           <img
@@ -66,7 +62,6 @@ export const Header: React.FC<HeaderProps> = ({ theme, setTheme }: HeaderProps) 
         </Link>
       </div>
 
-      {/* Navigation principale */}
       <nav className="header-nav extra" aria-label="Navigation principale">
         <ul className="nav-list">
           <li>
@@ -107,10 +102,8 @@ export const Header: React.FC<HeaderProps> = ({ theme, setTheme }: HeaderProps) 
         </ul>
       </nav>
 
-      {/* Actions */}
       <div className="header-right">
         <div className="button-gaps">
-          {/* Thème clair / sombre */}
           <SquareButton
           className="theme-btn"
             ariaLabel={
@@ -157,12 +150,12 @@ export const Header: React.FC<HeaderProps> = ({ theme, setTheme }: HeaderProps) 
                     : "sqr-button-dark-background"
                 }
                 aria-current={isActive("/profile") ? "page" : undefined}
+                aria-label="Mon profil"
                 onClick={() => handleClick("/profile")}
               >
                 <span
                   className="material-symbols-outlined profile-header"
                   aria-hidden="true"
-                  aria-label="profil"
                 >
                   account_circle
                 </span>

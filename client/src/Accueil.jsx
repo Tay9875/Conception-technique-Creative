@@ -20,7 +20,10 @@ function Accueil({ user }) {
   const [selectedTag, setSelectedTag] = useState(null);
   const [activeSort, setActiveSort] = useState("Récents");
 
-  // Gestion du Thème
+  useEffect(() => {
+    document.title = "Accueil — Oncarya";
+  }, []);
+
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
     localStorage.setItem("theme", theme);
@@ -65,11 +68,10 @@ function Accueil({ user }) {
     <>
       <Header theme={theme} setTheme={setTheme} />
 
-      {/* INTRO */}
-      <section className="section">
+      <section className="section" aria-labelledby="hero-title">
         <div className="section-container">
           <div className="section-heading">
-            <h1>Partageons nos expériences, soutenons-nous mutuellement</h1>
+            <h1 id="hero-title">Partageons nos expériences, soutenons-nous mutuellement</h1>
           </div>
           <div className="section-paragraph">
             <p>
@@ -80,7 +82,6 @@ function Accueil({ user }) {
         </div>
       </section>
 
-      {/* CONTENU (Avec passage des props dynamiques au Container) */}
       <Container
         tags={tags}
         selectedTag={selectedTag}

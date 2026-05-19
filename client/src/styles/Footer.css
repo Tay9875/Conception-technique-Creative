@@ -20,3 +20,9 @@ body{
     text-align: center;
     color: var(--main-light-text-color);
 }
+
+.footer-title {
+  font-weight: 700;
+  font-size: var(--small-font);
+  margin-bottom: 4px;
+}

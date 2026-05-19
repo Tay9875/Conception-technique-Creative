@@ -5,17 +5,15 @@ export default function BottomNav() {
   return (
     <nav
       className="bottom-nav"
-      aria-label="Navigation principale mobile"
+      aria-label="Navigation mobile"
     >
       <ul className="bottom-nav-list">
         <li>
           <NavLink
             to="/"
+            end
             className={({ isActive }) =>
               `bottom-nav-item ${isActive ? "is-active" : ""}`
-            }
-            aria-current={({ isActive }) =>
-              isActive ? "page" : undefined
             }
           >
             <span
@@ -34,9 +32,6 @@ export default function BottomNav() {
             className={({ isActive }) =>
               `bottom-nav-item ${isActive ? "is-active" : ""}`
             }
-            aria-current={({ isActive }) =>
-              isActive ? "page" : undefined
-            }
           >
             <span
               className="material-symbols-outlined"
@@ -48,25 +43,19 @@ export default function BottomNav() {
           </NavLink>
         </li>
 
-        {/* Action principale */}
         <li>
           <NavLink
             to="/feed"
             className={({ isActive }) =>
               `bottom-nav-main ${isActive ? "is-active" : ""}`
             }
-            aria-current={({ isActive }) =>
-              isActive ? "page" : undefined
-            }
+            aria-label="Partager un contenu"
           >
             <span
               className="material-symbols-outlined"
               aria-hidden="true"
             >
               add
-            </span>
-            <span className="visually-hidden">
-              Partager un contenu
             </span>
           </NavLink>
         </li>
@@ -77,9 +66,6 @@ export default function BottomNav() {
             className={({ isActive }) =>
               `bottom-nav-item ${isActive ? "is-active" : ""}`
             }
-            aria-current={({ isActive }) =>
-              isActive ? "page" : undefined
-            }
           >
             <span
               className="material-symbols-outlined"
@@ -87,7 +73,7 @@ export default function BottomNav() {
             >
               auto_stories
             </span>
-            <span className="bottom-nav-text">Mes Articles</span>
+            <span className="bottom-nav-text">Mes articles</span>
           </NavLink>
         </li>
 
@@ -96,9 +82,6 @@ export default function BottomNav() {
             to="/profile"
             className={({ isActive }) =>
               `bottom-nav-item ${isActive ? "is-active" : ""}`
-            }
-            aria-current={({ isActive }) =>
-              isActive ? "page" : undefined
             }
           >
             <span

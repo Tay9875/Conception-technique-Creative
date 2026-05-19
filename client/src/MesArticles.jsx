@@ -15,7 +15,6 @@ import { apiFetch } from "./lib/apiClient";
 function MesArticles({ user }) {
   const navigate = useNavigate();
 
-  // --- 1. ÉTATS (DATA & UI) ---
   const [theme, setTheme] = useState(
     () => localStorage.getItem("theme") || "light"
   );
@@ -24,30 +23,25 @@ function MesArticles({ user }) {
   const [tags, setTags] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // --- 2. ÉTATS (FILTRES & TRI) ---
   const [selectedTag, setSelectedTag] = useState(null);
   const [activeSort, setActiveSort] = useState("Récents");
 
-  // URL API (Render par défaut, décommente la ligne localhost pour tester en local)
-  // --- 3. EFFETS ---
+  useEffect(() => {
+    document.title = "Mes articles — Oncarya";
+  }, []);
+
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
     localStorage.setItem("theme", theme);
   }, [theme]);
 
-  // Chargement initial des données
   useEffect(() => {
     fetchTags();
-    console.log("🔍 [DEBUG] Effet de chargement des articles pour l'utilisateur :", user);
-    
-    // On ne charge les articles que si l'utilisateur est bien identifié
     if (user && user.id) {
-      console.log("📡 [DEBUG] Appel de fetchMyArticles car utilisateur connecté.");
       fetchMyArticles();
     }
   }, [user]);
 
-  // --- 4. APPELS API ---
   const fetchTags = async () => {
     try {
       const data = await apiFetch(`${API_URL}/tags`);
@@ -58,37 +52,25 @@ function MesArticles({ user }) {
   };
 
   const fetchMyArticles = async () => {
-    console.log("🔍 [DEBUG] User actuel reçu :", user); // Est-ce que user est null ?
-    
     if (!user || !user.id) {
-        console.warn("⚠️ [DEBUG] Pas d'ID utilisateur trouvé !");
         return;
     }
 
     try {
-      console.log(`📡 [DEBUG] Fetching : ${API_URL}/posts?user_id=${user.id}`);
-      
       const data = await apiFetch(`${API_URL}/posts?user_id=${user.id}`);
-      console.log("📦 [DEBUG] Données brutes reçues de l'API :", data);
 
-      // Le filtrage avec logs détaillés
       const myPosts = data.filter((post) => {
-          // On vérifie le type (String ou Number ?)
           const isMatch = post.user_id == user.id;
-          console.log(`👉 Comparaison : Post UserID (${post.user_id}) [${typeof post.user_id}] vs Moi (${user.id}) [${typeof user.id}] -> Match ? ${isMatch}`);
           return isMatch;
       });
-      
-      console.log("✅ [DEBUG] Articles finaux mis dans le state :", myPosts);
+
       setArticles(myPosts);
     } catch (error) {
       console.error(error);
     }
   };
 
-  // --- 5. LOGIQUE DE CRÉATION ---
   const handleNoteSubmit = async (data) => {
-    // data contient { title, description, tag_id }
     if (!user || !user.id) return;
 
     try {
@@ -111,7 +93,6 @@ function MesArticles({ user }) {
     navigate("/");
   };
 
-  // --- 6. LOGIQUE DE FILTRAGE ET TRI (Affichage) ---
   let displayedArticles = selectedTag
     ? articles.filter((article) => article.tag_id === selectedTag)
     : articles;
@@ -120,7 +101,6 @@ function MesArticles({ user }) {
     if (activeSort === "Populaires") {
       return (b.like_count || 0) - (a.like_count || 0);
     } else {
-      // Par défaut : Récents
       return new Date(b.created_at) - new Date(a.created_at);
     }
   });
@@ -130,8 +110,7 @@ function MesArticles({ user }) {
       <Header theme={theme} setTheme={setTheme} />
 
       <main>
-        {/* En-tête de la page */}
-          <section className="articles-section">
+            <section className="articles-section">
             <div className="articles-section-container">
               <div className="articles-section-lien">
                 <Link to="/" className="retour" aria-label="Retour à la page d'accueil">
@@ -160,7 +139,6 @@ function MesArticles({ user }) {
             </div>
           </section>
 
-          {/* Conteneur principal avec filtres et grille d'articles */}
         <Container
           tags={tags}
           selectedTag={selectedTag}
@@ -170,10 +148,10 @@ function MesArticles({ user }) {
         >
           {displayedArticles.length > 0 ? (
             displayedArticles.map((article) => (
-              <BlogCard 
-                key={article.id} 
-                article={article} // On passe les données du post
-                user={user}       // On passe l'user pour gérer le like
+              <BlogCard
+                key={article.id}
+                article={article}
+                user={user}
               />
             ))
           ) : (
@@ -193,7 +171,6 @@ function MesArticles({ user }) {
         </Container>
       </main>
 
-      {/* Modal pour créer un post */}
       {isModalOpen && (
         <AccessibleModal
           isOpen={isModalOpen}

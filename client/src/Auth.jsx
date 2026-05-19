@@ -15,7 +15,10 @@ export default function Auth({ onLoginSuccess }) {
   const [fieldErrors, setFieldErrors] = useState({});
   const headingRef = useRef(null);
 
-  useEffect(() => { headingRef.current?.focus(); }, [isLogin]);
+  useEffect(() => {
+    document.title = isLogin ? "Connexion — Oncarya" : "Inscription — Oncarya";
+    headingRef.current?.focus();
+  }, [isLogin]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -58,20 +61,139 @@ export default function Auth({ onLoginSuccess }) {
   };
 
   return (
-    <div className="auth-container"><div className="auth-card">
-      <h1 ref={headingRef} tabIndex={-1} className="auth-title">{isLogin ? "Connexion" : "Rejoindre Oncarya"}</h1>
-      <p className="auth-subtitle">Soutien et partage pour tous.</p>
-      {error && <p className="auth-error" role="alert" aria-live="assertive">{error}</p>}
-      <form onSubmit={handleSubmit} noValidate>
-        {!isLogin && <>
-          <div className="form-group"><label htmlFor="firstname">Prénom</label><input id="firstname" type="text" name="firstname" className="form-input" onChange={handleChange} required />{fieldErrors.firstname && <small className="auth-error">{fieldErrors.firstname}</small>}</div>
-          <div className="form-group"><label htmlFor="lastname">Nom</label><input id="lastname" type="text" name="lastname" className="form-input" onChange={handleChange} required />{fieldErrors.lastname && <small className="auth-error">{fieldErrors.lastname}</small>}</div>
-        </>}
-        <div className="form-group"><label htmlFor="email">Email</label><input id="email" type="email" name="email" className="form-input" onChange={handleChange} required />{fieldErrors.email && <small className="auth-error">{fieldErrors.email}</small>}</div>
-        <div className="form-group"><label htmlFor="password">Mot de passe</label><input id="password" type="password" name="password" className="form-input" placeholder="Au moins 10 caractères" onChange={handleChange} required minLength={10} />{fieldErrors.password && <small className="auth-error">{fieldErrors.password}</small>}</div>
-        <SquareButton type="submit" className="sqr-button-dark-background sqr-btn-primary">{isLogin ? "Se connecter" : "S'inscrire"}</SquareButton>
-      </form>
-      <p className="toggle-text">{isLogin ? "Pas encore de compte ?" : "Déjà un compte ?"} <button type="button" className="toggle-link" onClick={() => setIsLogin(!isLogin)}>{isLogin ? "Créer un compte" : "Se connecter"}</button></p>
-    </div></div>
+    <main className="auth-container" id="main-content">
+      <div className="auth-card">
+        <button
+          type="button"
+          className="auth-back-btn"
+          onClick={() => location.key !== "default" ? navigate(-1) : navigate("/")}
+          aria-label={location.key !== "default" ? "Retour à la page précédente" : "Retour à l'accueil"}
+        >
+          <span className="material-symbols-outlined" aria-hidden="true">arrow_back</span>
+          Retour
+        </button>
+
+        <h1
+          ref={headingRef}
+          tabIndex={-1}
+          className="auth-title"
+        >
+          {isLogin ? "Connexion" : "Rejoindre Oncarya"}
+        </h1>
+
+        <p className="auth-subtitle">Soutien et partage pour tous.</p>
+
+        {error && (
+          <p
+            className="auth-error"
+            role="alert"
+            aria-live="assertive"
+          >
+            {error}
+          </p>
+        )}
+
+        <form onSubmit={handleSubmit} noValidate>
+          {!isLogin && (
+            <>
+              <div className="form-group">
+                <label htmlFor="firstname">Prénom</label>
+                <input
+                  id="firstname"
+                  type="text"
+                  name="firstname"
+                  className="form-input"
+                  placeholder="Ex: Thomas"
+                  onChange={handleChange}
+                  required
+                  aria-required="true"
+                  autoComplete="given-name"
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="lastname">Nom</label>
+                <input
+                  id="lastname"
+                  type="text"
+                  name="lastname"
+                  className="form-input"
+                  placeholder="Ex: Dubois"
+                  onChange={handleChange}
+                  required
+                  aria-required="true"
+                  autoComplete="family-name"
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="role_id">Rôle</label>
+                <select
+                  id="role_id"
+                  name="role_id"
+                  className="form-input"
+                  value={formData.role_id}
+                  onChange={handleChange}
+                  required
+                  aria-required="true"
+                >
+                  <option value="1">Patient</option>
+                  <option value="2">Ancien Patient</option>
+                  <option value="3">Proche</option>
+                </select>
+              </div>
+            </>
+          )}
+
+          <div className="form-group">
+            <label htmlFor="email">Email</label>
+            <input
+              id="email"
+              type="email"
+              name="email"
+              className="form-input"
+              placeholder="nom@exemple.com"
+              onChange={handleChange}
+              required
+              aria-required="true"
+              autoComplete="email"
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="password">Mot de passe</label>
+            <input
+              id="password"
+              type="password"
+              name="password"
+              className="form-input"
+              placeholder="••••••••"
+              onChange={handleChange}
+              required
+              aria-required="true"
+              autoComplete={isLogin ? "current-password" : "new-password"}
+            />
+          </div>
+
+          <SquareButton
+            type="submit"
+            className="sqr-button-dark-background sqr-btn-primary"
+          >
+            {isLogin ? "Se connecter" : "S'inscrire"}
+          </SquareButton>
+        </form>
+
+        <p className="toggle-text">
+          {isLogin ? "Pas encore de compte ?" : "Déjà un compte ?"}{" "}
+          <button
+            type="button"
+            className="toggle-link"
+            onClick={() => setIsLogin(!isLogin)}
+          >
+            {isLogin ? "Créer un compte" : "Se connecter"}
+          </button>
+        </p>
+      </div>
+    </main>
   );
 }

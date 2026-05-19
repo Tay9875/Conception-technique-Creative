@@ -1,4 +1,3 @@
-// client/src/Profile.jsx
 import React, { useState, useEffect } from "react";
 import "./Profile.css";
 import { Header } from "./components/Header.tsx";
@@ -19,7 +18,6 @@ export default function Profile({ onLogout }) {
     return stored ? JSON.parse(stored) : null;
   });
 
-  // Récupère le profil complet si role_id absent
   useEffect(() => {
     if (user && user.id && user.role_id === undefined) {
       fetch(`${API_URL}/users/me`, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } })
@@ -36,6 +34,10 @@ export default function Profile({ onLogout }) {
   }, [user]);
 
   useEffect(() => {
+    document.title = "Mon profil — Oncarya";
+  }, []);
+
+  useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
     localStorage.setItem("theme", theme);
   }, [theme]);
@@ -47,7 +49,6 @@ export default function Profile({ onLogout }) {
   };
 
   const handleProfileUpdate = (updatedUser) => {
-    // 🔜 prêt pour un fetch API
     localStorage.setItem("user", JSON.stringify(updatedUser));
     setUser(updatedUser);
     alert("Profil mis à jour");
@@ -94,7 +95,6 @@ export default function Profile({ onLogout }) {
                 email: user.email,
             }}
             onSubmit={(data) => {
-                console.log("Profil mis à jour :", data);
             }}
             />
         </section>
