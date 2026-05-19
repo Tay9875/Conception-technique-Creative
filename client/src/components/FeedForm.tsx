@@ -1,37 +1,32 @@
-// client/src/components/FeedForm.tsx
-import React, { FormEvent, useState, useEffect } from "react";
-import { SquareButton } from "./SquareButton.tsx";
-import "../styles/FeedForm.css";
-
-interface Tag {
-  id: string | number;
-  title: string;
-}
+import { FormEvent, useEffect, useState } from 'react';
+import { SquareButton } from './SquareButton';
+import '../styles/FeedForm.css';
+import type { Tag, CreatePostPayload } from '../types';
 
 interface FeedFormProps {
   tags: Tag[];
-  onSubmit: (data: { title: string; description: string; tag_id: string | number }) => void;
+  onSubmit: (data: CreatePostPayload) => void;
 }
 
 export default function FeedForm({ tags, onSubmit }: FeedFormProps) {
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [tag, setTag] = useState(tags.length > 0 ? tags[0].id : "");
+  const [title, setTitle] = useState<string>('');
+  const [description, setDescription] = useState<string>('');
+  const [tag, setTag] = useState<number | ''>(tags.length > 0 ? tags[0].id : '');
 
   useEffect(() => {
-    if (tags.length > 0 && !tag) {
+    if (tags.length > 0 && tag === '') {
       setTag(tags[0].id);
     }
   }, [tags, tag]);
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = (e: FormEvent): void => {
     e.preventDefault();
-    if (!title || !description || !tag) return;
+    if (!title || !description || tag === '') return;
 
-    onSubmit({ title, description, tag_id: tag });
-    setTitle("");
-    setDescription("");
-    setTag(tags.length > 0 ? tags[0].id : "");
+    onSubmit({ title, description, tag_id: Number(tag) });
+    setTitle('');
+    setDescription('');
+    setTag(tags.length > 0 ? tags[0].id : '');
   };
 
   return (
@@ -71,7 +66,7 @@ export default function FeedForm({ tags, onSubmit }: FeedFormProps) {
         <select
           id="tag"
           value={tag}
-          onChange={(e) => setTag(e.target.value)}
+          onChange={(e) => setTag(e.target.value === '' ? '' : Number(e.target.value))}
           required
           aria-required="true"
           className="textInput"

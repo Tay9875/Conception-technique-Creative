@@ -1,11 +1,17 @@
-import { Navigate, useLocation } from "react-router-dom";
+import { ReactElement } from 'react';
+import { Navigate, useLocation } from 'react-router-dom';
+import type { SessionUser } from '../types';
 
-function ProtectedRoute({ user, children }) {
+interface ProtectedRouteProps {
+  user: SessionUser | null;
+  children: ReactElement;
+}
+
+function ProtectedRoute({ user, children }: ProtectedRouteProps): ReactElement {
   const location = useLocation();
 
   if (!user) {
-    // Redirige vers /login et conserve le chemin qu'on voulait
-    return <Navigate to="/login" state={{ from: location }} />;
+    return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
   return children;

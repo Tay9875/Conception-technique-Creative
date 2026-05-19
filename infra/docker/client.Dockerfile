@@ -10,8 +10,8 @@ RUN pnpm install --frozen-lockfile --filter client
 
 COPY client ./client
 
-ARG REACT_APP_API_URL=/api
-ENV REACT_APP_API_URL=$REACT_APP_API_URL
+ARG VITE_API_URL=/api
+ENV VITE_API_URL=$VITE_API_URL
 
 RUN pnpm --filter client build
 
