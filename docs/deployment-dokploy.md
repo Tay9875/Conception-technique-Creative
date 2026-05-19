@@ -91,7 +91,7 @@ A ajouter dans l'environnement du projet Compose Dokploy.
 | `RESEND_API_KEY` | api | Si email prod | `re_...` | Requis avec `EMAIL_MODE=resend`. |
 | `EMAIL_FROM` | api | Si email prod | `Oncarya <notifications@example.com>` | Expediteur verifie. |
 | `EMAIL_REPLY_TO` | api | Non | `support@example.com` | Adresse de reponse. |
-| `MIGRATE_ON_START` | api | Non | `false` | Garder `false` en routine; mettre `true` seulement si vous acceptez la migration au demarrage. |
+| `MIGRATE_ON_START` | api | Non | `true` | Par defaut, l'API applique les migrations Knex au demarrage. Mettre `false` seulement si vous gerez les migrations manuellement avant chaque release. |
 | `SEED_ON_START` | api | Non | `false` | Garder `false` en production. |
 
 Ne pas ajouter de port public pour `mysql`, `api` ou `web`. Le routage public se fait uniquement par le domaine Dokploy vers le port interne `8080` du service `web`.
@@ -146,9 +146,7 @@ git push origin v1.0.0
 
 2. Attendre la fin du workflow `Release Dokploy`.
 3. Dans Dokploy, verifier que `APP_IMAGE_TAG=v1.0.0`.
-4. Si la base est vide, appliquer le schema :
-   - soit temporairement `MIGRATE_ON_START=true` puis redeployer, puis remettre `false` ;
-   - soit ouvrir un shell dans le conteneur `api` et lancer :
+4. Si `MIGRATE_ON_START=true` est conserve, le schema est applique automatiquement au demarrage de l'API. Si vous avez force `MIGRATE_ON_START=false`, appliquer le schema manuellement avant le redeploiement :
 
 ```bash
 node -e "process.env.MIGRATE_ON_START='true'; import('./dist/database/startup.js').then(m => m.runDatabaseStartupTasks())"

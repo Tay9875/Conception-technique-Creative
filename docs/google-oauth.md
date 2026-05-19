@@ -73,6 +73,8 @@ Elle ajoute :
 
 `oauth_accounts` garde une contrainte unique sur `(provider, provider_account_id)`.
 
+En production Dokploy, `MIGRATE_ON_START` vaut `true` par defaut dans `docker-compose.prod.yml` pour que les migrations Knex requises par une release soient appliquees avant l'ouverture de l'API. Si cette variable est forcee a `false`, lancez les migrations manuellement avant de deployer une image qui attend de nouvelles colonnes.
+
 ## Liaison email existant + Google
 
 Le callback Google applique cette logique :

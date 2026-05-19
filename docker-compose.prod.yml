@@ -52,7 +52,7 @@ services:
       RESEND_API_KEY: ${RESEND_API_KEY:-}
       EMAIL_FROM: ${EMAIL_FROM:-}
       EMAIL_REPLY_TO: ${EMAIL_REPLY_TO:-}
-      MIGRATE_ON_START: ${MIGRATE_ON_START:-false}
+      MIGRATE_ON_START: ${MIGRATE_ON_START:-true}
       SEED_ON_START: ${SEED_ON_START:-false}
       ENABLE_DB_FIX_ROUTE: "false"
       APP_VERSION: ${APP_VERSION:-unknown}
