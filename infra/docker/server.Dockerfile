@@ -31,6 +31,7 @@ COPY --from=prod-deps /app/node_modules /app/node_modules
 COPY --from=prod-deps /app/server/node_modules ./node_modules
 COPY server/package.json ./package.json
 COPY --from=build /app/server/dist ./dist
+COPY server/migrations ./migrations
 RUN test -f /app/server/dist/index.js
 
 USER node

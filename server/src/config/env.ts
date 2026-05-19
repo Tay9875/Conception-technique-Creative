@@ -39,7 +39,9 @@ export const env = {
     sslCa: process.env.DB_SSL_CA
   },
   redisUrl: process.env.REDIS_URL || '',
-  metricsToken: process.env.METRICS_TOKEN || ''
+  metricsToken: process.env.METRICS_TOKEN || '',
+  migrateOnStart: process.env.MIGRATE_ON_START === 'true' || process.env.MIGRATE_ON_START === '1',
+  seedOnStart: process.env.SEED_ON_START === 'true' || process.env.SEED_ON_START === '1'
 };
 
 if (env.jwtSecret.length < 32) throw new Error('JWT_SECRET must be >= 32 chars');

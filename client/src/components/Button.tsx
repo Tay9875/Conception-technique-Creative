@@ -1,34 +1,37 @@
-import React from "react";
-import "../styles/Button.css";
+import { ButtonHTMLAttributes, ReactNode } from 'react';
+import '../styles/Button.css';
 
-type ButtonProps = {
-  children: React.ReactNode;
-  onClick?: React.MouseEventHandler<HTMLButtonElement>;
-  type?: "button" | "submit" | "reset";
-  className?: string;
-  disabled?: boolean;
+type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
+  children: ReactNode;
   ariaLabel?: string;
+  role?: ButtonHTMLAttributes<HTMLButtonElement>['role'];
+  'aria-checked'?: boolean;
+  'aria-current'?: ButtonHTMLAttributes<HTMLButtonElement>['aria-current'];
+  'aria-pressed'?: boolean;
+  'aria-expanded'?: boolean;
+  'aria-controls'?: string;
+  'aria-haspopup'?: ButtonHTMLAttributes<HTMLButtonElement>['aria-haspopup'];
+  'aria-label'?: string;
 };
 
-const Button: React.FC<ButtonProps> = ({
+const Button = ({
   children,
-  onClick,
-  type = "button",
-  className = "",
+  type = 'button',
+  className = '',
   disabled = false,
   ariaLabel,
-}) => {
+  'aria-label': ariaLabelHtml,
+  ...rest
+}: ButtonProps) => {
+  const resolvedAriaLabel = ariaLabelHtml ?? (ariaLabel && typeof children !== 'string' ? ariaLabel : undefined);
+
   return (
     <button
       type={type}
-      onClick={onClick}
       className={`btn ${className}`}
       disabled={disabled}
-      aria-label={
-        ariaLabel && typeof children !== "string"
-          ? ariaLabel
-          : undefined
-      }
+      aria-label={resolvedAriaLabel}
+      {...rest}
     >
       {children}
     </button>

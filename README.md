@@ -76,6 +76,14 @@ pnpm build         # Build frontend
 pnpm smoke:prod    # Smoke test, requiert SMOKE_BASE_URL ou une URL en argument
 ```
 
+## Recherche globale
+
+Le header expose une palette de recherche accessible au bouton "Rechercher" ou au raccourci `Ctrl+K` / `Cmd+K`.
+L'API publique correspondante est `GET /api/search?q=<terme>&limit=10`.
+
+La recherche utilise `minisearch` cote serveur avec un cache memoire court. Les donnees indexees restent publiques :
+posts non bannis, commentaires de posts non bannis, tags et noms publics deja affiches dans l'application.
+
 ## CI/CD
 
 Strategie retenue :

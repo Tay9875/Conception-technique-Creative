@@ -5,6 +5,8 @@ import { idSchema, paginationSchema } from '../schemas/common';
 import { z } from 'zod';
 import { getCache, setCache } from '../lib/cache';
 import { asyncHandler, HttpError, ok } from '../lib/http';
+import { analyzeContentForModeration } from '../moderation/moderationEngine';
+import { saveModerationReview } from '../moderation/moderationRepository';
 
 const createSchema = z.object({ title: z.string().min(1).max(255), description: z.string().min(1).max(5000), tag_id: z.coerce.number().int().positive() });
 const reportSchema = z.object({ reason: z.string().max(255).optional() });
@@ -35,6 +37,35 @@ postsRouter.get('/', asyncHandler(async (req, res) => {
 postsRouter.post('/', requireAuth, asyncHandler(async (req, res) => {
   const p = createSchema.safeParse(req.body);
   if (!p.success || !req.user) throw new HttpError(400, 'INVALID_PAYLOAD', 'Payload invalide');
+
+  const analysis = analyzeContentForModeration({
+    content: `${p.data.title}\n${p.data.description}`,
+    targetType: 'post',
+    authorId: req.user.id
+  });
+
+  if (analysis.status !== 'allowed') {
+    const conn = await pool.getConnection();
+    try {
+      await conn.beginTransaction();
+      const [r] = await conn.query('INSERT INTO posts (title, description, user_id, tag_id, is_banned) VALUES (?, ?, ?, ?, ?)', [
+        p.data.title,
+        p.data.description,
+        req.user.id,
+        p.data.tag_id,
+        analysis.shouldShadowBan ? 1 : 0
+      ]);
+      const id = (r as any).insertId;
+      await saveModerationReview(conn, { targetId: id, analysis });
+      await conn.commit();
+      return ok(res, { id }, 201);
+    } catch (error) {
+      await conn.rollback();
+      throw error;
+    } finally {
+      conn.release();
+    }
+  }
 
   const [r] = await pool.query('INSERT INTO posts (title, description, user_id, tag_id) VALUES (?, ?, ?, ?)', [
     p.data.title,
