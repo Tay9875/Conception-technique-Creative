@@ -1,15 +1,15 @@
-import { ReactNode } from "react";
-import "../styles/Empty.css";
+import { ReactNode } from 'react';
+import '../styles/Empty.css';
 
-
-interface ContainerProps {
+interface EmptyProps {
   children: ReactNode;
+  'aria-label'?: string;
 }
 
-export const Empty: React.FC<ContainerProps> = ({ children }) => {
+export const Empty = ({ children, 'aria-label': ariaLabel = 'Aucun article disponible' }: EmptyProps) => {
   return (
-    <main className="empty-state" aria-label="Aucun article disponible" id="main-content">
-        {children}
-    </main>
+    <section className="empty-state" aria-label={ariaLabel}>
+      {children}
+    </section>
   );
 };

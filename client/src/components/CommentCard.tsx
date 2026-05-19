@@ -1,17 +1,12 @@
-import React from "react";
-import "../styles/CommentCard.css";
+import '../styles/CommentCard.css';
 
 interface CommentCardProps {
-  author: string;       // nom de l'auteur
-  date: string;         // date ISO ou format lisible
-  content: string;      // contenu du commentaire
+  author: string;
+  date: string;
+  content: string;
 }
 
-export const CommentCard: React.FC<CommentCardProps> = ({
-  author,
-  date,
-  content,
-}) => {
+export const CommentCard = ({ author, date, content }: CommentCardProps) => {
   return (
     <article className="comment-card" aria-labelledby={`comment-${author}-${date}`}>
       <header className="comment-header">

@@ -1,0 +1,180 @@
+import { useEffect, useRef, useState, ChangeEvent, FormEvent } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import './Auth.css';
+import { SquareButton } from './components/SquareButton';
+import { API_URL } from './config/api';
+import { apiFetch, ApiError } from './lib/apiClient';
+import type { LoginResponse, RegisterResponse, SessionUser } from './types';
+
+interface AuthProps {
+  onLoginSuccess?: (user: SessionUser) => void;
+}
+
+interface AuthFormState {
+  firstname: string;
+  lastname: string;
+  email: string;
+  password: string;
+  role_id: string;
+}
+
+interface LocationState {
+  from?: string;
+}
+
+const initialForm: AuthFormState = {
+  firstname: '',
+  lastname: '',
+  email: '',
+  password: '',
+  role_id: '1',
+};
+
+export default function Auth({ onLoginSuccess }: AuthProps) {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const [isLogin, setIsLogin] = useState<boolean>(true);
+  const [formData, setFormData] = useState<AuthFormState>(initialForm);
+  const [error, setError] = useState<string>('');
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const headingRef = useRef<HTMLHeadingElement>(null);
+
+  useEffect(() => {
+    headingRef.current?.focus();
+  }, [isLogin]);
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement>): void => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFieldErrors((prev) => ({ ...prev, [name]: '' }));
+  };
+
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
+    e.preventDefault();
+    setError('');
+    setFieldErrors({});
+
+    const endpoint = isLogin ? 'login' : 'register';
+
+    try {
+      const payload = isLogin
+        ? { email: formData.email, password: formData.password }
+        : {
+            firstname: formData.firstname,
+            lastname: formData.lastname,
+            email: formData.email,
+            password: formData.password,
+          };
+
+      if (isLogin) {
+        const data = await apiFetch<LoginResponse>(`${API_URL}/auth/${endpoint}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        localStorage.setItem('user', JSON.stringify(data.user));
+        if (data.token) localStorage.setItem('token', data.token);
+        if (data.refreshToken) localStorage.setItem('refreshToken', data.refreshToken);
+        onLoginSuccess?.(data.user);
+        const from = (location.state as LocationState | null)?.from ?? '/';
+        navigate(from, { replace: true });
+      } else {
+        await apiFetch<RegisterResponse>(`${API_URL}/auth/${endpoint}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        setIsLogin(true);
+        setError('Inscription réussie. Tu peux maintenant te connecter.');
+      }
+    } catch (err) {
+      const apiErr = err as ApiError;
+      setError(apiErr.message || 'Une erreur est survenue.');
+      if (apiErr.details && typeof apiErr.details === 'object') {
+        setFieldErrors(apiErr.details as Record<string, string>);
+      }
+    }
+  };
+
+  return (
+    <div className="auth-container">
+      <div className="auth-card">
+        <h1 ref={headingRef} tabIndex={-1} className="auth-title">
+          {isLogin ? 'Connexion' : 'Rejoindre Oncarya'}
+        </h1>
+        <p className="auth-subtitle">Soutien et partage pour tous.</p>
+        {error && (
+          <p className="auth-error" role="alert" aria-live="assertive">
+            {error}
+          </p>
+        )}
+        <form onSubmit={handleSubmit} noValidate>
+          {!isLogin && (
+            <>
+              <div className="form-group">
+                <label htmlFor="firstname">Prénom</label>
+                <input
+                  id="firstname"
+                  type="text"
+                  name="firstname"
+                  className="form-input"
+                  onChange={handleChange}
+                  required
+                />
+                {fieldErrors.firstname && <small className="auth-error">{fieldErrors.firstname}</small>}
+              </div>
+              <div className="form-group">
+                <label htmlFor="lastname">Nom</label>
+                <input
+                  id="lastname"
+                  type="text"
+                  name="lastname"
+                  className="form-input"
+                  onChange={handleChange}
+                  required
+                />
+                {fieldErrors.lastname && <small className="auth-error">{fieldErrors.lastname}</small>}
+              </div>
+            </>
+          )}
+          <div className="form-group">
+            <label htmlFor="email">Email</label>
+            <input
+              id="email"
+              type="email"
+              name="email"
+              className="form-input"
+              onChange={handleChange}
+              required
+            />
+            {fieldErrors.email && <small className="auth-error">{fieldErrors.email}</small>}
+          </div>
+          <div className="form-group">
+            <label htmlFor="password">Mot de passe</label>
+            <input
+              id="password"
+              type="password"
+              name="password"
+              className="form-input"
+              placeholder="Au moins 10 caractères"
+              onChange={handleChange}
+              required
+              minLength={10}
+            />
+            {fieldErrors.password && <small className="auth-error">{fieldErrors.password}</small>}
+          </div>
+          <SquareButton type="submit" className="sqr-button-dark-background sqr-btn-primary">
+            {isLogin ? 'Se connecter' : "S'inscrire"}
+          </SquareButton>
+        </form>
+        <p className="toggle-text">
+          {isLogin ? 'Pas encore de compte ?' : 'Déjà un compte ?'}{' '}
+          <button type="button" className="toggle-link" onClick={() => setIsLogin(!isLogin)}>
+            {isLogin ? 'Créer un compte' : 'Se connecter'}
+          </button>
+        </p>
+      </div>
+    </div>
+  );
+}

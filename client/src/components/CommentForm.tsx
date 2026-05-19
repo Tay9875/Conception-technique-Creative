@@ -1,18 +1,24 @@
-import React, { FormEvent, useState } from "react";
-import { SquareButton } from "./SquareButton.tsx";
-import "../styles/CommentForm.css"
+import { FormEvent, useState } from 'react';
+import { SquareButton } from './SquareButton';
+import '../styles/CommentForm.css';
+
+export interface CommentFormData {
+  titre: string;
+  contenu: string;
+}
 
 interface CommentFormProps {
-  onSubmit: (data: { titre: string; contenu: string }) => void;
+  onSubmit: (data: CommentFormData) => void;
 }
 
 export default function CommentForm({ onSubmit }: CommentFormProps) {
-  const [titre] = useState("");
-  const [contenu, setContenu] = useState("");
+  const [contenu, setContenu] = useState<string>('');
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = (e: FormEvent): void => {
     e.preventDefault();
-    onSubmit({ titre, contenu });
+    if (!contenu) return;
+    onSubmit({ titre: '', contenu });
+    setContenu('');
   };
 
   return (
