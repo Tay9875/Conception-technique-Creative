@@ -2,7 +2,7 @@
 
 Oncarya est une application web d'entraide non medicalisee pour patients atteints de cancer. Le projet est un monorepo simple :
 
-- `client/` : frontend React, build CRA
+- `client/` : frontend React, build Vite
 - `server/` : API Node.js / Express
 - MySQL : base relationnelle
 - `pnpm` : gestion du workspace
@@ -26,7 +26,7 @@ web (Nginx + build React, port 8080)
               mysql (MySQL, volume persistant, non expose en production)
 ```
 
-Les routes backend sont prefixees en `/api`. Le frontend utilise `REACT_APP_API_URL`, avec `/api` pour l'image de production.
+Les routes backend sont prefixees en `/api`. Le frontend utilise `VITE_API_URL`, avec `/api` pour l'image de production.
 
 ## Prerequis
 
@@ -71,10 +71,16 @@ pnpm db:up         # Lance uniquement MySQL
 pnpm db:down       # Stoppe le compose local
 pnpm db:prepare    # Migration + seed local
 pnpm lint          # Lint client + server
-pnpm test          # Tests frontend
+pnpm test          # Tests frontend + backend
 pnpm build         # Build frontend
 pnpm smoke:prod    # Smoke test, requiert SMOKE_BASE_URL ou une URL en argument
 ```
+
+## Fonctionnalites transverses
+
+- Moderation automatique : voir `docs/moderation.md`.
+- Connexion Google OAuth : voir `docs/google-oauth.md`.
+- Notifications in-app et email : voir `docs/notifications.md`.
 
 ## Recherche globale
 

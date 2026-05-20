@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import '../styles/BlogCard.css';
 import { API_URL } from '../config/api';
 import { apiFetch, ApiError } from '../lib/apiClient';
-import type { LikeResponse, PostWithDetails, ReportResponse, SessionUser } from '../types';
+import type { LikeResponse, PostWithDetails, ProfileStatus, ReportResponse, SessionUser } from '../types';
 
 const TagBadge = ({ children }: { children: React.ReactNode }) => (
   <span className="tag-badge">{children}</span>
@@ -13,6 +13,21 @@ interface BlogCardProps {
   article: PostWithDetails & { role_id?: number; tag?: { title: string } };
   user?: SessionUser | null;
 }
+
+const PROFILE_STATUS_LABELS: Record<ProfileStatus, string> = {
+  patient: 'Patient',
+  former_patient: 'Ancien patient',
+  caregiver: 'Proche ou aidant',
+  prefer_not_to_say: 'Non précisé',
+};
+
+const getProfileStatusLabel = (article: BlogCardProps['article']) => {
+  if (article.profile_status) return PROFILE_STATUS_LABELS[article.profile_status];
+  if (article.role_id === 1) return 'Patient';
+  if (article.role_id === 2) return 'Ancien patient';
+  if (article.role_id === 3) return 'Proche';
+  return null;
+};
 
 export const BlogCard = ({ article, user }: BlogCardProps) => {
   const navigate = useNavigate();
@@ -72,14 +87,7 @@ export const BlogCard = ({ article, user }: BlogCardProps) => {
       ? `${article.firstname} ${article.lastname}`
       : 'Anonyme';
   const displayTag = article.tag_title ?? article.tag?.title ?? null;
-  const roleLabel =
-    article.role_id === 1
-      ? 'Patient'
-      : article.role_id === 2
-      ? 'Ancien Patient'
-      : article.role_id === 3
-      ? 'Proche'
-      : 'Inconnu';
+  const profileStatusLabel = getProfileStatusLabel(article);
 
   return (
     <article className="blogcard" tabIndex={0} onClick={() => navigate(`/article/${article.id}`)}>
@@ -94,7 +102,7 @@ export const BlogCard = ({ article, user }: BlogCardProps) => {
         <footer className="blogcard-tools">
           <div className="blogcard-infos">
             <p className="blogcard-author">
-              {authorName} {article.role_id && <span>[ {roleLabel} ]</span>}
+              {authorName} {profileStatusLabel && <span>[ {profileStatusLabel} ]</span>}
             </p>
             <time className="date">
               {new Date(article.created_at).toLocaleDateString('fr-FR')}

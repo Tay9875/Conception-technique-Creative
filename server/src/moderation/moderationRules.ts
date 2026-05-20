@@ -1,8 +1,11 @@
 export type ModerationCategory =
   | 'none'
   | 'self_harm_suicide'
+  | 'drug_or_substance'
   | 'dangerous_medical_advice'
   | 'disguised_promotion'
+  | 'sexual_content'
+  | 'personal_sensitive_data'
   | 'spam_or_low_quality'
   | 'harassment_or_abuse';
 
@@ -30,6 +33,10 @@ type Rule = {
 };
 
 const linkPattern = /https?:\/\/|www\.|(?:^|\s)[a-z0-9-]+\.(?:com|fr|net|org|io|co)(?:\/|\s|$)/gi;
+const emailPattern = /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/i;
+const phonePattern = /(?:\+33|0)\s?[1-9](?:[\s.-]?\d{2}){4}\b/;
+const addressPattern =
+  /\b\d{1,4}\s+(?:rue|avenue|av\.?|boulevard|bd|impasse|chemin|allee|place)\s+[a-z0-9' -]{3,}\b/i;
 
 const countMatches = (value: string, pattern: RegExp) => {
   const matches = value.match(pattern);
@@ -59,11 +66,18 @@ export const normalizeModerationText = (value: string) =>
     .replace(/\p{Diacritic}/gu, '')
     .toLowerCase()
     .replace(/[\u2019']/g, "'")
+    .replace(/[!?;:()[\]{}"“”«»]+/g, ' ')
+    .replace(/([.,]){2,}/g, '$1')
     .replace(/\s+/g, ' ')
     .trim();
 
 const professionalCarePattern =
-  /\b(parle[rz]?|demande[rz]?|consulte[rz]?|avis|appelle[rz]?)\b.{0,40}\b(medecin|oncologue|equipe medicale|professionnel de sante|soignant|psy|psychologue|infirmier|urgences|15|112)\b/;
+  /\b(parle[rz]?|demande[rz]?|consulte[rz]?|avis|appelle[rz]?|prescrit|prescrite|ordonnance|traitement)\b.{0,50}\b(medecin|oncologue|equipe medicale|professionnel de sante|soignant|psy|psychologue|infirmier|urgences|15|112|pharmacien)\b|\b(medecin|oncologue|equipe medicale|professionnel de sante|soignant|psy|psychologue|infirmier|pharmacien)\b.{0,50}\b(prescrit|prescrite|ordonnance|traitement|dose)\b/;
+
+const medicalSubstanceContextPattern =
+  /\b(morphine|tramadol|oxycodone|opioide|cannabis therapeutique|cbd|cortisone|benzodiazepine|anxiolytique|antidouleur|anti douleur)\b.{0,60}\b(prescrit|prescrite|ordonnance|medecin|oncologue|douleur|traitement|effets secondaires|soins palliatifs|dose prescrite)\b|\b(prescrit|prescrite|ordonnance|medecin|oncologue|douleur|traitement|effets secondaires|soins palliatifs|dose prescrite)\b.{0,60}\b(morphine|tramadol|oxycodone|opioide|cannabis therapeutique|cbd|cortisone|benzodiazepine|anxiolytique|antidouleur|anti douleur)\b/;
+
+export const hasMedicalSubstanceContext = (text: string) => medicalSubstanceContextPattern.test(text);
 
 export const moderationRules: Rule[] = [
   {
@@ -147,6 +161,41 @@ export const moderationRules: Rule[] = [
     ]
   },
   {
+    code: 'DANGEROUS_SUBSTANCE_SALE',
+    category: 'drug_or_substance',
+    message: 'Le contenu semble promouvoir ou vendre une substance dangereuse ou non encadree.',
+    weight: 90,
+    directShadowBan: true,
+    priority: 'high',
+    patterns: [
+      /\b(vends?|vente|acheter|commande|livraison|stock|prix)\b.{0,40}\b(cocaine|heroine|mdma|ecstasy|ketamine|lsd|crack|meth|amphetamine|weed|cannabis recreatif|drogue)\b/,
+      /\b(cocaine|heroine|mdma|ecstasy|ketamine|lsd|crack|meth|amphetamine|weed|cannabis recreatif|drogue)\b.{0,40}\b(vends?|vente|acheter|commande|livraison|stock|prix)\b/
+    ]
+  },
+  {
+    code: 'DANGEROUS_SUBSTANCE_DOSING',
+    category: 'drug_or_substance',
+    message: 'Le contenu donne des conseils dangereux de dosage, melange ou contournement medical.',
+    weight: 80,
+    directShadowBan: true,
+    priority: 'high',
+    patterns: [
+      /\b(double|triple|augmente|melange|combine|prends plus|dose forte)\b.{0,45}\b(morphine|tramadol|oxycodone|opioide|benzodiazepine|alcool|somnifere|anxiolytique)\b/,
+      /\b(morphine|tramadol|oxycodone|opioide|benzodiazepine|somnifere|anxiolytique)\b.{0,45}\b(avec alcool|sans ordonnance|pour planer|dose forte|effet recreatif)\b/
+    ]
+  },
+  {
+    code: 'RECREATIONAL_DRUG_ENCOURAGEMENT',
+    category: 'drug_or_substance',
+    message: 'Le contenu encourage une consommation recreative de substances.',
+    weight: 45,
+    priority: 'medium',
+    patterns: [
+      /\b(pour planer|defonce|se defoncer|trip|shoot|sniffer)\b/,
+      /\b(cannabis|weed|mdma|ecstasy|ketamine|lsd|cocaine)\b.{0,40}\b(ca aide|essaie|prends en|meilleur que les medocs)\b/
+    ]
+  },
+  {
     code: 'PROMOTIONAL_CONTACT_CHANNEL',
     category: 'disguised_promotion',
     message: 'Le contenu pousse vers un contact prive ou un canal commercial externe.',
@@ -179,12 +228,23 @@ export const moderationRules: Rule[] = [
     ]
   },
   {
+    code: 'AGGRESSIVE_HEALTH_MARKETING',
+    category: 'disguised_promotion',
+    message: 'Le contenu associe marketing agressif et promesse pseudo-sante.',
+    weight: 60,
+    priority: 'high',
+    patterns: [
+      /\b(offre limitee|places limitees|commande maintenant|resultats garantis|temoignage exclusif)\b.{0,60}\b(cancer|chimio|tumeur|complement|detox|programme)\b/,
+      /\b(complement|gelule|huile|programme|coaching)\b.{0,60}\b(promo|reduction|code|pack|acheter|commande)\b/
+    ]
+  },
+  {
     code: 'TOO_MANY_LINKS',
     category: 'spam_or_low_quality',
     message: 'Le contenu contient un nombre anormal de liens.',
     weight: 55,
     priority: 'medium',
-    test: (text) => countMatches(text, linkPattern) >= 4
+    test: (_text, original) => countMatches(original, linkPattern) >= 4
   },
   {
     code: 'SHORT_TEXT_WITH_LINK',
@@ -192,7 +252,7 @@ export const moderationRules: Rule[] = [
     message: 'Le contenu est tres court et principalement oriente vers un lien.',
     weight: 45,
     priority: 'medium',
-    test: (text) => text.length < 90 && countMatches(text, linkPattern) >= 1
+    test: (text, original) => text.length < 90 && countMatches(original, linkPattern) >= 1
   },
   {
     code: 'REPEATED_TEXT',
@@ -227,12 +287,62 @@ export const moderationRules: Rule[] = [
     patterns: [/\b(clique ici|gagne de l'argent|revenu passif|crypto|casino|pret rapide|followers)\b/]
   },
   {
+    code: 'PERSONAL_EMAIL_OR_PHONE',
+    category: 'personal_sensitive_data',
+    message: 'Le contenu semble publier une adresse email ou un numero de telephone.',
+    weight: 45,
+    priority: 'medium',
+    test: (_text, original) => emailPattern.test(original) || phonePattern.test(original)
+  },
+  {
+    code: 'PERSONAL_ADDRESS',
+    category: 'personal_sensitive_data',
+    message: 'Le contenu semble publier une adresse personnelle.',
+    weight: 45,
+    priority: 'medium',
+    patterns: [addressPattern]
+  },
+  {
+    code: 'PRIVATE_MEDICAL_IDENTIFIER',
+    category: 'personal_sensitive_data',
+    message: 'Le contenu invite a partager des informations medicales tres identifiantes.',
+    weight: 45,
+    priority: 'medium',
+    patterns: [
+      /\b(envoie|partage|donne|publie)\b.{0,45}\b(numero de securite sociale|carte vitale|compte rendu complet|dossier medical|adresse|telephone|mail|email)\b/
+    ]
+  },
+  {
     code: 'ABUSIVE_INSULT',
     category: 'harassment_or_abuse',
     message: 'Le contenu contient des insultes ou une agressivite ciblee.',
     weight: 55,
     priority: 'medium',
     patterns: [/\b(imbecile|idiot|debile|abruti|ta gueule|ferme ta gueule|minable|nul)\b/]
+  },
+  {
+    code: 'HATE_OR_DISCRIMINATION',
+    category: 'harassment_or_abuse',
+    message: 'Le contenu contient une attaque discriminatoire ou haineuse.',
+    weight: 75,
+    directShadowBan: true,
+    priority: 'high',
+    patterns: [
+      /\b(haine|degage|on devrait exclure|interdire)\b.{0,45}\b(juifs|musulmans|arabes|noirs|handicapes|homosexuels|trans|etrangers)\b/,
+      /\b(sale|espece de)\b.{0,20}\b(juif|musulman|arabe|noir|handicape|homo|trans|etranger)\b/
+    ]
+  },
+  {
+    code: 'THREAT_OR_VIOLENCE',
+    category: 'harassment_or_abuse',
+    message: 'Le contenu contient une menace ou un appel a la violence.',
+    weight: 85,
+    directShadowBan: true,
+    priority: 'high',
+    patterns: [
+      /\b(je vais|on va|tu vas)\b.{0,30}\b(te frapper|te tuer|te casser|te detruire)\b/,
+      /\b(faut|il faut|on devrait)\b.{0,30}\b(frapp(er|e)|tuer|eliminer|tabasser)\b/
+    ]
   },
   {
     code: 'PATIENT_BLAME_OR_HUMILIATION',
@@ -243,6 +353,28 @@ export const moderationRules: Rule[] = [
     patterns: [
       /\b(c'est ta faute|tu l'as cherche|tu merites|bien fait pour toi|arrete de te plaindre|faible|lache)\b/,
       /\b(les patients comme toi|les malades comme toi)\b.{0,40}\b(meritent|sont|devraient)\b/
+    ]
+  },
+  {
+    code: 'SEXUAL_HARASSMENT',
+    category: 'sexual_content',
+    message: 'Le contenu contient des propos sexuels deplaces ou du harcelement sexuel.',
+    weight: 80,
+    directShadowBan: true,
+    priority: 'high',
+    patterns: [
+      /\b(envoie|montre|je veux voir)\b.{0,35}\b(nu|nue|nudes|seins|parties intimes|photos sexy)\b/,
+      /\b(tu es bonne|t'es bonne|sexy|excitant[e]?)\b.{0,35}\b(patient|patiente|malade|ici|mp|dm)\b/
+    ]
+  },
+  {
+    code: 'EXPLICIT_SEXUAL_CONTENT',
+    category: 'sexual_content',
+    message: 'Le contenu contient des propos sexuels explicites hors contexte de sante.',
+    weight: 60,
+    priority: 'medium',
+    patterns: [
+      /\b(porno|pornographie|plan cul|sexe explicite|masturbation)\b.{0,45}\b(contacte|mp|dm|photo|video|rencontre)\b/
     ]
   }
 ];

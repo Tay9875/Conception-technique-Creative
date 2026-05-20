@@ -13,6 +13,7 @@ import { usersRouter } from './routes/users';
 import { moderationRouter } from './routes/moderation';
 import { adminRouter } from './routes/admin';
 import { searchRouter } from './routes/search';
+import { notificationsRouter } from './routes/notifications';
 import { buildRateLimit, compressionMw, helmetMw } from './middleware/security';
 import { fail, HttpError } from './lib/http';
 import { metrics } from './lib/metrics';
@@ -82,6 +83,7 @@ app.use('/api/users', usersRouter);
 app.use('/api/moderation', moderationRouter);
 app.use('/api/admin', adminRouter);
 app.use('/api/search', searchRouter);
+app.use('/api/notifications', notificationsRouter);
 
 app.use((err: Error, req: express.Request, res: express.Response, _next: express.NextFunction) => {
   if (err instanceof HttpError) return fail(res, err.status, err.code, err.message, err.details);
