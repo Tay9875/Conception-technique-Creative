@@ -33,6 +33,42 @@
     font-size: var(--small-font);
 }
 
+.textInput:focus-visible {
+    outline: 3px solid var(--main-color);
+    outline-offset: 2px;
+    border-color: var(--main-color);
+}
+
+.profile-helper {
+    margin: 0;
+    color: var(--main-light-text-color);
+    font-size: var(--smallest-font);
+    line-height: 1.45;
+}
+
+.profile-password-section {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding-top: 4px;
+}
+
+.profile-password-section h2 {
+    margin: 0;
+    color: var(--main-text-color);
+    font-size: 1rem;
+}
+
+.profile-auth-note {
+    margin: 0;
+    padding: 12px 14px;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    background: var(--main-background-color);
+    color: var(--main-light-text-color);
+    line-height: 1.5;
+}
+
 .btn-option {
     align-self: center;
 }

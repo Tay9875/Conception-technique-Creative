@@ -57,8 +57,8 @@ async function seedUsersPostsCommentsLikes() {
     const hash = await bcrypt.hash('password123', 12);
     const pathologyId = Math.random() < 0.6 ? randInt(1, 4) : null;
     await pool.query(
-      `INSERT IGNORE INTO users (firstname, lastname, email, password, role_id, pathology_id) VALUES (?, ?, ?, ?, ?, ?)`,
-      [fn, ln, email.toLowerCase(), hash, 1, pathologyId]
+      `INSERT IGNORE INTO users (firstname, lastname, email, password, role_id, pathology_id, profile_status) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      [fn, ln, email.toLowerCase(), hash, 1, pathologyId, 'patient']
     );
   }
 

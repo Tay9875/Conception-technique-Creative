@@ -1,0 +1,215 @@
+.notification-trigger {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  justify-content: center;
+  border: 1px solid var(--border-color);
+  background: color-mix(in srgb, var(--block-background-color) 90%, var(--main-color) 10%);
+  color: var(--main-text-color);
+  border-radius: 10px;
+  padding: 0;
+}
+
+.notification-trigger:hover {
+  color: var(--main-color);
+  background: color-mix(in srgb, var(--block-background-color) 82%, var(--main-color) 18%);
+}
+
+.notification-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: #dc2626;
+  color: #fff;
+  border: 2px solid var(--block-background-color);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.notification-popover {
+  width: min(380px, calc(100vw - 24px));
+  max-height: min(560px, calc(100vh - 110px));
+  overflow: auto;
+  background: var(--block-background-color);
+  color: var(--main-text-color);
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.18);
+  padding: 14px;
+  z-index: 1200;
+}
+
+.notification-popover-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 4px 4px 12px;
+  border-bottom: 1px solid var(--border-color);
+  text-align: left;
+}
+
+.notification-popover-header h2 {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.3;
+}
+
+.notification-popover-header p {
+  margin: 2px 0 0;
+  color: var(--main-light-text-color);
+  font-size: var(--smallest-font);
+}
+
+.notification-link-button {
+  background: transparent;
+  color: var(--main-color);
+  padding: 4px 0;
+  font-size: var(--smaller-font);
+  font-weight: 700;
+}
+
+.notification-list {
+  display: grid;
+  gap: 6px;
+  list-style: none;
+  padding: 10px 0 0;
+  margin: 0;
+}
+
+.notification-item {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 10px minmax(0, 1fr);
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--main-text-color);
+  text-align: left;
+}
+
+.notification-item:hover,
+.notification-item:focus-visible {
+  background: color-mix(in srgb, var(--main-color) 10%, transparent);
+}
+
+.notification-item.is-unread {
+  background: color-mix(in srgb, var(--main-color) 12%, var(--block-background-color) 88%);
+}
+
+.notification-item-dot {
+  width: 8px;
+  height: 8px;
+  margin-top: 6px;
+  border-radius: 999px;
+  background: transparent;
+}
+
+.notification-item.is-unread .notification-item-dot {
+  background: var(--main-color);
+}
+
+.notification-item-text {
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+}
+
+.notification-item-text strong {
+  font-size: var(--smaller-font);
+  line-height: 1.25;
+}
+
+.notification-item-text span {
+  color: var(--main-light-text-color);
+  font-size: var(--smallest-font);
+  line-height: 1.35;
+}
+
+.notification-item-text time {
+  color: var(--main-light-text-color);
+  font-size: 0.7rem;
+}
+
+.notification-empty {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  padding: 28px 12px 18px;
+  color: var(--main-light-text-color);
+  text-align: center;
+}
+
+.notification-empty .material-symbols-outlined {
+  color: var(--main-color);
+}
+
+.notification-empty p {
+  margin: 0;
+  font-size: var(--smaller-font);
+}
+
+.notification-empty button {
+  color: var(--main-color);
+  background: transparent;
+  font-weight: 700;
+}
+
+.notification-skeleton {
+  display: grid;
+  gap: 8px;
+  padding-top: 12px;
+}
+
+.notification-skeleton span {
+  height: 58px;
+  border-radius: 10px;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--main-color) 7%, transparent),
+    color-mix(in srgb, var(--main-color) 16%, transparent),
+    color-mix(in srgb, var(--main-color) 7%, transparent)
+  );
+  background-size: 200% 100%;
+  animation: notification-skeleton 1.2s ease-in-out infinite;
+}
+
+.notification-arrow {
+  fill: var(--block-background-color);
+}
+
+@keyframes notification-skeleton {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .notification-skeleton span {
+    animation: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .notification-popover {
+    position: fixed;
+    left: 12px;
+    right: 12px;
+    top: 82px;
+    width: auto;
+    max-height: calc(100vh - 170px);
+  }
+}

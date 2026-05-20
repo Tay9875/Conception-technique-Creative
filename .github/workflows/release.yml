@@ -135,7 +135,7 @@ jobs:
           file: infra/docker/client.Dockerfile
           push: true
           build-args: |
-            REACT_APP_API_URL=${{ vars.REACT_APP_API_URL || '/api' }}
+            VITE_API_URL=${{ vars.VITE_API_URL || '/api' }}
           tags: |
             ${{ vars.GHCR_IMAGE_NAME }}-web:${{ steps.release.outputs.release_tag }}
             ${{ vars.GHCR_IMAGE_NAME }}-web:sha-${{ steps.release.outputs.short_sha }}

@@ -6,6 +6,7 @@ import { z } from 'zod';
 import { asyncHandler, HttpError, ok } from '../lib/http';
 import { analyzeContentForModeration } from '../moderation/moderationEngine';
 import { saveModerationReview } from '../moderation/moderationRepository';
+import { createCommentNotification, createModerationReviewNotification } from '../notifications/notificationService';
 
 const createSchema = z.object({ description: z.string().min(1).max(2000), post_id: z.coerce.number().int().positive() });
 
@@ -45,8 +46,12 @@ commentsRouter.post('/', requireAuth, asyncHandler(async (req, res) => {
         p.data.post_id,
         analysis.shouldShadowBan ? 1 : 0
       ]);
-      await saveModerationReview(conn, { targetId: (r as any).insertId, analysis });
+      const commentId = (r as any).insertId;
+      await saveModerationReview(conn, { targetId: commentId, analysis });
       await conn.commit();
+      if (analysis.status === 'needs_review') {
+        await createModerationReviewNotification({ authorId: req.user.id, targetType: 'comment', targetId: commentId });
+      }
       return ok(res, { message: 'Commentaire ajoute' }, 201);
     } catch (error) {
       await conn.rollback();
@@ -56,7 +61,11 @@ commentsRouter.post('/', requireAuth, asyncHandler(async (req, res) => {
     }
   }
 
-  await pool.query('INSERT INTO comments (description, user_id, post_id) VALUES (?, ?, ?)', [p.data.description, req.user.id, p.data.post_id]);
-  return ok(res, { message: 'Commentaire ajoute' }, 201);
+  const [result] = await pool.query('INSERT INTO comments (description, user_id, post_id) VALUES (?, ?, ?)', [p.data.description, req.user.id, p.data.post_id]);
+  const [postRows] = await pool.query('SELECT user_id FROM posts WHERE id = ? LIMIT 1', [p.data.post_id]);
+  const post = (postRows as any[])[0];
+  if (post) {
+    await createCommentNotification({ postAuthorId: post.user_id, actorUserId: req.user.id, postId: p.data.post_id });
+  }
+  return ok(res, { id: (result as any).insertId, message: 'Commentaire ajoute' }, 201);
 }));
-

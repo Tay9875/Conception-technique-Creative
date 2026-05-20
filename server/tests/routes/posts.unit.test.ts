@@ -130,7 +130,8 @@ describe('POST /api/posts/:id/like', () => {
     const token = signAccessToken({ id: 5, email: 'a@b.com', role: 1 });
     query
       .mockResolvedValueOnce([[]])  // SELECT likes - none
-      .mockResolvedValueOnce([{}]); // INSERT like
+      .mockResolvedValueOnce([{}]) // INSERT like
+      .mockResolvedValueOnce([[{ user_id: 5 }]]); // SELECT post owner, self -> no notification
     const res = await request(app).post('/api/posts/1/like').set('Authorization', `Bearer ${token}`);
     expect(res.status).toBe(200);
     expect(res.body.data).toEqual({ liked: true });

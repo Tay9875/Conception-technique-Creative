@@ -48,6 +48,20 @@ function installStorage(name: 'localStorage' | 'sessionStorage') {
 installStorage('localStorage');
 installStorage('sessionStorage');
 
+class MockResizeObserver {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+}
+
+if (typeof globalThis.ResizeObserver === 'undefined') {
+  Object.defineProperty(globalThis, 'ResizeObserver', {
+    configurable: true,
+    writable: true,
+    value: MockResizeObserver,
+  });
+}
+
 expect.extend(toHaveNoViolations);
 
 beforeAll(() => server.listen({ onUnhandledRequest: 'warn' }));

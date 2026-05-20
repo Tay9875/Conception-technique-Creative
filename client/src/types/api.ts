@@ -1,4 +1,4 @@
-import type { SessionUser } from './models';
+import type { ProfileStatus, SessionUser } from './models';
 
 export interface LoginPayload {
   email: string;
@@ -22,6 +22,17 @@ export interface LoginResponse {
 export interface RegisterResponse {
   message: string;
 }
+
+export interface UpdateProfilePayload {
+  firstname?: string;
+  lastname?: string;
+  email?: string;
+  profileStatus?: ProfileStatus;
+  currentPassword?: string;
+  newPassword?: string;
+}
+
+export type UpdateProfileResponse = SessionUser;
 
 export interface CreatePostPayload {
   title: string;
