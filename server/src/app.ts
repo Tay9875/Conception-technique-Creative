@@ -11,6 +11,7 @@ import { commentsRouter } from './routes/comments';
 import { tagsRouter } from './routes/tags';
 import { usersRouter } from './routes/users';
 import { moderationRouter } from './routes/moderation';
+import { adminRouter } from './routes/admin';
 import { searchRouter } from './routes/search';
 import { notificationsRouter } from './routes/notifications';
 import { buildRateLimit, compressionMw, helmetMw } from './middleware/security';
@@ -80,6 +81,7 @@ app.use('/api/comments', commentsRouter);
 app.use('/api/tags', tagsRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/moderation', moderationRouter);
+app.use('/api/admin', adminRouter);
 app.use('/api/search', searchRouter);
 app.use('/api/notifications', notificationsRouter);
 

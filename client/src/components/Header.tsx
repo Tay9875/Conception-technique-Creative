@@ -6,6 +6,7 @@ import type { SessionUser } from '../types';
 import { GlobalSearch } from "./GlobalSearch";
 import { NotificationBell } from './NotificationBell';
 
+
 export type Theme = 'light' | 'dark';
 
 interface HeaderProps {
@@ -44,7 +45,7 @@ export const Header = ({ theme, setTheme }: HeaderProps) => {
   };
 
   const handleClick = (path: string): void => {
-    const protectedPaths = ['/favoris', '/notes', '/feed', '/profile'];
+    const protectedPaths = ['/favoris', '/notes', '/feed', '/profile', '/admin'];
     const isAuthenticated = Boolean(user);
 
     if (protectedPaths.includes(path) && !isAuthenticated) {
@@ -147,24 +148,30 @@ export const Header = ({ theme, setTheme }: HeaderProps) => {
           {user && (
             <>
               <SquareButton
-                className={
-                  isActive('/profile')
-                    ? 'sqr-button-dark-background is-active'
-                    : 'sqr-button-dark-background'
-                }
+                className={isActive('/profile') ? 'sqr-button-dark-background is-active' : 'sqr-button-dark-background'}
                 aria-current={isActive('/profile') ? 'page' : undefined}
                 aria-label="Mon profil"
                 onClick={() => handleClick('/profile')}
               >
-                <span
-                  className="material-symbols-outlined profile-header"
-                  aria-hidden="true"
-                >
+                <span className="material-symbols-outlined profile-header" aria-hidden="true">
                   account_circle
                 </span>
               </SquareButton>
 
-              <SquareButton className="sqr-button-dark-background" onClick={handleLogout}>
+              {user.role_id === 4 && (
+                <SquareButton
+                  className={isActive('/admin') ? 'sqr-button-dark-background is-active' : 'sqr-button-dark-background'}
+                  aria-current={isActive('/admin') ? 'page' : undefined}
+                  onClick={() => handleClick('/admin')}
+                >
+                  Admin
+                </SquareButton>
+              )}
+
+              <SquareButton
+                className="sqr-button-dark-background"
+                onClick={handleLogout}
+              >
                 Déconnexion
               </SquareButton>
             </>

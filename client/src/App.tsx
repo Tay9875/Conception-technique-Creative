@@ -4,6 +4,7 @@ import './App.css';
 import Auth from './Auth';
 import ProtectedRoute from './components/ProtectedRoutes';
 import Feed from './Feed';
+import AdminPanel from './AdminPanel';
 import Accueil from './Accueil';
 import Favoris from './Favoris';
 import Notes from './Notes';
@@ -16,15 +17,20 @@ import type { SessionUser } from './types';
 
 function App() {
   const [user, setUser] = useState<SessionUser | null>(null);
+  const [token, setToken] = useState<string | null>(null);
 
   useEffect(() => {
     const savedUser = localStorage.getItem('user');
+    const savedToken = localStorage.getItem('token');
     if (savedUser) {
       try {
         setUser(JSON.parse(savedUser) as SessionUser);
       } catch {
         setUser(null);
       }
+    }
+    if (savedToken) {
+      setToken(savedToken);
     }
   }, []);
 
@@ -64,6 +70,14 @@ function App() {
           element={
             <ProtectedRoute user={user}>
               <Feed user={user} />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute user={user} requiredRole={4}>
+              <AdminPanel user={user} token={token} />
             </ProtectedRoute>
           }
         />

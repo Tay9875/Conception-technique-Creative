@@ -1,0 +1,118 @@
+/* Admin Tabs */
+.admin-tabs {
+  display: flex;
+  gap: 1rem;
+  margin: 1.5rem 0;
+  border-bottom: 2px solid var(--border-color, #e0e0e0);
+}
+
+.admin-tab-button {
+  padding: 0.75rem 1.5rem;
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+  font-weight: 500;
+  color: var(--text-color, #333);
+  transition: all 0.3s ease;
+  font-size: 1rem;
+}
+
+.admin-tab-button:hover {
+  color: var(--primary-color, #007bff);
+}
+
+.admin-tab-button.active {
+  border-bottom-color: var(--primary-color, #007bff);
+  color: var(--primary-color, #007bff);
+}
+
+/* Admin Panel Tables */
+.admin-panel {
+  margin-top: 2rem;
+  padding: 2rem;
+  border-radius: 8px;
+  background: var(--card-background, #ffffff);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.profile-card {
+  width: 100%;
+  max-width: 100%;
+  padding: 2rem;
+  box-sizing: border-box;
+}
+
+.profile-container {
+  width: 100%;
+  padding: 1rem 0.5rem;
+  box-sizing: border-box;
+}
+
+.admin-panel h2 {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  color: var(--text-color, #333);
+}
+
+.admin-table-wrapper {
+  overflow-x: auto;
+  border-radius: 4px;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.admin-table thead {
+  background: var(--table-header-bg, #f5f5f5);
+  border-bottom: 2px solid var(--border-color, #e0e0e0);
+}
+
+.admin-table th {
+  padding: 1rem;
+  text-align: center;
+  font-weight: 600;
+  color: var(--text-color, #333);
+}
+
+.admin-table td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border-color, #e0e0e0);
+  color: var(--text-color, #333);
+  text-align: center;
+}
+
+.admin-table tbody tr:hover {
+  background: var(--table-hover-bg, #f9f9f9);
+}
+
+.admin-table button {
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .admin-tabs {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .admin-tab-button {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+  }
+
+  .admin-table {
+    font-size: 0.85rem;
+  }
+
+  .admin-table th,
+  .admin-table td {
+    padding: 0.5rem;
+  }
+}
