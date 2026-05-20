@@ -10,8 +10,30 @@ export async function seedDatabase() {
     INSERT IGNORE INTO roles (id, name) VALUES
     (1, 'Patient'),
     (2, 'Ancien Patient'),
-    (3, 'Proche');
+    (3, 'Proche'),
+    (4, 'Admin');
   `);
+
+  const adminEmail = process.env.ADMIN_EMAIL;
+  const adminPassword = process.env.ADMIN_PASSWORD;
+
+  if (adminEmail && adminPassword) {
+    const [existingAdmin]: any = await pool.query(
+      'SELECT id FROM users WHERE email = ?',
+      [adminEmail]
+    );
+
+      if (existingAdmin.length === 0) {
+        const hashedPassword = await bcrypt.hash(adminPassword, 12);
+
+        await pool.query(
+          `INSERT INTO users 
+          (firstname, lastname, email, password, role_id, pathology_id)
+          VALUES (?, ?, ?, ?, ?, ?)`,
+          ['Super', 'Admin', adminEmail, hashedPassword, 4, null]
+        );
+      }
+    }
 
   await pool.query(`
     INSERT IGNORE INTO pathologies (id, name) VALUES

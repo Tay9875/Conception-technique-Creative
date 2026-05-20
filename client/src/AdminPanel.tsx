@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Header } from "./components/Header.tsx";
-import { SquareButton } from "./components/SquareButton.tsx";
-import { API_URL } from "./config/api";
+import { Header } from "./components/Header.js";
+import { SquareButton } from "./components/SquareButton.js";
+import { API_URL } from "./config/api.js";
 import "./Profile.css";
 import "./styles/AdminPanel.css";
 
@@ -48,12 +48,10 @@ export default function AdminPanel({ user, token }) {
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch(`${API_URL}/admin/users`, {
-        headers,
-      });
+      const response = await fetch(`${API_URL}/admin/users`, { headers });
       if (!response.ok) throw new Error("Impossible de récupérer les utilisateurs.");
       const data = await response.json();
-      setUsers(data);
+      setUsers(data.data ?? data); // ← ici
     } catch (err) {
       console.error(err);
       setError(true);
@@ -63,12 +61,10 @@ export default function AdminPanel({ user, token }) {
 
   const fetchReports = async () => {
     try {
-      const response = await fetch(`${API_URL}/admin/reports`, {
-        headers,
-      });
+      const response = await fetch(`${API_URL}/admin/reports`, { headers });
       if (!response.ok) throw new Error("Impossible de récupérer les signalements.");
       const data = await response.json();
-      setReports(data);
+      setReports(data.data ?? data); // ← et ici
     } catch (err) {
       console.error(err);
       setError(true);
