@@ -4,6 +4,7 @@ import AccessibleModal from '../../components/AccessibleModal';
 describe('AccessibleModal', () => {
   afterEach(() => {
     document.body.style.overflow = 'auto';
+    document.getElementById('modal-root')?.remove();
   });
 
   it('renders nothing when isOpen is false', () => {
@@ -24,9 +25,8 @@ describe('AccessibleModal', () => {
       </AccessibleModal>
     );
     expect(screen.getByRole('dialog')).toBeInTheDocument();
-    expect(screen.getByRole('heading', { level: 3, name: 'My modal' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 2, name: 'My modal' })).toBeInTheDocument();
     expect(screen.getByText('Body content')).toBeInTheDocument();
-    // Portal-rendered content lives under #modal-root, not the caller container.
     expect(document.getElementById('modal-root')).not.toBeNull();
   });
 
@@ -47,8 +47,7 @@ describe('AccessibleModal', () => {
         <button type="button">Inside button</button>
       </AccessibleModal>
     );
-    // The close button is the first focusable inside .modal-content (rendered before children).
-    const closeButton = screen.getByRole('button', { name: 'Fermer la fenêtre' });
+    const closeButton = screen.getByRole('button', { name: 'Fermer - Focus' });
     expect(document.activeElement).toBe(closeButton);
   });
 
@@ -59,7 +58,8 @@ describe('AccessibleModal', () => {
         <p>Body</p>
       </AccessibleModal>
     );
-    fireEvent.click(screen.getByRole('button', { name: 'Fermer la fenêtre' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Fermer - Click close' }));
     expect(onClose).toHaveBeenCalledTimes(1);
   });
 });
+

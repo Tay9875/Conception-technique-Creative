@@ -10,7 +10,7 @@ describe('Footer', () => {
   it('renders the heading text', () => {
     render(<Footer />);
     expect(
-      screen.getByText(/Ensemble & Fort - Un espace de partage et d'entraide/i)
+      screen.getByRole('heading', { name: /Ensemble & Fort.*Un espace de partage et d'entraide/i })
     ).toBeInTheDocument();
   });
 

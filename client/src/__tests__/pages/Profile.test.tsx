@@ -1,7 +1,10 @@
-import { screen, fireEvent } from '@testing-library/react';
+import { screen, fireEvent, waitFor } from '@testing-library/react';
 import { Route, Routes } from 'react-router-dom';
-import { axe } from "jest-axe";
+import { axe } from 'jest-axe';
+import { http, HttpResponse } from 'msw';
 import Profile from '../../Profile';
+import { API_URL } from '../../config/api';
+import { server } from '../../test-utils/mocks/server';
 import { renderWithProviders } from '../../test-utils/helpers/renderWithProviders';
 import { mockUser } from '../../test-utils/helpers/fixtures';
 
@@ -23,9 +26,9 @@ describe('Profile page', () => {
 
     renderWithProviders(<Profile />, { initialEntries: ['/profile'] });
 
-    // Status line includes the role label (Patient for role_id=1)
     expect(screen.getByText(/statut\s*:\s*patient/i)).toBeInTheDocument();
-    // ProfileForm pre-fills inputs with the user data
+    expect(screen.getByText(/méthode de connexion/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/nouveau mot de passe/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/prénom/i)).toHaveValue(mockUser.firstname);
     expect(screen.getByLabelText(/^nom$/i)).toHaveValue(mockUser.lastname);
     expect(screen.getByLabelText(/adresse email/i)).toHaveValue(mockUser.email);
@@ -33,6 +36,7 @@ describe('Profile page', () => {
 
   it('logs out: clears localStorage user and navigates to /login', () => {
     localStorage.setItem('user', JSON.stringify(mockUser));
+    localStorage.setItem('token', 'access');
 
     renderWithProviders(
       <Routes>
@@ -42,8 +46,6 @@ describe('Profile page', () => {
       { initialEntries: ['/profile'] }
     );
 
-    // Header also renders a "Déconnexion" button when a user is logged in, so
-    // we explicitly target the page-level logout button (sign-out-btn class).
     const logoutButtons = screen.getAllByRole('button', { name: /déconnexion/i });
     const pageLogout = logoutButtons.find((btn) =>
       btn.classList.contains('sign-out-btn')
@@ -52,7 +54,48 @@ describe('Profile page', () => {
     fireEvent.click(pageLogout as HTMLElement);
 
     expect(localStorage.getItem('user')).toBeNull();
+    expect(localStorage.getItem('token')).toBeNull();
     expect(screen.getByText(/page login/i)).toBeInTheDocument();
+  });
+
+  it('shows Google-only auth state without password form', async () => {
+    const googleOnlyUser = {
+      ...mockUser,
+      authProviders: ['google'],
+      hasPassword: false,
+      canChangePassword: false,
+      profileStatus: 'prefer_not_to_say',
+    };
+    localStorage.setItem('user', JSON.stringify(googleOnlyUser));
+    server.use(
+      http.get(`${API_URL}/users/me`, () =>
+        HttpResponse.json({ success: true, data: googleOnlyUser })
+      )
+    );
+
+    renderWithProviders(<Profile />, { initialEntries: ['/profile'] });
+
+    await waitFor(() => {
+      expect(screen.getByText(/connexion via google/i)).toBeInTheDocument();
+    });
+    expect(screen.queryByLabelText(/nouveau mot de passe/i)).not.toBeInTheDocument();
+    expect(screen.getByText(/changement de mot de passe Oncarya/i)).toBeInTheDocument();
+  });
+
+  it('updates profile status from the profile page', async () => {
+    localStorage.setItem('user', JSON.stringify(mockUser));
+
+    renderWithProviders(<Profile />, { initialEntries: ['/profile'] });
+
+    fireEvent.change(screen.getByLabelText(/statut dans oncarya/i), {
+      target: { value: 'caregiver' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /enregistrer les modifications/i }));
+
+    await waitFor(() => {
+      expect(screen.getByRole('status')).toHaveTextContent(/profil mis/i);
+    });
+    expect(localStorage.getItem('user')).toContain('"profileStatus":"caregiver"');
   });
 
   it('does not crash when there is no user in localStorage (redirects to /login)', () => {

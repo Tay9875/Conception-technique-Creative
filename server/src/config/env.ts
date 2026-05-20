@@ -27,8 +27,22 @@ export const env = {
   isProd,
   port: Number(process.env.PORT || 3000),
   corsOrigin,
+  clientUrl: process.env.CLIENT_URL || process.env.FRONTEND_URL || corsOrigin.split(',')[0],
+  appBaseUrl: process.env.APP_BASE_URL || process.env.CLIENT_URL || process.env.FRONTEND_URL || corsOrigin.split(',')[0],
   jwtSecret,
   jwtRefreshSecret,
+  google: {
+    clientId: process.env.GOOGLE_CLIENT_ID || '',
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
+    callbackUrl: process.env.GOOGLE_CALLBACK_URL || ''
+  },
+  oauthStateSecret: process.env.OAUTH_STATE_SECRET || jwtSecret,
+  email: {
+    mode: process.env.EMAIL_MODE || (process.env.RESEND_API_KEY ? 'resend' : 'console'),
+    resendApiKey: process.env.RESEND_API_KEY || '',
+    from: process.env.EMAIL_FROM || '',
+    replyTo: process.env.EMAIL_REPLY_TO || ''
+  },
   db: {
     host: must(process.env.DB_HOST, 'DB_HOST'),
     port: Number(process.env.DB_PORT || 3306),

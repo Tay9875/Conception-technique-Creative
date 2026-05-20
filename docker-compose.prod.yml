@@ -10,7 +10,11 @@ services:
     volumes:
       - oncarya_mysql_data:/var/lib/mysql
     healthcheck:
-      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u$${MYSQL_USER} -p$${MYSQL_PASSWORD} --silent"]
+      test:
+        [
+          "CMD-SHELL",
+          "mysqladmin ping -h 127.0.0.1 -u$${MYSQL_USER} -p$${MYSQL_PASSWORD} --silent",
+        ]
       interval: 10s
       timeout: 5s
       retries: 20
@@ -20,6 +24,9 @@ services:
   api:
     image: ${GHCR_IMAGE_NAME:?GHCR_IMAGE_NAME is required}-api:${APP_IMAGE_TAG:?APP_IMAGE_TAG is required}
     restart: unless-stopped
+    dns:
+      - 185.12.64.1
+      - 185.12.64.2
     depends_on:
       mysql:
         condition: service_healthy
@@ -35,13 +42,27 @@ services:
       JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required}
       JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:?JWT_REFRESH_SECRET is required}
       CORS_ORIGIN: ${CORS_ORIGIN:?CORS_ORIGIN is required}
-      MIGRATE_ON_START: ${MIGRATE_ON_START:-false}
+      CLIENT_URL: ${CLIENT_URL:?CLIENT_URL is required}
+      APP_BASE_URL: ${APP_BASE_URL:?APP_BASE_URL is required}
+      OAUTH_STATE_SECRET: ${OAUTH_STATE_SECRET:?OAUTH_STATE_SECRET is required}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+      GOOGLE_CALLBACK_URL: ${GOOGLE_CALLBACK_URL:-}
+      EMAIL_MODE: ${EMAIL_MODE:-console}
+      RESEND_API_KEY: ${RESEND_API_KEY:-}
+      EMAIL_FROM: ${EMAIL_FROM:-}
+      EMAIL_REPLY_TO: ${EMAIL_REPLY_TO:-}
+      MIGRATE_ON_START: ${MIGRATE_ON_START:-true}
       SEED_ON_START: ${SEED_ON_START:-false}
       ENABLE_DB_FIX_ROUTE: "false"
       APP_VERSION: ${APP_VERSION:-unknown}
       APP_COMMIT_SHA: ${APP_COMMIT_SHA:-unknown}
     healthcheck:
-      test: ["CMD-SHELL", "node -e \"fetch('http://127.0.0.1:3000/health').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))\""]
+      test:
+        [
+          "CMD-SHELL",
+          'node -e "fetch(''http://127.0.0.1:3000/health'').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"',
+        ]
       interval: 30s
       timeout: 5s
       retries: 5
@@ -49,6 +70,7 @@ services:
       - "3000"
     networks:
       - oncarya_internal
+      - oncarya_egress
 
   web:
     image: ${GHCR_IMAGE_NAME:?GHCR_IMAGE_NAME is required}-web:${APP_IMAGE_TAG:?APP_IMAGE_TAG is required}
@@ -59,7 +81,8 @@ services:
     expose:
       - "8080"
     healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:8080/ >/dev/null || exit 1"]
+      test:
+        ["CMD-SHELL", "wget -qO- http://127.0.0.1:8080/ >/dev/null || exit 1"]
       interval: 30s
       timeout: 5s
       retries: 5
@@ -76,3 +99,5 @@ networks:
   oncarya_internal:
     driver: bridge
     internal: true
+  oncarya_egress:
+    driver: bridge

@@ -11,12 +11,16 @@ import { commentsRouter } from './routes/comments';
 import { tagsRouter } from './routes/tags';
 import { usersRouter } from './routes/users';
 import { moderationRouter } from './routes/moderation';
+import { adminRouter } from './routes/admin';
+import { searchRouter } from './routes/search';
+import { notificationsRouter } from './routes/notifications';
 import { buildRateLimit, compressionMw, helmetMw } from './middleware/security';
 import { fail, HttpError } from './lib/http';
 import { metrics } from './lib/metrics';
 
 export const app = express();
 app.disable('x-powered-by');
+app.set('trust proxy', 2);
 app.use((req, _res, next) => { req.requestId = randomUUID(); next(); });
 app.use((req, res, next) => {
   res.on('finish', () => metrics.incHttp(req.method, req.path, res.statusCode));
@@ -77,6 +81,9 @@ app.use('/api/comments', commentsRouter);
 app.use('/api/tags', tagsRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/moderation', moderationRouter);
+app.use('/api/admin', adminRouter);
+app.use('/api/search', searchRouter);
+app.use('/api/notifications', notificationsRouter);
 
 app.use((err: Error, req: express.Request, res: express.Response, _next: express.NextFunction) => {
   if (err instanceof HttpError) return fail(res, err.status, err.code, err.message, err.details);

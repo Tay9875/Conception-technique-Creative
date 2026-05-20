@@ -15,13 +15,25 @@ export interface User {
   email: string;
   role_id: number;
   pathology_id?: number | null;
+  profileStatus?: ProfileStatus;
+  profile_status?: ProfileStatus;
 }
+
+export type AuthProvider = 'password' | 'google';
+export type ProfileStatus = 'patient' | 'former_patient' | 'caregiver' | 'prefer_not_to_say';
 
 export interface SessionUser {
   id: number;
   firstname: string;
   lastname: string;
+  email?: string;
   role_id: number;
+  avatar_url?: string | null;
+  email_verified?: boolean;
+  authProviders?: AuthProvider[];
+  hasPassword?: boolean;
+  canChangePassword?: boolean;
+  profileStatus?: ProfileStatus;
 }
 
 export interface Tag {
@@ -51,6 +63,7 @@ export interface Post {
 export interface PostWithDetails extends Post {
   firstname: string;
   lastname: string;
+  profile_status?: ProfileStatus | null;
   tag_title: string | null;
   like_count: number;
   is_liked: 0 | 1;

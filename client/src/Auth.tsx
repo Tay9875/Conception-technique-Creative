@@ -19,7 +19,7 @@ interface AuthFormState {
 }
 
 interface LocationState {
-  from?: string;
+  from?: unknown;
 }
 
 const initialForm: AuthFormState = {
@@ -30,6 +30,21 @@ const initialForm: AuthFormState = {
   role_id: '1',
 };
 
+const getInternalReturnTo = (from: unknown): string => {
+  if (typeof from === 'string' && from.startsWith('/')) {
+    return from;
+  }
+
+  if (from && typeof from === 'object') {
+    const candidate = from as { pathname?: unknown; search?: unknown };
+    if (typeof candidate.pathname === 'string' && candidate.pathname.startsWith('/')) {
+      return `${candidate.pathname}${typeof candidate.search === 'string' ? candidate.search : ''}`;
+    }
+  }
+
+  return '/';
+};
+
 export default function Auth({ onLoginSuccess }: AuthProps) {
   const navigate = useNavigate();
   const location = useLocation();
@@ -38,11 +53,54 @@ export default function Auth({ onLoginSuccess }: AuthProps) {
   const [formData, setFormData] = useState<AuthFormState>(initialForm);
   const [error, setError] = useState<string>('');
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const [googleLoading, setGoogleLoading] = useState<boolean>(false);
   const headingRef = useRef<HTMLHeadingElement>(null);
 
   useEffect(() => {
     headingRef.current?.focus();
   }, [isLogin]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+    if (params.get('oauth') !== 'success') {
+      const search = new URLSearchParams(location.search);
+      if (search.get('oauth') === 'error') {
+        const reason = search.get('reason');
+        if (reason === 'unverified') {
+          setError('Google n’a pas confirmé cette adresse email. Connectez-vous avec votre mot de passe Oncarya, ou utilisez un compte Google vérifié.');
+        } else if (reason === 'state') {
+          setError('La session Google a expiré. Vous pouvez relancer la connexion.');
+        } else if (reason === 'denied') {
+          setError('Connexion Google interrompue. Vous pouvez réessayer ou utiliser votre email.');
+        } else {
+          setError('Connexion Google indisponible. Vous pouvez réessayer ou utiliser votre email.');
+        }
+      }
+      return;
+    }
+
+    const token = params.get('token');
+    const refreshToken = params.get('refreshToken');
+    const encodedUser = params.get('user');
+    if (!token || !refreshToken || !encodedUser) {
+      setError('Connexion Google incomplete. Veuillez reessayer.');
+      return;
+    }
+
+    try {
+      const base64 = encodedUser.replace(/-/g, '+').replace(/_/g, '/');
+      const padded = base64.padEnd(Math.ceil(base64.length / 4) * 4, '=');
+      const oauthUser = JSON.parse(atob(padded)) as SessionUser;
+      localStorage.setItem('user', JSON.stringify(oauthUser));
+      localStorage.setItem('token', token);
+      localStorage.setItem('refreshToken', refreshToken);
+      onLoginSuccess?.(oauthUser);
+      window.history.replaceState(null, '', `${location.pathname}${location.search}`);
+      navigate(params.get('returnTo') || '/', { replace: true });
+    } catch {
+      setError('Connexion Google impossible a finaliser.');
+    }
+  }, [location.pathname, location.search, navigate, onLoginSuccess]);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>): void => {
     const { name, value } = e.target;
@@ -77,7 +135,7 @@ export default function Auth({ onLoginSuccess }: AuthProps) {
         if (data.token) localStorage.setItem('token', data.token);
         if (data.refreshToken) localStorage.setItem('refreshToken', data.refreshToken);
         onLoginSuccess?.(data.user);
-        const from = (location.state as LocationState | null)?.from ?? '/';
+        const from = getInternalReturnTo((location.state as LocationState | null)?.from);
         navigate(from, { replace: true });
       } else {
         await apiFetch<RegisterResponse>(`${API_URL}/auth/${endpoint}`, {
@@ -97,6 +155,13 @@ export default function Auth({ onLoginSuccess }: AuthProps) {
     }
   };
 
+  const handleGoogleLogin = (): void => {
+    setGoogleLoading(true);
+    setError('');
+    const from = getInternalReturnTo((location.state as LocationState | null)?.from);
+    window.location.assign(`${API_URL}/auth/google?returnTo=${encodeURIComponent(from)}`);
+  };
+
   return (
     <div className="auth-container">
       <div className="auth-card">
@@ -109,6 +174,21 @@ export default function Auth({ onLoginSuccess }: AuthProps) {
             {error}
           </p>
         )}
+        <button
+          type="button"
+          className="google-auth-button"
+          onClick={handleGoogleLogin}
+          disabled={googleLoading}
+        >
+          <span className="google-mark" aria-hidden="true">G</span>
+          <span>{googleLoading ? 'Ouverture de Google...' : 'Continuer avec Google'}</span>
+        </button>
+        <p className="auth-oauth-copy">Connexion rapide, sans publication automatique.</p>
+        <div className="auth-divider" aria-hidden="true">
+          <span />
+          <strong>ou</strong>
+          <span />
+        </div>
         <form onSubmit={handleSubmit} noValidate>
           {!isLogin && (
             <>

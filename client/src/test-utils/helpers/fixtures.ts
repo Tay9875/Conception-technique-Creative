@@ -14,13 +14,19 @@ export const mockUser: User = {
   email: 'alice@example.com',
   role_id: 1,
   pathology_id: null,
+  profileStatus: 'patient',
 };
 
 export const mockSessionUser: SessionUser = {
   id: mockUser.id,
   firstname: mockUser.firstname,
   lastname: mockUser.lastname,
+  email: mockUser.email,
   role_id: mockUser.role_id,
+  authProviders: ['password'],
+  hasPassword: true,
+  canChangePassword: true,
+  profileStatus: 'patient',
 };
 
 export const mockLoginResponse: LoginResponse = {
@@ -44,6 +50,7 @@ export const mockPost: PostWithDetails = {
   tag_id: 1,
   firstname: 'Alice',
   lastname: 'Martin',
+  profile_status: 'patient',
   tag_title: 'Bien-être',
   like_count: 5,
   is_liked: 0,

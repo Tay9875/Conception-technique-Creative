@@ -17,6 +17,10 @@ const setBaseEnv = () => {
 describe('env loader', () => {
   beforeEach(() => {
     vi.resetModules();
+    vi.doMock('dotenv', () => ({
+      default: { config: vi.fn() },
+      config: vi.fn()
+    }));
     for (const k of Object.keys(process.env)) {
       if (!(k in ORIGINAL_ENV)) delete process.env[k];
     }
@@ -24,6 +28,7 @@ describe('env loader', () => {
   });
 
   afterEach(() => {
+    vi.doUnmock('dotenv');
     vi.resetModules();
   });
 
@@ -57,10 +62,6 @@ describe('env loader', () => {
     delete process.env.CORS_ORIGIN;
     await expect(import('../../src/config/env')).rejects.toThrow(/Missing env: CORS_ORIGIN/);
   });
-
-  // NOTE: DB_HOST/DB_USER/DB_PASSWORD/DB_NAME are present in .env so we can't easily
-  // remove them at runtime (dotenv.config will reload them). CORS_ORIGIN is not in .env
-  // and exercises the same `must()` branch.
 
   it('reads DB_SSL flag truthy', async () => {
     setBaseEnv();

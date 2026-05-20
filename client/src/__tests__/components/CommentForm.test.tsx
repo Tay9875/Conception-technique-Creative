@@ -4,18 +4,18 @@ import CommentForm from '../../components/CommentForm';
 describe('CommentForm', () => {
   it('renders the contenu textarea', () => {
     render(<CommentForm onSubmit={vi.fn()} />);
-    expect(screen.getByLabelText(/Commentaires/i)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Enregistrer/i })).toBeInTheDocument();
+    expect(screen.getByLabelText(/Votre commentaire/i)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Publier le commentaire/i })).toBeInTheDocument();
   });
 
   it('calls onSubmit with the typed contenu and empty titre', () => {
     const onSubmit = vi.fn();
     render(<CommentForm onSubmit={onSubmit} />);
 
-    fireEvent.change(screen.getByLabelText(/Commentaires/i), {
+    fireEvent.change(screen.getByLabelText(/Votre commentaire/i), {
       target: { value: 'Super article !' },
     });
-    fireEvent.click(screen.getByRole('button', { name: /Enregistrer/i }));
+    fireEvent.click(screen.getByRole('button', { name: /Publier le commentaire/i }));
 
     expect(onSubmit).toHaveBeenCalledTimes(1);
     expect(onSubmit).toHaveBeenCalledWith({ titre: '', contenu: 'Super article !' });
@@ -35,10 +35,11 @@ describe('CommentForm', () => {
     const onSubmit = vi.fn();
     render(<CommentForm onSubmit={onSubmit} />);
 
-    const textarea = screen.getByLabelText(/Commentaires/i) as HTMLTextAreaElement;
-    fireEvent.change(textarea, { target: { value: 'Très utile' } });
-    fireEvent.click(screen.getByRole('button', { name: /Enregistrer/i }));
+    const textarea = screen.getByLabelText(/Votre commentaire/i) as HTMLTextAreaElement;
+    fireEvent.change(textarea, { target: { value: 'Tres utile' } });
+    fireEvent.click(screen.getByRole('button', { name: /Publier le commentaire/i }));
 
     expect(textarea.value).toBe('');
   });
 });
+

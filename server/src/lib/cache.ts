@@ -1,7 +1,26 @@
 import Redis from 'ioredis';
 import { env } from '../config/env';
+import { logger } from './logger';
 
-export const redis = env.redisUrl ? new Redis(env.redisUrl) : null;
+let _redis: Redis | null = null;
+if (env.redisUrl) {
+  try {
+    const client = new Redis(env.redisUrl);
+    client.on('error', (err) => {
+      logger.warn({ err }, 'Redis client error — disabling cache');
+      try {
+        client.quit().catch(() => {});
+      } catch {}
+      _redis = null;
+    });
+    _redis = client;
+  } catch (err) {
+    logger.warn({ err }, 'Failed to initialize Redis, cache disabled');
+    _redis = null;
+  }
+}
+
+export const redis = _redis;
 
 export async function getCache<T>(key: string): Promise<T | null> {
   if (!redis) return null;

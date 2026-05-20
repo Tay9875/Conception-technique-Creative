@@ -12,8 +12,17 @@ process.env.DB_USER = 'root';
 process.env.DB_PASSWORD = 'root';
 process.env.DB_NAME = 'app_test';
 
+const connQuery = vi.fn();
+const conn = {
+  beginTransaction: vi.fn(async () => {}),
+  query: connQuery,
+  commit: vi.fn(async () => {}),
+  rollback: vi.fn(async () => {}),
+  release: vi.fn(() => {})
+};
+
 vi.mock('../../src/database/db', () => ({
-  pool: { query: vi.fn(), getConnection: vi.fn() },
+  pool: { query: vi.fn(), getConnection: vi.fn(async () => conn) },
   dbHealth: vi.fn().mockResolvedValue(true)
 }));
 
@@ -31,6 +40,11 @@ beforeAll(async () => {
 
 beforeEach(() => {
   query.mockReset();
+  connQuery.mockReset();
+  conn.beginTransaction.mockClear();
+  conn.commit.mockClear();
+  conn.rollback.mockClear();
+  conn.release.mockClear();
 });
 
 describe('GET /api/comments/:postId', () => {
@@ -55,7 +69,9 @@ describe('GET /api/comments/:postId', () => {
 describe('POST /api/comments', () => {
   it('creates a comment when authenticated with valid body', async () => {
     const token = signAccessToken({ id: 1, email: 'a@b.com', role: 1 });
-    query.mockResolvedValueOnce([{ insertId: 42 }]);
+    query
+      .mockResolvedValueOnce([{ insertId: 42 }])
+      .mockResolvedValueOnce([[{ user_id: 1 }]]);
 
     const res = await request(app)
       .post('/api/comments')
@@ -65,6 +81,25 @@ describe('POST /api/comments', () => {
     expect(res.status).toBe(201);
     expect(res.body.success).toBe(true);
     expect(query).toHaveBeenCalled();
+  });
+
+  it('creates and shadow-bans high-risk comments without changing the public response', async () => {
+    const token = signAccessToken({ id: 1, email: 'a@b.com', role: 1 });
+    connQuery
+      .mockResolvedValueOnce([{ insertId: 43 }])
+      .mockResolvedValueOnce([{}]);
+
+    const res = await request(app)
+      .post('/api/comments')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ description: 'Ce produit miracle guerit le cancer a 100% garanti.', post_id: 7 });
+
+    expect(res.status).toBe(201);
+    expect(res.body.success).toBe(true);
+    expect(connQuery.mock.calls[0][0]).toContain('is_banned');
+    expect(connQuery.mock.calls[0][1][3]).toBe(1);
+    expect(connQuery.mock.calls[1][0]).toContain('moderation_reviews');
+    expect(conn.commit).toHaveBeenCalled();
   });
 
   it('returns 401 when no auth header', async () => {

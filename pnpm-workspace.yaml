@@ -6,3 +6,10 @@ allowBuilds:
   core-js: true
   core-js-pure: true
   esbuild: true
+  msw: true
+onlyBuiltDependencies:
+  - bcrypt
+  - core-js
+  - core-js-pure
+  - esbuild
+  - msw

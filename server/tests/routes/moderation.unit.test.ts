@@ -117,3 +117,15 @@ describe('GET /api/moderation/logs', () => {
     expect(res.status).toBe(400);
   });
 });
+
+describe('GET /api/moderation/queue', () => {
+  it('returns moderation review queue', async () => {
+    const rows = [
+      { id: 1, target_type: 'post', target_id: 10, status: 'needs_review', priority: 'high' }
+    ];
+    query.mockResolvedValueOnce([rows]);
+    const res = await request(app).get('/api/moderation/queue').set('Authorization', `Bearer ${modToken()}`);
+    expect(res.status).toBe(200);
+    expect(res.body.data).toEqual(rows);
+  });
+});

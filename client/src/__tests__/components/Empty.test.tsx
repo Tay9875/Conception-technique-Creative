@@ -18,7 +18,7 @@ describe('Empty', () => {
       </Empty>
     );
     expect(
-      screen.getByRole('region', { name: 'Aucun article disponible' })
+      screen.getByRole('status', { name: 'Aucun article disponible' })
     ).toBeInTheDocument();
   });
 
@@ -28,6 +28,6 @@ describe('Empty', () => {
         <p>Empty</p>
       </Empty>
     );
-    expect(screen.getByRole('region', { name: 'Aucune note' })).toBeInTheDocument();
+    expect(screen.getByRole('status', { name: 'Aucune note' })).toBeInTheDocument();
   });
 });

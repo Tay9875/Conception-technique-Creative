@@ -5,6 +5,7 @@ const initialData = {
   firstname: 'Alice',
   lastname: 'Martin',
   email: 'alice@example.com',
+  profileStatus: 'patient' as const,
 };
 
 describe('ProfileForm', () => {
@@ -23,9 +24,10 @@ describe('ProfileForm', () => {
     expect(
       (screen.getByLabelText(/Nouveau mot de passe/i) as HTMLInputElement).value
     ).toBe('');
+    expect(screen.getByLabelText(/Statut dans Oncarya/i)).toHaveValue('patient');
   });
 
-  it('omits password from the payload when left empty', () => {
+  it('omits password fields from the payload when left empty', () => {
     const onSubmit = vi.fn();
     render(<ProfileForm initialData={initialData} onSubmit={onSubmit} />);
 
@@ -39,14 +41,19 @@ describe('ProfileForm', () => {
       firstname: 'Alice',
       lastname: 'Martin',
       email: 'alice@example.com',
+      profileStatus: 'patient',
     });
-    expect('password' in payload).toBe(false);
+    expect('currentPassword' in payload).toBe(false);
+    expect('newPassword' in payload).toBe(false);
   });
 
-  it('includes password in the payload when filled in', () => {
+  it('includes password fields in the payload when filled in', () => {
     const onSubmit = vi.fn();
     render(<ProfileForm initialData={initialData} onSubmit={onSubmit} />);
 
+    fireEvent.change(screen.getByLabelText(/Mot de passe actuel/i), {
+      target: { value: 'oldpass123' },
+    });
     fireEvent.change(screen.getByLabelText(/Nouveau mot de passe/i), {
       target: { value: 'newpass123' },
     });
@@ -59,7 +66,9 @@ describe('ProfileForm', () => {
       firstname: 'Alice',
       lastname: 'Martin',
       email: 'alice@example.com',
-      password: 'newpass123',
+      profileStatus: 'patient',
+      currentPassword: 'oldpass123',
+      newPassword: 'newpass123',
     });
   });
 
@@ -76,6 +85,29 @@ describe('ProfileForm', () => {
 
     expect(onSubmit).toHaveBeenCalledWith(
       expect.objectContaining({ firstname: 'Alicia' })
+    );
+  });
+
+  it('hides password inputs for Google-only accounts', () => {
+    render(<ProfileForm initialData={initialData} canChangePassword={false} onSubmit={vi.fn()} />);
+
+    expect(screen.queryByLabelText(/Nouveau mot de passe/i)).not.toBeInTheDocument();
+    expect(screen.getByText(/connecté avec Google/i)).toBeInTheDocument();
+  });
+
+  it('submits profile status changes', () => {
+    const onSubmit = vi.fn();
+    render(<ProfileForm initialData={initialData} onSubmit={onSubmit} />);
+
+    fireEvent.change(screen.getByLabelText(/Statut dans Oncarya/i), {
+      target: { value: 'caregiver' },
+    });
+    fireEvent.click(
+      screen.getByRole('button', { name: /Enregistrer les modifications/i })
+    );
+
+    expect(onSubmit).toHaveBeenCalledWith(
+      expect.objectContaining({ profileStatus: 'caregiver' })
     );
   });
 });
